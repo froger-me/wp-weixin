@@ -68,6 +68,7 @@ Enable Wechat mobile authentication | No       | checkbox  | If enabled, users w
 Force Wechat mobile authentication  | No       | checkbox  | Make the website accessible only through the Wechat browser.                                                                 
 Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the Wechat browser.                           
 Send welcome message                | No       | checkbox  | Send a welcome message when a user follows the Official Account.                                                             
+Welcome message image URL           | No       | text      | A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br>Default image is in `/wp-weixin/images/default-welcome.png`. 
 
 Required settings above are the **minimal configuration** to enable the plugin.
 
