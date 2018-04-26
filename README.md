@@ -116,8 +116,8 @@ Use custom persistence for access_token          | checkbox | Use a custom persi
 ## Go PRO!
 
 To integrate Wechat Pay with Wordpress, there are several possibilities, both using exclusive plugins:
-* **Use Woo WechatPay** with WP Weixin on a Woocommerce website: Woo WechatPay is a payment gateway for Woocommerce allowing a website to receive payments for orders via Wechat, both on mobile and desktop/laptop. See [How to get Woo WechatPay](https://anyape.com/woo-wechatpay.html).
-* **Use WP Weixin Pay** with WP Weixin: with this extension, you can receive payments with an emulated "Transfer" screen, without needing any e-commerce plugin. See [How to get WP Weixin Pay](http://anyape.com/wp-weixin-pay.html).
+* **Use Woo WechatPay** with WP Weixin on a Woocommerce website: Woo WechatPay is a payment gateway for Woocommerce allowing a website to receive payments for orders via Wechat, both on mobile and desktop/laptop. See [How to get Woo WechatPay](https://anyape.com/woo-wechatpay.html#how-to-get-woo-wechatpay).
+* **Use WP Weixin Pay** with WP Weixin: with this extension, you can receive payments with an emulated "Transfer" screen, without needing any e-commerce plugin. See [How to get WP Weixin Pay](https://anyape.com/wp-weixin-pay.html#how-to-get-wp-weixin-pay).
 * Combine all the plugins!
 
 The combination of WP Weixin, WP Weixin Pay and Woo WechatPay is maybe the best clean, fully documented, i18n-ready, powerful suite of plugins integrating Wordpress with Wechat.
