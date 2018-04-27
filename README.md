@@ -19,7 +19,7 @@
 
 ## General Description
 
-WP Weixin enables integration between WordPress and Wechat. It is fully functional as a standalone plugin, and also acts as a core for [Woo WechatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension.  
+WP Weixin enables integration between WordPress and Wechat. It is fully functional as a standalone plugin, and also acts as a core for [Woo WechatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce, [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension. It is also a library for WordPress developers to build their own integration with Wechat.  
 It can be used with both Official Subscription Account and Official Service Account.
 
 ### Overview
