@@ -1,5 +1,5 @@
 
-# WP Weixin - Wordpress Wechat integration
+# WP Weixin - WordPress Wechat integration
 
 * [General description](#user-content-general-description)
 	* [Overview](#user-content-overview)
@@ -19,31 +19,31 @@
 
 ## General Description
 
-WP Weixin enables integration between Wordpress and Wechat. It is fully functional as a standalone plugin, and also acts as a core for Woo WechatPay payment gateway for WooCommerce and WP Weixin Pay.  
+WP Weixin enables integration between WordPress and Wechat. It is fully functional as a standalone plugin, and also acts as a core for Woo WechatPay payment gateway for WooCommerce and WP Weixin Pay.  
 It can be used with both Official Subscription Account and Official Service Account.
 
 ### Overview
 
-This plugin adds the following major features to Wordpress:
+This plugin adds the following major features to WordPress:
 
 * **WP Weixin settings page:** to configure the plugin with an Official Account.
 * **Wechat Share:** Share posts and pages on Moments or Send to chat, in a pretty way.
-* **Wechat JS_SDK:** the `wx` global variable is pre-configured with a signed package to leverage the javascript SDK of Wechat in Wordpress themes more easily. 
+* **Wechat JS_SDK:** the `wx` global variable is pre-configured with a signed package to leverage the javascript SDK of Wechat in WordPress themes more easily. 
 * **WP Weixin QR code generator:** to create custom codes.
-* **Wechat Authentication:** to automatically create and authenticate a user in Wordpress.
+* **Wechat Authentication:** to automatically create and authenticate a user in WordPress.
 * **Wechat Forced:** to prevent users from browsing the website outside of Wechat.
 * **Wechat Force Follow:** to harvest Wechat followers, forcing users to follow the Official Account before accessing the content.
 * **Wechat Responder:** acts as an API for developers to receive and respond to calls made by Wechat.
 * **Welcome message:** sends a welcome message in Wechat when a user follows the Official Account.
-* **Menu integration:** to create Official Account menus in Wordpress when the Wechat Responder is enabled.
+* **Menu integration:** to create Official Account menus in WordPress when the Wechat Responder is enabled.
 * **Proxy (beta):** use a proxy to connect to Wechat.
-* **Wordpress Users screen override:** to display Wechat names and Wechat avatars if they exist, instead of the default values in the user screen.
+* **WordPress Users screen override:** to display Wechat names and Wechat avatars if they exist, instead of the default values in the user screen.
 
 Developers can also build plugins and themes integrated with Wechat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.
 
 ### Object Cache considerations
 
-This plugin uses Wordpress `WP_Object_Cache` to optimise the number of database queries, ensuring only the proper amount is fired on each pageload. Because the `WP_Object_Cache` object can be affected by third-party plugins, it is required that such plugins implement the `wp_cache_add_non_persistent_groups` function to avoid side effects.  
+This plugin uses WordPress `WP_Object_Cache` to optimise the number of database queries, ensuring only the proper amount is fired on each pageload. Because the `WP_Object_Cache` object can be affected by third-party plugins, it is required that such plugins implement the `wp_cache_add_non_persistent_groups` function to avoid side effects.  
 
 See below examples of popular cache plugins compatible with WP Weixin:
 
@@ -64,7 +64,7 @@ Wechat App ID                       | Yes      | text      | The AppId in the ba
 Wechat App Secret                   | Yes      | text      | The AppSecret in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                         
 Wechat OA Name                      | No       | text      | The name of the Official Account (recommended to enter the actual name).                                                     
 Wechat OA Logo URL                  | No       | text      | A URL to the logo of the Official Account - (recommended enter the URL of a picture of the actual logo).                     
-Enable Wechat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in Wordpress (if not, a session cookie `wx_openId` is set).
+Enable Wechat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in WordPress (if not, a session cookie `wx_openId` is set).
 Force Wechat mobile authentication  | No       | checkbox  | Make the website accessible only through the Wechat browser.                                                                 
 Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the Wechat browser.                           
 Send welcome message                | No       | checkbox  | Send a welcome message when a user follows the Official Account.                                                             
@@ -104,24 +104,24 @@ Use a proxy | checkbox | Enable proxy.
 Proxy Host  | text     | IP address or URI of the proxy host.     
 Proxy Port  | text     | Port to use to connect to the proxy host.
 
-Depending on your server configuration, a proxy may be needed if Wordpress is behind a firewall or within a company network.
+Depending on your server configuration, a proxy may be needed if WordPress is behind a firewall or within a company network.
 
 ### Miscellaneous Settings
 
 Name                                             | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 ------------------------------------------------ |:--------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Show Wechat name and pictures in Users list page | checkbox | Override the display of the Wordpress account names and avatars.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+Show Wechat name and pictures in Users list page | checkbox | Override the display of the WordPress account names and avatars.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 Official Account menu language awareness         | checkbox | Customise the menu of the Official Account depending on user's language. By default, the language of the menu corresponding to the website's default language is used.<br/>This setting is only available if WPML is activated.                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter('wp_weixin_get_access_info', $access_info, 10, 0);`</li><li>`add_action('wp_weixin_save_access_info', $access_info, 10, 1);`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `4` or less.<br/>Useful to avoid a race condition if the access_token information need to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the Wordpress options table in the database.
+Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter('wp_weixin_get_access_info', $access_info, 10, 0);`</li><li>`add_action('wp_weixin_save_access_info', $access_info, 10, 1);`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `4` or less.<br/>Useful to avoid a race condition if the access_token information need to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the WordPress options table in the database.
 
 ## Go PRO!
 
-To integrate Wechat Pay with Wordpress, there are several possibilities using exclusive plugins:
+To integrate Wechat Pay with WordPress, there are several possibilities using exclusive plugins:
 * **Use Woo WechatPay** with WP Weixin on a Woocommerce website: Woo WechatPay is a payment gateway for Woocommerce allowing a website to receive payments for orders via Wechat, both on mobile and desktop/laptop. See [Woo WechatPay details](https://anyape.com/woo-wechatpay.html) to see how to get it.
 * **Use WP Weixin Pay** with WP Weixin: with this extension, you can receive payments with an emulated "Transfer" screen, without needing any e-commerce plugin. See [WP Weixin Pay details](https://anyape.com/wp-weixin-pay.html) to see how to get it.
 * Combine all the plugins!
 
-The combination of WP Weixin, WP Weixin Pay and Woo WechatPay is maybe the best clean, fully documented, i18n-ready, powerful suite of plugins integrating Wordpress with Wechat.
+The combination of WP Weixin, WP Weixin Pay and Woo WechatPay is maybe the best clean, fully documented, i18n-ready, powerful suite of plugins integrating WordPress with Wechat.
 
 ## Functions
 The functions listed below are made publicly available by the plugin for theme and plugin developers. Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
@@ -329,7 +329,7 @@ ___
 
 ## Templates
 
-The following plugin files are included using `locate_template()` function of Wordpress. This means they can be overloaded in the active Wordpress theme if a file with the same name exists at the root of the theme.
+The following plugin files are included using `locate_template()` function of WordPress. This means they can be overloaded in the active WordPress theme if a file with the same name exists at the root of the theme.
 ___
 
 `wp-weixin/inc/templates/wp-weixin-subscribe.php`  
