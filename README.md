@@ -321,7 +321,8 @@ ___
 apply_filters('wp_weixin_jsapi_urls', array $jsapi_urls);
 ```
 
-Filters the URLs necessary to register on the Wechat merchant account's API configuration screen - particularly useful another plugin implements some sort of custom checkout page with a URL not registered in WooCommerce.
+As an effect only if [Woo WechatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and/or [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension is activated.  
+Filters the URLs necessary to register on the Wechat merchant account's API configuration screen - particularly useful if another plugin implements some sort of custom checkout page with a URL not registered in WooCommerce.
 
 **Parameters**  
 $jsapi_urls
