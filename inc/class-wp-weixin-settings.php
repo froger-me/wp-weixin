@@ -413,7 +413,7 @@ class WP_Weixin_Settings {
 					'label' => __( 'Force Wechat mobile', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Make the website accessible only through the Wechat browser (except administrators and admin interface).', 'wp-weixin' ),
+					'help'  => __( 'Make the website accessible only through the Wechat browser (except administrators and admin interface).<br>If accessed with an other browser, the page displays a QR code.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'force_follower',

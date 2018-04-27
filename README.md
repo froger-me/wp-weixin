@@ -58,15 +58,15 @@ The following settings can be accessed on the WP Weixin settings page.
 ### Main Settings
 
 Name                                | Required | Type      | Description                                                                                                                  
------------------------------------ |:--------:|:---------:| -----------------------------------------------------------------------------------------------------------------------------
-Enable                              | Yes      | checkbox  | Enable WP Weixin - requires a valid configuration.                                                                           
-Wechat App ID                       | Yes      | text      | The AppId in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                             
-Wechat App Secret                   | Yes      | text      | The AppSecret in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                         
-Wechat OA Name                      | No       | text      | The name of the Official Account (recommended to enter the actual name).                                                     
-Wechat OA Logo URL                  | No       | text      | A URL to the logo of the Official Account - (recommended enter the URL of a picture of the actual logo).                     
-Enable Wechat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in WordPress (if not, a session cookie `wx_openId` is set).
-Force Wechat mobile                 | No       | checkbox  | Make the website accessible only through the Wechat browser.                                                                 
-Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the Wechat browser.                           
+----------------------------------- |:--------:|:---------:| ------------------------------------------------------------------------------------------------------------------------------
+Enable                              | Yes      | checkbox  | Enable WP Weixin - requires a valid configuration.                                                                            
+Wechat App ID                       | Yes      | text      | The AppId in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                              
+Wechat App Secret                   | Yes      | text      | The AppSecret in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                          
+Wechat OA Name                      | No       | text      | The name of the Official Account (recommended to enter the actual name).                                                      
+Wechat OA Logo URL                  | No       | text      | A URL to the logo of the Official Account - (recommended enter the URL of a picture of the actual logo).                      
+Enable Wechat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in WordPress (if not, a session cookie `wx_openId` is set). 
+Force Wechat mobile                 | No       | checkbox  | Make the website accessible only through the Wechat browser.<br>If accessed with another browser, the page displays a QR code.
+Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the Wechat browser.                            
 
 
 Required settings above are the **minimal configuration** to enable the plugin.
