@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: WP Weixin
-Plugin URI: https://truerun.com/
-Description: Main WP Weixin plugin - flexibly handles authentication, handles Wechat message responses, holds the weixin SDK.
+Plugin URI: https://github.com/froger-me/wp-weixin
+Description: WordPress Wechat integration
 Version: 2
 Author: Alexandre Froger
 Author URI: https://froger.me
