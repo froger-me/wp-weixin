@@ -28,13 +28,6 @@ class WP_Weixin {
 				'wp_weixin_subscribe_time',
 			);
 
-			// Activation hook
-			register_activation_hook( WP_WEIXIN_PLUGIN_PATH, array( 'WP_Weixin', 'activate' ) );
-			// Deactivation hook
-			register_deactivation_hook( WP_WEIXIN_PLUGIN_PATH, array( 'WP_Weixin', 'deactivate' ) );
-			// Uninstall cleanup
-			register_uninstall_hook( WP_WEIXIN_PLUGIN_PATH, array( 'WP_Weixin', 'uninstall' ) );
-
 			// Make sure we're not caching in a persistent object cache if a persistent plugin is installed
 			add_action( 'init', array( $this, 'set_cache_policy' ), 0, 0 );
 			// Add translation

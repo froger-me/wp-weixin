@@ -23,14 +23,19 @@ if ( ! defined( 'WP_WEIXIN_PLUGIN_URL' ) ) {
 	define( 'WP_WEIXIN_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 
+require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin.php';
+
+register_activation_hook( __FILE__, array( 'WP_Weixin', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'WP_Weixin', 'deactivate' ) );
+register_uninstall_hook( __FILE__, array( 'WP_Weixin', 'uninstall' ) );
+
 function wp_weixin_run() {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-settings.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-wechat.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-wechat-singleton.php';
-	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-auth.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-responder.php';
-	// require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-pay.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-walker-nav-menu-wechat-edit.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin-menu.php';
 	require_once WP_WEIXIN_PLUGIN_PATH . 'lib/wechat-sdk/wechat-sdk.php';
@@ -51,7 +56,6 @@ function wp_weixin_run() {
 		$wp_weixin_auth      = new WP_Weixin_Auth( $wechat, true );
 		$wp_weixin_responder = ( $use_responder ) ? new WP_Weixin_Responder( $wechat, true ) : false;
 		$wp_weixin_menu      = ( $use_responder ) ? new WP_Weixin_Menu( $wechat, true ) : false;
-		// $wp_weixin_pay       = ( $use_ecommerce ) ? new WP_Weixin_Pay( $wechat, $wp_weixin_auth, true ) : false;
 
 		do_action( 'wp_weixin_extensions' );
 	}

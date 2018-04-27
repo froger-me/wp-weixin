@@ -4,8 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
 class WP_Weixin_Settings {
 
 	private $settings_fields;

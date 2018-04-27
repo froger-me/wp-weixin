@@ -197,7 +197,7 @@ class Wechat {
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function checkBind() {
-		$echoStr = isset($_GET['echostr']) ? filter_input(INPUT_GET, 'echostr', FILTER_SANITIZE_STRING) : false;
+		$echoStr = filter_input(INPUT_GET, 'echostr', FILTER_SANITIZE_STRING);
 
 		if ($echoStr) {
 
@@ -716,7 +716,7 @@ class Wechat {
 		$response = $this->_array2Xml($this->data);
 
 		if ($this->encode) {
-			$nonce                  = filter_input(INPUT_GET, 'nonce', FILTER_SANITIZE_STRING);;
+			$nonce                  = filter_input(INPUT_GET, 'nonce', FILTER_SANITIZE_STRING);
 			$xmlStr['Encrypt']      = $this->AESencode($response);
 			$xmlStr['MsgSignature'] = self::getSHA1($xmlStr['Encrypt'], $nonce);
 			$xmlStr['TimeStamp']    = time();
@@ -1004,7 +1004,7 @@ class Wechat {
 	 * @return array|boolean
 	 */
 	public function getOauthAccessToken() {
-		$code = isset($_GET['code']) ? filter_input(INPUT_GET, 'code', FILTER_SANITIZE_STRING) : false;
+		$code = filter_input(INPUT_GET, 'code', FILTER_SANITIZE_STRING);
 
 		if (!$code) {
 

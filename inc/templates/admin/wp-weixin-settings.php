@@ -2,18 +2,17 @@
 	exit; // Exit if accessed directly
 }
 
-$active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'settings';
+$active_tab = filter_input( INPUT_GET, 'state', FILTER_SANITIZE_STRING );
+$active_tab = ( $active_tab ) ? $active_tab : 'settings';
 
-if ( current_user_can( 'manage_options' ) ) {
-	$active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'settings';
-} else {
+if ( ! current_user_can( 'manage_options' ) ) {
 	$active_tab = 'qrs';
 }
 
 $base_payment_qr_url = site_url( 'wp-weixin-pay/transfer/' );
 $base_qr_url         = site_url( 'wp-weixin/get-qrcode/hash/' );
 $url_nonce           = wp_create_nonce( 'qr_code' );
-$base_payment_qr_src = site_url( 'wp-weixin/get-qrcode/hash/' . base64_encode( $base_payment_qr_url . '|' . $url_nonce ) );
+$base_payment_qr_src = site_url( 'wp-weixin/get-qrcode/hash/' . base64_encode( $base_payment_qr_url . '|' . $url_nonce ) );// @codingStandardsIgnoreLine
 
 ?>
 <div class="wrap">

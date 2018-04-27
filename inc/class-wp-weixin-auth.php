@@ -83,7 +83,7 @@ class WP_Weixin_Auth {
 			$oauth_access_token_info = $this->wechat->getOauthAccessToken();
 
 			if ( false !== $oauth_access_token_info ) {
-				$state = isset( $_GET['state'] ) ? filter_input( INPUT_GET, 'state', FILTER_SANITIZE_STRING ) : false;
+				$state = filter_input( INPUT_GET, 'state', FILTER_SANITIZE_STRING );
 
 				if ( wp_verify_nonce( $state, __FILE__ ) ) {
 					$this->_login( $oauth_access_token_info );
@@ -152,6 +152,7 @@ class WP_Weixin_Auth {
 	public function maybe_force_follow( $force_follow = true ) {
 
 		if ( ! $force_follow || ! WP_Weixin::is_wechat_mobile() ) {
+
 			return;
 		}
 
