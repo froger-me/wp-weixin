@@ -32,8 +32,8 @@ This plugin adds the following major features to WordPress:
 * **WP Weixin QR code generator:** to create custom codes.
 * **Wechat Authentication:** to automatically create and authenticate a user in WordPress.
 * **Wechat Forced:** to prevent users from browsing the website outside of Wechat.
-* **Wechat Force Follow:** to harvest Wechat followers, forcing users to follow the Official Account before accessing the content.
 * **Wechat Responder:** acts as an API for developers to receive and respond to calls made by Wechat.
+* **Wechat Force Follow:** to harvest Wechat followers, forcing users to follow the Official Account before accessing the content.
 * **Welcome message:** sends a welcome message in Wechat when a user follows the Official Account ; allows to do so with WordPress when the Wechat Responder is enabled.
 * **Menu integration:** allows to set the Official Account menus in WordPress when the Wechat Responder is enabled.
 * **Proxy (beta):** use a proxy to connect to Wechat.
@@ -65,21 +65,22 @@ Wechat App Secret                   | Yes      | text      | The AppSecret in th
 Wechat OA Name                      | No       | text      | The name of the Official Account (recommended to enter the actual name).                                                     
 Wechat OA Logo URL                  | No       | text      | A URL to the logo of the Official Account - (recommended enter the URL of a picture of the actual logo).                     
 Enable Wechat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in WordPress (if not, a session cookie `wx_openId` is set).
-Force Wechat mobile authentication  | No       | checkbox  | Make the website accessible only through the Wechat browser.                                                                 
+Force Wechat mobile                 | No       | checkbox  | Make the website accessible only through the Wechat browser.                                                                 
 Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the Wechat browser.                           
-Send welcome message                | No       | checkbox  | Send a welcome message when a user follows the Official Account.                                                             
-Welcome message image URL           | No       | text      | A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br>Default image is in `/wp-weixin/images/default-welcome.png`. 
+
 
 Required settings above are the **minimal configuration** to enable the plugin.
 
 ### Wechat Responder Settings
 
-Name                 | Type      | Description                                                                                                                                                                                                                                                                            
--------------------- |:---------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Use Wechat Responder | checkbox  | Allow the website to receive messages from Wechat and respond to them. Server configuration must be enabled and configured in `https://mp.weixin.qq.com/` under Development > Basic configuration. Required if using "Force follow" option in the Main Settings or Wechat Pay settings.
-Wechat Token         | text      | The Token in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                                                                                                                                                                                       
-Encode messages      | checkbox  | Encode the communication between the website and the Wechat API (recommended).                                                                                                                                                                                                         
-Wechat AES Key       | text      | The EncodingAESKey in the backend at `https://mp.weixin.qq.com/` under<br/> Development > Basic configuration.                                                                                                                                                                              
+Name                      | Type      | Description                                                                                                                                                                                                                                                                            
+------------------------- |:---------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Use Wechat Responder      | checkbox  | Allow the website to receive messages from Wechat and respond to them. Server configuration must be enabled and configured in `https://mp.weixin.qq.com/` under Development > Basic configuration. Required if using "Force follow" option in the Main Settings or Wechat Pay settings.
+Wechat Token              | text      | The Token in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                                                                                                                                                                                       
+Encode messages           | checkbox  | Encode the communication between the website and the Wechat API (recommended).                                                                                                                                                                                                         
+Wechat AES Key            | text      | The EncodingAESKey in the backend at `https://mp.weixin.qq.com/` under<br/> Development > Basic configuration.                                                                                                                                                                              
+Send welcome message      | checkbox  | Send a welcome message when a user follows the Official Account.                                                             
+Welcome message image URL | text      | A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br>Default image is in `/wp-weixin/images/default-welcome.png`. 
 
 ### Wechat Pay Settings - PRO
 
@@ -88,7 +89,7 @@ These settings are only available if WP Weixin Pay and/or Woo WechatPay are inst
 Name                                | Type      | Description                                                                                                                                                                                                                     | Requirement                             
 ----------------------------------- |:---------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------:
 Use merchant platform               | checkbox  | Allow users to send money to the Service Account with Wechat - an account at `https://pay.weixin.qq.com/` is necessary. This setting is not configurable (forced to checked and hidden) if Woo WechatPay plugin is activated.   | WP Weixin Pay                           
-Custom amount transfer 			  | checkbox  | Allow users to do custom amount transfers and admins to create payment QR Codes.                                          																									      | WP Weixin Pay                           
+Custom amount transfer 			    | checkbox  | Allow users to do custom amount transfers and admins to create payment QR Codes.                                          																									      | WP Weixin Pay                           
 Force follow (account and checkout) | checkbox  | Require the user to follow the Official Account before accessing the checkout and account pages with the Wechat browser. This setting is only available if WooCommerce is activated.                                            | Woo WechatPay                           
 Wechat Merchant App ID              | text      | The AppID in the backend at `https://pay.weixin.qq.com/` - can be different from the Wechat App ID as the Wechat Pay account may be linked to a different AppID. Leave empty to use the Wechat App ID.                          | WP Weixin Pay<br>**or**<br>Woo WechatPay  
 Wechat Merchant ID                  | text      | The Merchant ID in the backend at `https://pay.weixin.qq.com/index.php/extend/pay_setting`.                                                                                                                                     | WP Weixin Pay<br>**or**<br>Woo WechatPay  

@@ -422,21 +422,6 @@ class WP_Weixin_Settings {
 					'class' => '',
 					'help'  => __( 'Require the user to follow the Official Account before accessing the site with the Wechat browser (except administrators and admin interface).', 'wp-weixin' ),
 				),
-				array(
-					'id'    => 'follow_welcome',
-					'label' => __( 'Send welcome message', 'wp-weixin' ),
-					'type'  => 'checkbox',
-					'class' => '',
-					'help'  => __( 'Send a welcome message when a user follows the Official Account. Requires using the Wechat Responder.', 'wp-weixin' ),
-				),
-				array(
-					'id'    => 'welcome_image_url',
-					'label' => __( 'Welcome message image URL', 'wp-weixin' ),
-					'type'  => 'text',
-					'class' => 'regular-text',
-					// translators: %1$s is the default welcom image link
-					'help'  => sprintf( __( 'A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br/>Default is %1$s', 'wp-weixin' ), '<a href="' . WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png">' . WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png</a>' ),
-				),
 				'title'       => __( 'Main Settings', 'wp-weixin' ),
 				'description' => __( 'Minimal required configuration to enable WP Weixin: "Wechat App ID", "Wechat App Secret".', 'wp-weixin' ),
 			),
@@ -447,7 +432,7 @@ class WP_Weixin_Settings {
 					'type'  => 'checkbox',
 					'class' => '',
 					// translators: %1s is site_url( '/weixin-responder', 'https' )
-					'help'  => sprintf( __( 'Allow the website to receive messages from the Wechat API and respond to them.<br/>Server configuration must be enabled and URL must be set to "%1$s" in <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.<br/>Required if using "Force follow" option.', 'wp-weixin' ), site_url( '/weixin-responder', 'https' ) ),
+					'help'  => sprintf( __( 'Allow the website to receive messages from the Wechat API and respond to them.<br/>Server configuration must be enabled and URL must be set to "%1$s" in <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ), site_url( '/weixin-responder', 'https' ) ),
 				),
 				array(
 					'id'    => 'token',
@@ -469,6 +454,21 @@ class WP_Weixin_Settings {
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The EncodingAESKey in the backend at <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ),
+				),
+				array(
+					'id'    => 'follow_welcome',
+					'label' => __( 'Send welcome message', 'wp-weixin' ),
+					'type'  => 'checkbox',
+					'class' => '',
+					'help'  => __( 'Send a welcome message when a user follows the Official Account.', 'wp-weixin' ),
+				),
+				array(
+					'id'    => 'welcome_image_url',
+					'label' => __( 'Welcome message image URL', 'wp-weixin' ),
+					'type'  => 'text',
+					'class' => 'regular-text',
+					// translators: %1$s is the default welcom image link
+					'help'  => sprintf( __( 'A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br/>Default is %1$s', 'wp-weixin' ), '<a href="' . WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png">' . WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png</a>' ),
 				),
 				'title'       => __( 'Wechat Responder Settings', 'wp-weixin' ),
 				'description' => __( 'Settings for the website to interact with the Wechat API.', 'wp-weixin' ),
@@ -493,7 +493,7 @@ class WP_Weixin_Settings {
 					'label' => __( 'Force follow (user account and checkout pages)', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Require the user to follow the Official Account before accessing the checkout and user account pages with the Wechat browser (except administrators and admin interface).', 'wp-weixin' ),
+					'help'  => __( 'Require the user to follow the Official Account before accessing the checkout and user account pages with the Wechat browser (except administrators and admin interface).<br/>Requires using the Wechat Responder.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'mch_appid',

@@ -204,7 +204,7 @@ class WP_Weixin_Auth {
 				$sessions = WP_Session_Tokens::get_instance( $user->ID );
 
 				$sessions->destroy_all();
-				set_transient( 'wp_weixin_recent_unsub_' . $user->ID, true );
+				set_transient( 'wp_weixin_recent_unsub_' . $user->ID, true, 3600 );
 			}
 		}
 	}
