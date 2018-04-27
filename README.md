@@ -34,8 +34,8 @@ This plugin adds the following major features to WordPress:
 * **Wechat Forced:** to prevent users from browsing the website outside of Wechat.
 * **Wechat Force Follow:** to harvest Wechat followers, forcing users to follow the Official Account before accessing the content.
 * **Wechat Responder:** acts as an API for developers to receive and respond to calls made by Wechat.
-* **Welcome message:** sends a welcome message in Wechat when a user follows the Official Account.
-* **Menu integration:** to create Official Account menus in WordPress when the Wechat Responder is enabled.
+* **Welcome message:** sends a welcome message in Wechat when a user follows the Official Account ; allows to do so with WordPress when the Wechat Responder is enabled.
+* **Menu integration:** allows to set the Official Account menus in WordPress when the Wechat Responder is enabled.
 * **Proxy (beta):** use a proxy to connect to Wechat.
 * **WordPress Users screen override:** to display Wechat names and Wechat avatars if they exist, instead of the default values in the user screen.
 
