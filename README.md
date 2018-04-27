@@ -16,6 +16,7 @@
 	* [Actions](#user-content-actions)
 	* [Filters](#user-content-filters)
 * [Templates](#user-content-templates)
+* [Javascript](#user-content-javascript)
 
 ## General Description
 
@@ -27,13 +28,13 @@ It can be used with both Official Subscription Account and Official Service Acco
 This plugin adds the following major features to WordPress:
 
 * **WP Weixin settings page:** to configure the plugin with an Official Account.
-* **Wechat Share:** Share posts and pages on Moments or Send to chat, in a pretty way.
+* **Wechat Share:** Share posts and pages on Moments or Send to chat, in a pretty way. Triggers javascript events for developers on success and failure.
 * **Wechat JS_SDK:** the `wx` global variable is pre-configured with a signed package to leverage the javascript SDK of Wechat in WordPress themes more easily. 
 * **WP Weixin QR code generator:** to create custom codes.
 * **Wechat Authentication:** to automatically create and authenticate a user in WordPress.
-* **Wechat Forced:** to prevent users from browsing the website outside of Wechat.
+* **Force Wechat mobile:** to prevent users from browsing the website outside of Wechat. If accessed with an other browser, the page displays a QR code.
 * **Wechat Responder:** acts as an API for developers to receive and respond to calls made by Wechat.
-* **Wechat Force Follow:** to harvest Wechat followers, forcing users to follow the Official Account before accessing the content.
+* **Force following the Official Account:** to harvest Wechat followers, forcing users to follow the Official Account before accessing the content.
 * **Welcome message:** sends a welcome message in Wechat when a user follows the Official Account ; allows to do so with WordPress when the Wechat Responder is enabled.
 * **Menu integration:** allows to set the Official Account menus in WordPress when the Wechat Responder is enabled.
 * **Proxy (beta):** use a proxy to connect to Wechat.
@@ -346,3 +347,50 @@ No variable is provided to this template by default: it uses the `wp_weixin_subs
 
 **Associated scripts**  
 None
+
+## Javascript
+
+The global variable `wx` is already properly signed and initialised with the complete `jsApiList`.  
+To use it properly, developers must include their scripts with a priority of `6` or more and `wp-weixin-main-script` as a dependency.  
+
+In addition, the following events may be subscribed to.
+___
+```Javascript
+window.wpWeixinShareTimelineSuccessListener(callback);
+```
+
+Subscribing to this event will execute the `callback` function when sharing the post on Wechat Moments succeeded.  
+
+**Parameters passed to the callback**  
+shareInfo
+> (object) The share information sent to the Wechat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  
+___
+```Javascript
+window.wpWeixinShareTimelineFailureListener(callback);
+```
+
+Subscribing to this event will execute the `callback` function when sharing the post on Wechat Moments failed.  
+
+**Parameters passed to the callback**  
+shareInfo
+> (object) The share information sent to the Wechat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  
+___
+```Javascript
+window.wpWeixinShareAppMessageSuccessListener(callback);`
+```
+
+Subscribing to this event will execute the `callback` function when sharing the post with Wechat "Send to chat" succeeded.  
+
+**Parameters passed to the callback**  
+shareInfo
+> (object) The share information sent to the Wechat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  
+___
+```Javascript
+window.wpWeixinShareAppMessageFailureListener(callback);
+```
+
+Subscribing to this event will execute the `callback` function when sharing the post with Wechat "Send to chat" failed.  
+
+**Parameters passed to the callback**  
+shareInfo
+> (object) The share information sent to the Wechat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  

@@ -33,7 +33,7 @@ class WP_Weixin {
 			// Add translation
 			add_action( 'init', array( $this, 'load_textdomain' ), 0, 0 );
 			// Add main scripts & styles
-			add_action( 'wp_enqueue_scripts', array( $this, 'add_frontend_scripts' ), 10, 0 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'add_frontend_scripts' ), 5, 0 );
 			// Allow user profile update with empty email
 			add_action( 'user_profile_update_errors', array( $this, 'remove_empty_email_error' ), 10, 1 );
 			// Add sort by wechat name logic
