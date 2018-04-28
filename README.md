@@ -63,7 +63,7 @@ The following settings can be accessed on the WP Weixin settings page.
 
 ### Main Settings
 
-Required settings above are the **minimal configuration** to enable the plugin.  
+Required settings below are the **minimal configuration** necessary for the plugin to have any effect.  
 
 Name                                | Required | Type      | Description                                                                                                                  
 ----------------------------------- |:--------:|:---------:| ------------------------------------------------------------------------------------------------------------------------------
