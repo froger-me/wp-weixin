@@ -3,6 +3,7 @@
 
 * [General description](#user-content-general-description)
 	* [Overview](#user-content-overview)
+	* [Screenshots](#user-content-screenshots)
 	* [Object Cache considerations](#user-content-object-cache-considerations)
 * [Settings](#user-content-settings)
 	* [Main Settings](#user-content-main-settings)
@@ -41,6 +42,10 @@ This plugin adds the following major features to WordPress:
 * **WordPress Users screen override:** to display WeChat names and WeChat avatars if they exist, instead of the default values in the user screen.
 
 Developers can also build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.
+
+### Screenshots
+
+<img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-welcome-default.png" alt="Welcome default message" width="30%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-force-wechat-mobile.png" alt="Force WeChat mobile" width="65%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-settings.png" alt="WP Weixin Settings" width="100%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-responder-settings.png" alt="WP Weixin Responder settings" width="100%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-misc-settings.png" alt="WP Weixin Miscellaneous settings" width="100%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-qr-generator.png" alt="WP Weixin QR code generator" width="42%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-users-screen.png" alt="WP Weixin Users screen" width="55%"> 
 
 ### Object Cache considerations
 

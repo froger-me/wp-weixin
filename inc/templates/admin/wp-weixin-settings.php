@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 }
 
-$active_tab = filter_input( INPUT_GET, 'state', FILTER_SANITIZE_STRING );
+$active_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
 $active_tab = ( $active_tab ) ? $active_tab : 'settings';
 
 if ( ! current_user_can( 'manage_options' ) ) {
