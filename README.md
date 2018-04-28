@@ -359,7 +359,7 @@ None
 The global variable `wx` is already properly signed and initialised with the complete `jsApiList`.  
 To use it properly, developers must include their scripts with a priority of `6` or more and `wp-weixin-main-script` as a dependency.  
 
-In addition, the following events may be subscribed to.
+In addition, the following listeners may be subscribed to:
 ___
 ```Javascript
 window.wpWeixinShareTimelineSuccessListener( callback );
@@ -375,7 +375,7 @@ ___
 window.wpWeixinShareTimelineFailureListener( callback );
 ```
 
-Subscribing to this event will execute the `callback` function when sharing the post on WeChat Moments failed.  
+Subscribing to this listener will execute the `callback` function when sharing the post on WeChat Moments failed.  
 
 **Parameters passed to the callback**  
 shareInfo
@@ -385,7 +385,7 @@ ___
 window.wpWeixinShareAppMessageSuccessListener( callback );`
 ```
 
-Subscribing to this event will execute the `callback` function when sharing the post with WeChat "Send to chat" succeeded.  
+Subscribing to this listener will execute the `callback` function when sharing the post with WeChat "Send to chat" succeeded.  
 
 **Parameters passed to the callback**  
 shareInfo
@@ -395,7 +395,7 @@ ___
 window.wpWeixinShareAppMessageFailureListener( callback );
 ```
 
-Subscribing to this event will execute the `callback` function when sharing the post with WeChat "Send to chat" failed.  
+Subscribing to this listener will execute the `callback` function when sharing the post with WeChat "Send to chat" failed.  
 
 **Parameters passed to the callback**  
 shareInfo
