@@ -365,7 +365,7 @@ ___
 window.wpWeixinShareTimelineSuccessListener( callback );
 ```
 
-Subscribing to this event will execute the `callback` function when sharing the post on WeChat Moments succeeded.  
+Subscribing to this listener will execute the `callback` function after sharing the post on WeChat Moments succeeded.  
 
 **Parameters passed to the callback**  
 shareInfo
@@ -375,7 +375,7 @@ ___
 window.wpWeixinShareTimelineFailureListener( callback );
 ```
 
-Subscribing to this listener will execute the `callback` function when sharing the post on WeChat Moments failed.  
+Subscribing to this listener will execute the `callback` function after sharing the post on WeChat Moments failed.  
 
 **Parameters passed to the callback**  
 shareInfo
@@ -385,7 +385,7 @@ ___
 window.wpWeixinShareAppMessageSuccessListener( callback );`
 ```
 
-Subscribing to this listener will execute the `callback` function when sharing the post with WeChat "Send to chat" succeeded.  
+Subscribing to this listener will execute the `callback` function after sharing the post with WeChat "Send to chat" succeeded.  
 
 **Parameters passed to the callback**  
 shareInfo
@@ -395,7 +395,7 @@ ___
 window.wpWeixinShareAppMessageFailureListener( callback );
 ```
 
-Subscribing to this listener will execute the `callback` function when sharing the post with WeChat "Send to chat" failed.  
+Subscribing to this listener will execute the `callback` function after sharing the post with WeChat "Send to chat" failed.  
 
 **Parameters passed to the callback**  
 shareInfo
