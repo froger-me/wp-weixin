@@ -351,6 +351,21 @@ No variable is provided to this template by default: it uses the `wp_weixin_subs
 `wp-weixin/css/main.css`  
 
 **Associated scripts**  
+None  
+___
+
+`wp-weixin/inc/templates/wp-weixin-browser-qr.php`  
+
+**Description**  
+The template of the page displaying the QR code when the website is accessible only through the WeChat browser.  
+
+**Variables**  
+No variable is provided to this template by default: it uses the `wp_weixin_browser_page_qr_src` filter to get the source of the QR code image.
+
+**Associated styles**  
+None (inline) 
+
+**Associated scripts**  
 None
 
 ## Javascript
