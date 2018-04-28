@@ -7,7 +7,7 @@
 			<span class="item-title"><span class="menu-item-title"><?php echo esc_html( $title ); ?></span> <span class="is-submenu" <?php echo esc_attr( $submenu_text ); ?>><?php esc_html_e( 'sub item' ); ?></span></span>
 			<span class="item-controls">
 				<?php
-					$label = ( 'wechat' === $item->type ) ? __( 'Wechat Menu Item', 'wp-weixin' ) : $item->type_label;
+					$label = ( 'wechat' === $item->type ) ? __( 'WeChat Menu Item', 'wp-weixin' ) : $item->type_label;
 				?>
 				<span class="item-type"><?php echo esc_html( $label ); ?></span>
 				<span class="item-order hide-if-js">

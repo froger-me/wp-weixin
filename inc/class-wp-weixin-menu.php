@@ -14,21 +14,21 @@ class WP_Weixin_Menu {
 		$this->wechat = $wechat;
 
 		if ( $init_hooks ) {
-			// Add Wechat Menu Item metabox
+			// Add WeChat Menu Item metabox
 			add_action( 'admin_head-nav-menus.php', array( $this, 'add_meta_box' ), 10, 0 );
-			// Add menu location for Wechat
+			// Add menu location for WeChat
 			add_action( 'after_setup_theme', array( $this, 'add_menu_location' ), 10, 0 );
 			// Publish the menu to wechat on save
 			add_action( 'wp_update_nav_menu', array( $this, 'publish' ), 10, 1 );
 			// Add admin scripts
 			add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 99, 1 );
-			// Add callback when adding a menu item: handle Wechat Menu Item menu type
+			// Add callback when adding a menu item: handle WeChat Menu Item menu type
 			add_action( 'wp_ajax_add_wechat_menu_item', array( $this, 'wp_ajax_add_menu_item' ), 10, 0 );
 			add_action( 'wp_ajax_add_wechat_menu_item', array( $this, 'wp_ajax_add_menu_item' ), 10, 0 );
-			// Add save logic when adding a menu item: handle Wechat Menu Item menu type
+			// Add save logic when adding a menu item: handle WeChat Menu Item menu type
 			add_action( 'wp_update_nav_menu_item', array( $this, 'update_nav_menu_item' ), 0, 3 );
 
-			// Use a custom Walker class to handle Wechat Menu Item menu type
+			// Use a custom Walker class to handle WeChat Menu Item menu type
 			add_filter( 'wp_edit_nav_menu_walker', array( $this, 'alter_menu_walker' ), 1, 2 );
 		}
 	}
@@ -55,7 +55,7 @@ class WP_Weixin_Menu {
 	}
 
 	public function add_menu_location() {
-		register_nav_menu( 'weixin_oa_menu_location', __( 'Wechat Official Account menu', 'wp-weixin' ) );
+		register_nav_menu( 'weixin_oa_menu_location', __( 'WeChat Official Account menu', 'wp-weixin' ) );
 	}
 
 	public function alter_menu_walker( $walker_class_name, $menu_id ) {
@@ -224,7 +224,7 @@ class WP_Weixin_Menu {
 		$weixin_oa_menu  = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
 
 		if ( $weixin_oa_menu->term_id === $menu_id ) {
-			add_meta_box( 'add-wechat-links', __( 'Wechat Menu Item', 'wp-weixin' ), array( $this, 'nav_menu_item_wechat_meta_box' ), 'nav-menus', 'side', 'default' );
+			add_meta_box( 'add-wechat-links', __( 'WeChat Menu Item', 'wp-weixin' ), array( $this, 'nav_menu_item_wechat_meta_box' ), 'nav-menus', 'side', 'default' );
 		}
 	}
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Wechat PHP SDK
+ * WeChat PHP SDK
  *
  * Helper class to handle wechat authentication, official account manipulation and ecommerce
  * Requires Curl
@@ -9,7 +9,7 @@
  * Inspired from the work of 小陈叔叔 <cjango@163.com> - https://coding.net/u/cjango/p/wechat_sdk/git
  *
  * @category   SDK
- * @package    Wechat
+ * @package    WeChat
  * @author     Alexandre Froger
  * @copyright  2017 froger.me
  * @license    MIT License
@@ -178,7 +178,7 @@ class Wechat {
 	                    }
 
 	                    if (!$condition) {
-	                    	$this->setError('Current Wechat version ('. $version_browser .') < required version (' . $version . ')');
+	                    	$this->setError('Current WeChat version ('. $version_browser .') < required version (' . $version . ')');
 
 	                    	$is_wechat_mobile = false;
 	                    } else {
@@ -2131,100 +2131,100 @@ class Wechat {
 	private function getErrorMessage($code) {
 
 		switch ($code) {
-			case -1: 	return 'Wechat API:	System busy';
-			case 0: 	return 'Wechat API:	Request succeeded';
-			case 40001: return 'Wechat API:	Verification failed';
-			case 40002: return 'Wechat API:	Invalid certificate type';
-			case 40003: return 'Wechat API:	Invalid Open ID';
-			case 40004: return 'Wechat API:	Invalid media file type';
-			case 40005: return 'Wechat API:	Invalid file type';
-			case 40006: return 'Wechat API:	Invalid file size';
-			case 40007: return 'Wechat API:	Invalid media file ID';
-			case 40008: return 'Wechat API:	Invalid message type';
-			case 40009: return 'Wechat API:	Invalid image file size';
-			case 40010: return 'Wechat API:	Invalid audio file size';
-			case 40011: return 'Wechat API:	Invalid video file size';
-			case 40012: return 'Wechat API:	Invalid thumbnail file size';
-			case 40013: return 'Wechat API:	Invalid App ID';
-			case 40014: return 'Wechat API:	Invalid access token';
-			case 40015: return 'Wechat API:	Invalid menu type';
-			case 40016: return 'Wechat API:	Invalid button quantity';
-			case 40017: return 'Wechat API:	Invalid button quantity';
-			case 40018: return 'Wechat API:	Invalid button name length';
-			case 40019: return 'Wechat API:	Invalid button KEY length';
-			case 40020: return 'Wechat API:	Invalid button URL length';
-			case 40021: return 'Wechat API:	Invalid menu version';
-			case 40022: return 'Wechat API:	Invalid sub-menu levels';
-			case 40023: return 'Wechat API:	Invalid sub-menu button quantity';
-			case 40024: return 'Wechat API:	Invalid sub-menu button type';
-			case 40025: return 'Wechat API:	Invalid sub-menu button name length';
-			case 40026: return 'Wechat API:	Invalid sub-menu button KEY length';
-			case 40027: return 'Wechat API:	Invalid sub-menu button URL length';
-			case 40028: return 'Wechat API:	Invalid custom menu user';
-			case 40029: return 'Wechat API:	Invalid oauth code';
-			case 40030: return 'Wechat API:	Invalid refresh token';
-			case 40031: return 'Wechat API:	Invalid openid list';
-			case 40032: return 'Wechat API:	Invalid openid list length';
-			case 40033: return 'Wechat API:	Invalid request characters: The character "\uxxxx" cannot be included.';
-			case 40035: return 'Wechat API:	Invalid parameters';
-			case 40038: return 'Wechat API:	Invalid request format';
-			case 40039: return 'Wechat API:	Invalid URL length';
-			case 40050: return 'Wechat API:	Invalid group ID';
-			case 40051: return 'Wechat API:	Invalid group name';
-			case 41001: return 'Wechat API:	Parameter missing: access token';
-			case 41002: return 'Wechat API:	Parameter missing: appid';
-			case 41003: return 'Wechat API:	Parameter missing: refresh token';
-			case 41004: return 'Wechat API:	Parameter missing: secret';
-			case 41005: return 'Wechat API:	Multimedia file data missing';
-			case 41006: return 'Wechat API:	Parameter missing: media id';
-			case 41007: return 'Wechat API:	Sub-menu data missing';
-			case 41008: return 'Wechat API:	Parameter missing: oauth code';
-			case 41009: return 'Wechat API:	Parameter missing: openid';
-			case 42001: return 'Wechat API:	access token timed out';
-			case 42002: return 'Wechat API:	refresh token timed out';
-			case 42003: return 'Wechat API:	oauth code timed out';
-			case 43001: return 'Wechat API:	GET request required';
-			case 43002: return 'Wechat API:	POST request required';
-			case 43003: return 'Wechat API:	HTTPS request required';
-			case 43004: return 'Wechat API:	The other user is not yet a follower';
-			case 43005: return 'Wechat API:	The other user is not yet a follower';
-			case 44001: return 'Wechat API:	Multimedia file is empty';
-			case 44002: return 'Wechat API:	POST package is empty';
-			case 44003: return 'Wechat API:	Rich media message is empty';
-			case 44004: return 'Wechat API:	Text message is empty';
-			case 45001: return 'Wechat API:	Error source: multimedia file size';
-			case 45002: return 'Wechat API:	Message contents too long';
-			case 45003: return 'Wechat API:	Title too long';
-			case 45004: return 'Wechat API:	Description too long';
-			case 45005: return 'Wechat API:	URL too long';
-			case 45006: return 'Wechat API:	Image URL too long';
-			case 45007: return 'Wechat API:	Audio play time over limit';
-			case 45008: return 'Wechat API:	Rich media messages over limit';
-			case 45009: return 'Wechat API:	Error source: interface call';
-			case 45010: return 'Wechat API:	Message quantity over limit';
-			case 45015: return 'Wechat API:	Response too late';
-			case 45016: return 'Wechat API:	System group cannot be changed.';
-			case 45017: return 'Wechat API:	System name too long';
-			case 45018: return 'Wechat API:	Too many groups';
-			case 46001: return 'Wechat API:	Media data missing';
-			case 46002: return 'Wechat API:	This menu version does not exist.';
-			case 46003: return 'Wechat API:	This menu data does not exist.';
-			case 46004: return 'Wechat API:	This user does not exist.';
-			case 47001: return 'Wechat API:	Error while extracting JSON/XML contents';
-			case 48001: return 'Wechat API:	Unauthorized API function';
-			case 50001: return 'Wechat API:	The user is not authorized for this API';
-			case 61450: return 'Wechat API:	System error (system error)';
-			case 61451: return 'Wechat API:	Invalid parameter (invalid parameter)';
-			case 61452: return 'Wechat API:	Invalid customer service account (invalid kf_account)';
-			case 61453: return 'Wechat API:	Existing customer service account (kf_account existed)';
-			case 61454: return 'Wechat API:	Length of customer service account name over limit (ten English characters at a maximum, excluding @ and the part after it) (invalid kf_acount length)';
-			case 61455: return 'Wechat API:	Invalid characters in a customer service account name (English letters and numbers supported only) (illegal character in kf_account)';
-			case 61456: return 'Wechat API:	Maximum number of customer service accounts reached(ten customer service accounts at a maximum) (kf_account count exceeded)';
-			case 61457: return 'Wechat API:	Invalid image file type (invalid file type)';
-			case 61500: return 'Wechat API:	Date format error';
-			case 61501: return 'Wechat API:	Date range error';
-			case 50001: return 'Wechat API: The user has not authorized the api';
-			case 65303: return 'Wechat API: There is no menu. To create a conditonal menu or delete menus, create a default menu first';
+			case -1: 	return 'WeChat API:	System busy';
+			case 0: 	return 'WeChat API:	Request succeeded';
+			case 40001: return 'WeChat API:	Verification failed';
+			case 40002: return 'WeChat API:	Invalid certificate type';
+			case 40003: return 'WeChat API:	Invalid Open ID';
+			case 40004: return 'WeChat API:	Invalid media file type';
+			case 40005: return 'WeChat API:	Invalid file type';
+			case 40006: return 'WeChat API:	Invalid file size';
+			case 40007: return 'WeChat API:	Invalid media file ID';
+			case 40008: return 'WeChat API:	Invalid message type';
+			case 40009: return 'WeChat API:	Invalid image file size';
+			case 40010: return 'WeChat API:	Invalid audio file size';
+			case 40011: return 'WeChat API:	Invalid video file size';
+			case 40012: return 'WeChat API:	Invalid thumbnail file size';
+			case 40013: return 'WeChat API:	Invalid App ID';
+			case 40014: return 'WeChat API:	Invalid access token';
+			case 40015: return 'WeChat API:	Invalid menu type';
+			case 40016: return 'WeChat API:	Invalid button quantity';
+			case 40017: return 'WeChat API:	Invalid button quantity';
+			case 40018: return 'WeChat API:	Invalid button name length';
+			case 40019: return 'WeChat API:	Invalid button KEY length';
+			case 40020: return 'WeChat API:	Invalid button URL length';
+			case 40021: return 'WeChat API:	Invalid menu version';
+			case 40022: return 'WeChat API:	Invalid sub-menu levels';
+			case 40023: return 'WeChat API:	Invalid sub-menu button quantity';
+			case 40024: return 'WeChat API:	Invalid sub-menu button type';
+			case 40025: return 'WeChat API:	Invalid sub-menu button name length';
+			case 40026: return 'WeChat API:	Invalid sub-menu button KEY length';
+			case 40027: return 'WeChat API:	Invalid sub-menu button URL length';
+			case 40028: return 'WeChat API:	Invalid custom menu user';
+			case 40029: return 'WeChat API:	Invalid oauth code';
+			case 40030: return 'WeChat API:	Invalid refresh token';
+			case 40031: return 'WeChat API:	Invalid openid list';
+			case 40032: return 'WeChat API:	Invalid openid list length';
+			case 40033: return 'WeChat API:	Invalid request characters: The character "\uxxxx" cannot be included.';
+			case 40035: return 'WeChat API:	Invalid parameters';
+			case 40038: return 'WeChat API:	Invalid request format';
+			case 40039: return 'WeChat API:	Invalid URL length';
+			case 40050: return 'WeChat API:	Invalid group ID';
+			case 40051: return 'WeChat API:	Invalid group name';
+			case 41001: return 'WeChat API:	Parameter missing: access token';
+			case 41002: return 'WeChat API:	Parameter missing: appid';
+			case 41003: return 'WeChat API:	Parameter missing: refresh token';
+			case 41004: return 'WeChat API:	Parameter missing: secret';
+			case 41005: return 'WeChat API:	Multimedia file data missing';
+			case 41006: return 'WeChat API:	Parameter missing: media id';
+			case 41007: return 'WeChat API:	Sub-menu data missing';
+			case 41008: return 'WeChat API:	Parameter missing: oauth code';
+			case 41009: return 'WeChat API:	Parameter missing: openid';
+			case 42001: return 'WeChat API:	access token timed out';
+			case 42002: return 'WeChat API:	refresh token timed out';
+			case 42003: return 'WeChat API:	oauth code timed out';
+			case 43001: return 'WeChat API:	GET request required';
+			case 43002: return 'WeChat API:	POST request required';
+			case 43003: return 'WeChat API:	HTTPS request required';
+			case 43004: return 'WeChat API:	The other user is not yet a follower';
+			case 43005: return 'WeChat API:	The other user is not yet a follower';
+			case 44001: return 'WeChat API:	Multimedia file is empty';
+			case 44002: return 'WeChat API:	POST package is empty';
+			case 44003: return 'WeChat API:	Rich media message is empty';
+			case 44004: return 'WeChat API:	Text message is empty';
+			case 45001: return 'WeChat API:	Error source: multimedia file size';
+			case 45002: return 'WeChat API:	Message contents too long';
+			case 45003: return 'WeChat API:	Title too long';
+			case 45004: return 'WeChat API:	Description too long';
+			case 45005: return 'WeChat API:	URL too long';
+			case 45006: return 'WeChat API:	Image URL too long';
+			case 45007: return 'WeChat API:	Audio play time over limit';
+			case 45008: return 'WeChat API:	Rich media messages over limit';
+			case 45009: return 'WeChat API:	Error source: interface call';
+			case 45010: return 'WeChat API:	Message quantity over limit';
+			case 45015: return 'WeChat API:	Response too late';
+			case 45016: return 'WeChat API:	System group cannot be changed.';
+			case 45017: return 'WeChat API:	System name too long';
+			case 45018: return 'WeChat API:	Too many groups';
+			case 46001: return 'WeChat API:	Media data missing';
+			case 46002: return 'WeChat API:	This menu version does not exist.';
+			case 46003: return 'WeChat API:	This menu data does not exist.';
+			case 46004: return 'WeChat API:	This user does not exist.';
+			case 47001: return 'WeChat API:	Error while extracting JSON/XML contents';
+			case 48001: return 'WeChat API:	Unauthorized API function';
+			case 50001: return 'WeChat API:	The user is not authorized for this API';
+			case 61450: return 'WeChat API:	System error (system error)';
+			case 61451: return 'WeChat API:	Invalid parameter (invalid parameter)';
+			case 61452: return 'WeChat API:	Invalid customer service account (invalid kf_account)';
+			case 61453: return 'WeChat API:	Existing customer service account (kf_account existed)';
+			case 61454: return 'WeChat API:	Length of customer service account name over limit (ten English characters at a maximum, excluding @ and the part after it) (invalid kf_acount length)';
+			case 61455: return 'WeChat API:	Invalid characters in a customer service account name (English letters and numbers supported only) (illegal character in kf_account)';
+			case 61456: return 'WeChat API:	Maximum number of customer service accounts reached(ten customer service accounts at a maximum) (kf_account count exceeded)';
+			case 61457: return 'WeChat API:	Invalid image file type (invalid file type)';
+			case 61500: return 'WeChat API:	Date format error';
+			case 61501: return 'WeChat API:	Date range error';
+			case 50001: return 'WeChat API: The user has not authorized the api';
+			case 65303: return 'WeChat API: There is no menu. To create a conditonal menu or delete menus, create a default menu first';
 			default: 	return 'Unknown error';
 		}
 	}

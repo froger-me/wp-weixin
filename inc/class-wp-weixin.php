@@ -40,7 +40,7 @@ class WP_Weixin {
 			add_action( 'pre_user_query', array( $this, 'alter_user_sort_query' ), 10, 1 );
 			// Flush rewrite rules if necessary - do it late
 			add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
-			// Add Wechat public information to user profile
+			// Add WeChat public information to user profile
 			add_action( 'show_user_profile', array( $this, 'user_profile_wechat_info' ), 10, 1 );
 			add_action( 'edit_user_profile', array( $this, 'user_profile_wechat_info' ), 10, 1 );
 
@@ -100,8 +100,8 @@ class WP_Weixin {
 					$condition     = ( ( (int) $version_parts[0] ) >= 6 );
 
 					if ( ! $condition ) {
-						$title   = '<h2>' . __( 'Wechat version deprecated.', 'wp-weixin' ) . '</h2>';
-						$message = '<p>' . __( 'Please update Wechat to a more recent version ', 'wp-weixin' );
+						$title   = '<h2>' . __( 'WeChat version deprecated.', 'wp-weixin' ) . '</h2>';
+						$message = '<p>' . __( 'Please update WeChat to a more recent version ', 'wp-weixin' );
 
 						$message .= __( '(minimum compatible version: 6.5.8)', 'wp-weixin' );
 
@@ -364,7 +364,7 @@ class WP_Weixin {
 		$pristine = $columns;
 		$columns  = array_slice( $pristine, 0, 1, true );
 
-		$columns += array( 'wechat_name' => __( 'Wechat Username', 'wp-weixin' ) );
+		$columns += array( 'wechat_name' => __( 'WeChat Username', 'wp-weixin' ) );
 		$columns += array_slice( $pristine, 1, count( $pristine ) - 1, true );
 
 		unset( $columns['username'] );
