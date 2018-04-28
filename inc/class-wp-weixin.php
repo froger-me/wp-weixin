@@ -253,7 +253,7 @@ class WP_Weixin {
 					$image  = WP_WEIXIN_PLUGIN_PATH . '/images/default-avatar.png';
 					$type   = pathinfo( $image, PATHINFO_EXTENSION );
 					$data   = wp_remote_retrieve_body( wp_remote_get( $image ) );
-					$avatar = 'data:image/' . $type . ';base64,' . base64_encode( $data );
+					$avatar = 'data:image/' . $type . ';base64,' . base64_encode( $data );// @codingStandardsIgnoreLine
 				}
 
 				$avatar  = "<img alt='{$alt}' src='{$avatar}'";
