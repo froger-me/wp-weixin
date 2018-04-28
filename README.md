@@ -80,7 +80,7 @@ Use WeChat Responder      | checkbox  | Allow the website to receive messages fr
 WeChat Token              | text      | The Token in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 Encode messages           | checkbox  | Encode the communication between the website and the WeChat API (recommended).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 WeChat AES Key            | text      | The EncodingAESKey in the backend at `https://mp.weixin.qq.com/` under<br/> Development > Basic configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-Send welcome message      | checkbox  | Send a welcome message when a user follows the Official Account.<br/>The following filters can be used to change the default values of the message:<ul><li>`apply_filters('wp_weixin_follower_welcome_title', string $title, mixed $before_subscription);`</li><li>`apply_filters('wp_weixin_follower_welcome_description', string $description, mixed $before_subscription);`</li><li>`apply_filters('wp_weixin_follower_welcome_url', string $url, mixed $before_subscription);`</li><li>`apply_filters('wp_weixin_follower_welcome_pic_url', string $pic_url, mixed $before_subscription);`</li></ul>
+Send welcome message      | checkbox  | Send a welcome message when a user follows the Official Account.<br/>The following filters can be used to change the default values of the message:<ul><li>`apply_filters( 'wp_weixin_follower_welcome_title', string $title, mixed $before_subscription );`</li><li>`apply_filters( 'wp_weixin_follower_welcome_description', string $description, mixed $before_subscription );`</li><li>`apply_filters( 'wp_weixin_follower_welcome_url', string $url, mixed $before_subscription );`</li><li>`apply_filters( 'wp_weixin_follower_welcome_pic_url', string $pic_url, mixed $before_subscription );`</li></ul>
 Welcome message image URL | text      | A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br>Default image is in `/wp-weixin/images/default-welcome.png`.                                                                                                                                                                                                                                                                                                                                                                                                    
 
 ### WeChat Pay Settings - PRO
@@ -114,7 +114,7 @@ Name                                             | Type     | Description
 ------------------------------------------------ |:--------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Show WeChat name and pictures in Users list page | checkbox | Override the display of the WordPress account names and avatars.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 Official Account menu language awareness         | checkbox | Customise the menu of the Official Account depending on user's language. By default, the language of the menu corresponding to the website's default language is used.<br/>This setting is only available if WPML is activated.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter('wp_weixin_get_access_info', $access_info, 10, 0);`</li><li>`add_action('wp_weixin_save_access_info', $access_info, 10, 1);`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `4` or less.<br/>Useful to avoid a race condition if the access_token information needs to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the WordPress options table in the database.
+Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter( 'wp_weixin_get_access_info', $access_info, 10, 0 );`</li><li>`add_action( 'wp_weixin_save_access_info', $access_info, 10, 1 );`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `4` or less.<br/>Useful to avoid a race condition if the access_token information needs to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the WordPress options table in the database.
 
 ## Go PRO!
 
@@ -145,7 +145,7 @@ WP Weixin gives developers the possibilty to customise its behavior with a serie
 ### Actions
 
 ```php
-do_action('wp_weixin_responder', array $request_data);
+do_action( 'wp_weixin_responder', array $request_data );
 ```
 
 **Description**  
@@ -156,7 +156,7 @@ Fired after receiving a request from WeChat.
 ___
 
 ```php
-do_action('wp_weixin_save_access_info', array $access_info);
+do_action( 'wp_weixin_save_access_info', array $access_info );
 
 ```
 
@@ -170,7 +170,7 @@ ___
 
 ### Filters
 ```php
-apply_filters('wp_weixin_browser_page_qr_src', string $src);
+apply_filters( 'wp_weixin_browser_page_qr_src', string $src );
 ```
 
 **Description**  
@@ -185,7 +185,7 @@ WP_Weixin_Auth::get_browser_page_qr_src()
 ___
 
 ```php
-apply_filters('wp_weixin_subscribe_src', string $src);
+apply_filters( 'wp_weixin_subscribe_src', string $src );
 ```
 
 **Description**  
@@ -200,7 +200,7 @@ WP_Weixin_Auth::get_subscribe_src()
 ___
 
 ```php
-apply_filters('wp_weixin_follower_notice_title', string $title);
+apply_filters( 'wp_weixin_follower_notice_title', string $title );
 ```
 
 **Description**  
@@ -211,7 +211,7 @@ Filter the title of the page displaying the QR code to follow the Official Accou
 ___
 
 ```php
-apply_filters('wp_weixin_follower_notice', string $notice);
+apply_filters( 'wp_weixin_follower_notice', string $notice );
 ```
 
 **Description**  
@@ -222,7 +222,7 @@ Filter the message displayed on the page displaying the QR code to follow the Of
 ___
 
 ```php
-apply_filters('wp_weixin_auth_needed', bool $needs_auth);
+apply_filters( 'wp_weixin_auth_needed', bool $needs_auth );
 ```
 
 **Description**  
@@ -234,7 +234,7 @@ $needs_auth
 ___
 
 ```php
-apply_filters('wp_weixin_debug', bool $debug);
+apply_filters( 'wp_weixin_debug', bool $debug );
 ```
 
 **Description**  
@@ -246,7 +246,7 @@ $debug
 ___
 
 ```php
-apply_filters('wp_weixin_follower_welcome_title', string $title, mixed $before_subscription);
+apply_filters( 'wp_weixin_follower_welcome_title', string $title, mixed $before_subscription );
 ```
 
 **Description**  
@@ -261,7 +261,7 @@ $before_subscription
 ___
 
 ```php
-apply_filters('wp_weixin_follower_welcome_description', string $description, mixed $before_subscription);
+apply_filters( 'wp_weixin_follower_welcome_description', string $description, mixed $before_subscription );
 ```
 
 **Description**  
@@ -276,7 +276,7 @@ $before_subscription
 ___
 
 ```php
-apply_filters('wp_weixin_follower_welcome_url', string $url, mixed $before_subscription);
+apply_filters( 'wp_weixin_follower_welcome_url', string $url, mixed $before_subscription );
 ```
 
 **Description**  
@@ -291,7 +291,7 @@ $before_subscription
 ___
 
 ```php
-apply_filters('wp_weixin_follower_welcome_pic_url', string $pic_url, mixed $before_subscription);
+apply_filters( 'wp_weixin_follower_welcome_pic_url', string $pic_url, mixed $before_subscription );
 ```
 
 **Description**  
@@ -306,7 +306,7 @@ $before_subscription
 ___
 
 ```php
-apply_filters('wp_weixin_get_access_info', array $access_info);
+apply_filters( 'wp_weixin_get_access_info', array $access_info );
 ```
 
 Filters the access_token and expiry when requesting the WeChat object if custom persistence is used - particularly useful to avoid a race condition if the access_token needs to be shared between multiple platforms.
@@ -318,7 +318,7 @@ $access_info
 ___
 
 ```php
-apply_filters('wp_weixin_jsapi_urls', array $jsapi_urls);
+apply_filters( 'wp_weixin_jsapi_urls', array $jsapi_urls );
 ```
 
 As an effect only if [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and/or [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension is activated.  
@@ -357,7 +357,7 @@ To use it properly, developers must include their scripts with a priority of `6`
 In addition, the following events may be subscribed to.
 ___
 ```Javascript
-window.wpWeixinShareTimelineSuccessListener(callback);
+window.wpWeixinShareTimelineSuccessListener( callback );
 ```
 
 Subscribing to this event will execute the `callback` function when sharing the post on WeChat Moments succeeded.  
@@ -367,7 +367,7 @@ shareInfo
 > (object) The share information sent to the WeChat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  
 ___
 ```Javascript
-window.wpWeixinShareTimelineFailureListener(callback);
+window.wpWeixinShareTimelineFailureListener( callback );
 ```
 
 Subscribing to this event will execute the `callback` function when sharing the post on WeChat Moments failed.  
@@ -377,7 +377,7 @@ shareInfo
 > (object) The share information sent to the WeChat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  
 ___
 ```Javascript
-window.wpWeixinShareAppMessageSuccessListener(callback);`
+window.wpWeixinShareAppMessageSuccessListener( callback );`
 ```
 
 Subscribing to this event will execute the `callback` function when sharing the post with WeChat "Send to chat" succeeded.  
@@ -387,7 +387,7 @@ shareInfo
 > (object) The share information sent to the WeChat JS_SDK. Attributes are `title`, `desc`, `link`, `imgUrl`.  
 ___
 ```Javascript
-window.wpWeixinShareAppMessageFailureListener(callback);
+window.wpWeixinShareAppMessageFailureListener( callback );
 ```
 
 Subscribing to this event will execute the `callback` function when sharing the post with WeChat "Send to chat" failed.  
