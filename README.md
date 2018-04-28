@@ -63,6 +63,8 @@ The following settings can be accessed on the WP Weixin settings page.
 
 ### Main Settings
 
+Required settings above are the **minimal configuration** to enable the plugin.  
+
 Name                                | Required | Type      | Description                                                                                                                  
 ----------------------------------- |:--------:|:---------:| ------------------------------------------------------------------------------------------------------------------------------
 Enable                              | Yes      | checkbox  | Enable WP Weixin - requires a valid configuration.                                                                            
@@ -73,9 +75,6 @@ WeChat OA Logo URL                  | No       | text      | A URL to the logo o
 Enable WeChat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in WordPress (if not, a session cookie `wx_openId` is set). 
 Force WeChat mobile                 | No       | checkbox  | Make the website accessible only through the WeChat browser.<br>If accessed with another browser, the page displays a QR code.
 Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the WeChat browser.                            
-
-
-Required settings above are the **minimal configuration** to enable the plugin.
 
 ### WeChat Responder Settings
 
