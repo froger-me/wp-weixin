@@ -339,7 +339,9 @@ ___
 The following plugin files are included using `locate_template()` function of WordPress. This means they can be overloaded in the active WordPress theme if a file with the same name exists at the root of the theme.
 ___
 
-`wp-weixin/inc/templates/wp-weixin-subscribe.php`  
+```
+wp-weixin-subscribe.php
+```  
 
 **Description**  
 The template of the page displaying the QR code to follow the Official Account.  
@@ -350,11 +352,11 @@ No variable is provided to this template by default: it uses the `wp_weixin_subs
 **Associated styles**  
 `wp-weixin/css/main.css`  
 
-**Associated scripts**  
-None  
 ___
 
-`wp-weixin/inc/templates/wp-weixin-browser-qr.php`  
+```
+wp-weixin-browser-qr.php
+```  
 
 **Description**  
 The template of the page displaying the QR code when the website is accessible only through the WeChat browser.  
@@ -362,11 +364,7 @@ The template of the page displaying the QR code when the website is accessible o
 **Variables**  
 No variable is provided to this template by default: it uses the `wp_weixin_browser_page_qr_src` filter to get the source of the QR code image.
 
-**Associated styles**  
-None (inline) 
-
-**Associated scripts**  
-None
+___
 
 ## Javascript
 
