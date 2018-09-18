@@ -3,15 +3,15 @@ msgstr ""
 "Project-Id-Version: WP Weixin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-06 03:32+0000\n"
-"PO-Revision-Date: 2017-12-06 03:33+0000\n"
+"PO-Revision-Date: 2018-05-17 02:50+0000\n"
 "Last-Translator: admin <alex@truerun.com>\n"
 "Language-Team: Chinese (China)\n"
-"Language: zh-CN\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Loco - https://localise.biz/"
+"X-Generator: Loco https://localise.biz/"
 
 #: inc/wp-weixin-auth.class.php:58 inc/wp-weixin-auth.class.php:186
 #: inc/wp-weixin-auth.class.php:265 inc/wp-weixin-auth.class.php:292
@@ -441,11 +441,11 @@ msgstr ""
 
 #: inc/templates/wp-weixin-pay.php:21
 msgid "Transfer to official account"
-msgstr ""
+msgstr "付款给公众号"
 
 #: inc/templates/wp-weixin-pay.php:27
 msgid "Transfer amount"
-msgstr ""
+msgstr "付款金额"
 
 #: inc/templates/wp-weixin-pay.php:30
 msgid "Add Note"
@@ -453,19 +453,19 @@ msgstr "添加备注"
 
 #: inc/templates/wp-weixin-pay.php:34
 msgid "Up to 10 chars"
-msgstr ""
+msgstr "不超过10个字"
 
 #: inc/templates/wp-weixin-pay.php:37
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: inc/templates/wp-weixin-pay.php:38
 msgid "OK"
-msgstr ""
+msgstr "确定"
 
 #: inc/templates/wp-weixin-pay.php:42
 msgid "Transfer"
-msgstr ""
+msgstr "付款"
 
 #: inc/templates/wp-weixin-subscribe.php:4
 msgid "Follow Us!"

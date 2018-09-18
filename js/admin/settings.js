@@ -27,7 +27,10 @@ jQuery(document).ready(function($) {
 				handle: $('.wp_weixin-proxy-section.wp_weixin-proxy-field input'),
 				content: $('.wp_weixin-proxy-section:not(.wp_weixin-proxy-field)')
 			}
-		};
+		},
+		forceResponderHandles = [
+			$('.wp_weixin-follow_welcome-field input')
+		];
 
 	$.each(sections, function(idx, section) {
 		
@@ -48,6 +51,40 @@ jQuery(document).ready(function($) {
 		});
 	});
 
+	$.each(forceResponderHandles, function(idx, handle) {
+		
+		if (handle.prop('checked') && !sections.responder.handle.prop('checked')) {
+			sections.responder.handle.prop('checked', true);
+			sections.responder.handle.trigger('change');
+		}
+
+		handle.on('change', forceFollow);
+	});
+
+	sections.responder.handle.on('change', forceFollow);
+
+	function forceFollow() {
+
+		$.each(forceResponderHandles, function(idx, handle) {
+
+			if (handle.prop('checked')) {
+				sections.responder.handle.prop('checked', true);
+				sections.responder.content.show();
+			}
+		});
+	}
+
+	if ($('.wp_weixin-force_auth-field input').prop('checked')) {
+		$('.wp_weixin-enable_auth-field input').prop('checked', true);
+	}
+
+	$('.wp_weixin-enable_auth-field input, .wp_weixin-force_auth-field input').on('change', function() {
+
+		if ($('.wp_weixin-force_auth-field input').prop('checked')) {
+			$('.wp_weixin-enable_auth-field input').prop('checked', true);
+		}
+	});
+
 	$('#wp_weixin_qr_amount').on('keyup', function(e) {
 		e.preventDefault();
 		$(this).currencyFormat();
@@ -56,18 +93,20 @@ jQuery(document).ready(function($) {
 	$('.qr-button').on('click', function(e) {
 		e.preventDefault();
 
-		var button 	= $(this),
-			img 	= $('#' + button.data('img')),
-			url 	= $('#qr_url').val(),
-			amount 	= $('#wp_weixin_qr_amount').val(),
-			fixed 	= $('#wp_weixin_qr_amount_fixed').prop('checked'),
+		var button 	    = $(this),
+			img 	    = $('#' + button.data('img')),
+			url 	    = $('#qr_url').val(),
+			amount 	    = $('#wp_weixin_qr_amount').val(),
+			fixed 	    = $('#wp_weixin_qr_amount_fixed').prop('checked'),
+			productName = $('#wp_weixin_qr_product_name').val(),
 			data;
 
 		if (button.hasClass('qr-payment-button')) {
 			data = {
-				amount 	: amount,
-				fixed	: fixed,
-				url 	: img.data('default_url')
+				amount 	    : amount,
+				fixed	    : fixed,
+				productName : productName,
+				url 	    : img.data('default_url')
 			};
 		} else {
 			data = {

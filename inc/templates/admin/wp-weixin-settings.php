@@ -63,6 +63,16 @@ $base_payment_qr_src = site_url( 'wp-weixin/get-qrcode/hash/' . base64_encode( $
 							</p>
 						</td>
 					</tr>
+					<tr class="wp_weixin-qr-product-name-section">
+						<th scope="row"><?php esc_html_e( 'Product Name', 'wp-weixin' ); ?></th>
+						<td>
+							<input id="wp_weixin_qr_product_name" type="text" name="wp_weixin_qr_product_name" value="">
+							<p class="description">
+								<?php esc_html_e( 'Product name that will appear on the Wechat payment details.', 'wp-weixin' ); ?><br>
+								<?php esc_html_e( 'If filled, the value will use the notes field of the money transfer screen and therefore the "Add Note" link will not be displayed.', 'wp-weixin' ); ?>
+							</p>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 			<p class="submit">

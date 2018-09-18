@@ -762,6 +762,9 @@ class Wechat {
 	 * Sets Music response content
 	 * @param  string $content Music content
 	 */
+	private function transfer_customer_service($content) {
+		$this->data['Content'] = $content;
+	}
 	
 	/**
 	 * Sets Music response content

@@ -4,6 +4,6 @@
 <h2><?php esc_html_e( 'WeChat account information', 'wp-weixin' ); ?></h2>
 <ul>
 	<?php foreach ( $data as $key => $value ) : ?>
-	<li><strong><?php print esc_html( $key ); ?></strong>: <?php print esc_html( $value ); ?></li>
+	<li><strong><?php print esc_html( $key ); ?></strong>: <?php print $value; ?></li>
 	<?php endforeach; ?>
 </ul>

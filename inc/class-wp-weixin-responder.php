@@ -98,7 +98,7 @@ class WP_Weixin_Responder {
 			error_log( print_r( $request_data, true ) );// @codingStandardsIgnoreLine
 		}
 
-		do_action( 'wp_weixin_responder', $request_data );
+		do_action( 'wp_weixin_responder', $request_data, $this->wechat );
 
 		exit();
 	}
