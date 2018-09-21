@@ -17,14 +17,14 @@ class WP_Weixin_Auth {
 
 		if ( $init_hooks ) {
 			// Manage wechat authentication
-			add_action( 'init', array( $this, 'manage_auth' ), 10, 0 );
+			add_action( 'init', array( $this, 'manage_auth' ), -99, 0 );
 			// Logout when unsubscribed
-			add_action( 'wp_weixin_responder', array( $this, 'force_logout' ), 10, 1 );
+			add_action( 'wp_weixin_responder', array( $this, 'force_logout' ), -99, 1 );
 
 			// Detemine where wechat authentication is needed
-			add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), 10, 1 );
+			add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), -99, 1 );
 			// Get the QR code for browsers
-			add_filter( 'wp_weixin_browser_page_qr_src', array( $this, 'get_browser_page_qr_src' ), 10, 1 );
+			add_filter( 'wp_weixin_browser_page_qr_src', array( $this, 'get_browser_page_qr_src' ), -99, 1 );
 		}
 	}
 
@@ -49,6 +49,10 @@ class WP_Weixin_Auth {
 		} elseif ( ! $is_wechat_mobile && $is_auth_needed ) {
 			add_action( 'template_redirect', array( $this, 'show_browser_qr' ), 0, 0 );
 		}
+
+		if ( isset( $_GET['code'] ) && is_plugin_active( 'open-social/open-social.php' ) ) { //@codingStandardsIgnoreLine
+			unset( $_GET['code'] );
+		}
 	}
 
 	public function show_browser_qr() {
@@ -69,7 +73,7 @@ class WP_Weixin_Auth {
 		global $wp;
 		$current_url = home_url( $wp->request );
 
-		$hash = base64_encode( $current_url . '|' . wp_create_nonce( 'qr_code' ) );// @codingStandardsIgnoreLine
+		$hash = base64_encode( $current_url . '|' . wp_create_nonce( 'qr_code' ) ); // @codingStandardsIgnoreLine
 
 		$page_qr_src = home_url( 'wp-weixin/get-qrcode/hash/' . $hash );
 
@@ -86,22 +90,22 @@ class WP_Weixin_Auth {
 				$state = filter_input( INPUT_GET, 'state', FILTER_SANITIZE_STRING );
 
 				if ( wp_verify_nonce( $state, __FILE__ ) ) {
-					$this->_login( $oauth_access_token_info );
+					$this->login( $oauth_access_token_info );
 					$this->maybe_force_follow( WP_Weixin_Settings::get_option( 'force_follower' ) );
 				} else {
 					$title    = '<h2>' . __( 'System error.', 'wp-weixin' ) . '</h2>';
 					$message  = '<p>' . __( 'Invalid CSRF token. Please refresh the page. ', 'wp-weixin' );
 					$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-					wp_die( $title . $message );// @codingStandardsIgnoreLine
+					wp_die( $title . $message ); // @codingStandardsIgnoreLine
 				}
 			} else {
-				$this->_pre_oauth();
+				$this->pre_oauth();
 			}
 		} else {
 			$user    = wp_get_current_user();
 			$user_id = $user->ID;
-			$user_id = $this->_auth_refresh( $user_id );
+			$user_id = $this->auth_refresh( $user_id );
 
 			$this->maybe_force_follow( WP_Weixin_Settings::get_option( 'force_follower' ) );
 		}
@@ -184,7 +188,7 @@ class WP_Weixin_Auth {
 					set_transient( 'wp_weixin_subscribe_url', $qr_url );
 				}
 
-				$this->_set_subscribe_image_base64_src( $qr_url );
+				$this->set_subscribe_image_base64_src( $qr_url );
 				add_filter( 'wp_weixin_subscribe_src', array( $this, 'get_subscribe_src' ), 0, 1 );
 				add_action( 'template_include', array( $this, 'subscribe_template' ), 99, 0 );
 
@@ -213,7 +217,7 @@ class WP_Weixin_Auth {
 	 * Private methods
 	 *******************************************************************/
 
-	private function _pre_oauth() {// @codingStandardsIgnoreLine
+	private function pre_oauth() {
 		$current_url = ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 		$scope = 'snsapi_userinfo';
@@ -226,7 +230,7 @@ class WP_Weixin_Auth {
 	}
 
 
-	private function _login( $oauth_access_token_info ) {// @codingStandardsIgnoreLine
+	private function login( $oauth_access_token_info ) {
 		$error = $this->wechat->getError();
 		$error = ( $error ) ? $error['code'] . ': ' . $error['message'] : false;
 
@@ -237,7 +241,7 @@ class WP_Weixin_Auth {
 
 			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-			wp_die( $title . $message );// @codingStandardsIgnoreLine
+			wp_die( $title . $message ); // @codingStandardsIgnoreLine
 		}
 
 		$access_token        = $oauth_access_token_info['access_token'];
@@ -249,9 +253,9 @@ class WP_Weixin_Auth {
 			$user = get_user_by( 'login', 'wx-' . $openid );
 
 			if ( ! username_exists( 'wx-' . $openid ) ) {
-				$user_id = $this->_register_user( $openid, $access_token, $refresh_token );
+				$user_id = $this->register_user( $openid, $access_token, $refresh_token );
 			} else {
-				$user_id = $this->_update_user_info( $access_token, $openid );
+				$user_id = $this->update_user_info( $access_token, $openid );
 			}
 
 			wp_set_current_user( $user_id, 'wx-' . $openid );
@@ -261,13 +265,13 @@ class WP_Weixin_Auth {
 		setcookie( 'wx_openId', $openid, current_time( 'timestamp' ) + (int) $this->expire_length );
 	}
 
-	private function _update_user_info( $access_token, $openid ) {// @codingStandardsIgnoreLine
+	private function update_user_info( $access_token, $openid ) {
 		$user_info = $this->wechat->getOauthUserInfo( $access_token, $openid );
 		$result    = false;
 
 		if ( ! $user_info || isset( $user_info['errcode'] ) ) {
 			// fail silently
-			error_log( 'System error, access to wechat user information for ' . $openid . ' failed.' );// @codingStandardsIgnoreLine// @codingStandardsIgnoreLine
+			error_log( 'System error, access to wechat user information for ' . $openid . ' failed.' ); // @codingStandardsIgnoreLine
 		} else {
 
 			$avatar = $user_info['headimgurl'];
@@ -294,7 +298,7 @@ class WP_Weixin_Auth {
 
 			if ( is_wp_error( $user_id ) ) {
 				// fail silently
-				error_log( 'System error, failed to update user' . $openid . '. Reason:' . $user_id->get_error_message() );// @codingStandardsIgnoreLine
+				error_log( 'System error, failed to update user' . $openid . '. Reason:' . $user_id->get_error_message() ); // @codingStandardsIgnoreLine
 			}
 
 			update_user_meta( $user_id, 'wp_weixin_rawdata', wp_json_encode( $user_info ) );
@@ -305,7 +309,7 @@ class WP_Weixin_Auth {
 		return $result;
 	}
 
-	private function _register_user( $openid, $access_token, $refresh_token ) {// @codingStandardsIgnoreLine
+	private function register_user( $openid, $access_token, $refresh_token ) {
 		$user_info = $this->wechat->getOauthUserInfo( $access_token, $openid );
 
 		$error = $this->wechat->getError();
@@ -323,7 +327,7 @@ class WP_Weixin_Auth {
 
 			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-			wp_die( $title . $message );// @codingStandardsIgnoreLine
+			wp_die( $title . $message ); // @codingStandardsIgnoreLine
 		}
 
 		$user_info['access_token']   = $access_token;
@@ -345,7 +349,7 @@ class WP_Weixin_Auth {
 
 			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-			wp_die( $title . $message );// @codingStandardsIgnoreLine
+			wp_die( $title . $message ); // @codingStandardsIgnoreLine
 		}
 
 		update_user_meta( $user_id, 'wp_weixin_rawdata', wp_json_encode( $user_info ) );
@@ -353,7 +357,7 @@ class WP_Weixin_Auth {
 		return $user_id;
 	}
 
-	private function _auth_refresh( $user_id ) {// @codingStandardsIgnoreLine
+	private function auth_refresh( $user_id ) {
 		$json_user_info = get_user_meta( $user_id, 'wp_weixin_rawdata', true );
 		$user_info      = json_decode( $json_user_info, true );
 		$refresh_token  = isset( $user_info['refresh_token'] ) ? $user_info['refresh_token'] : false;
@@ -375,7 +379,7 @@ class WP_Weixin_Auth {
 		}
 	}
 
-	private function _set_subscribe_image_base64_src( $url ) {// @codingStandardsIgnoreLine
+	private function set_subscribe_image_base64_src( $url ) {
 		$src   = false;
 		$image = false;
 
@@ -384,7 +388,7 @@ class WP_Weixin_Auth {
 		}
 
 		if ( false !== $image ) {
-			$src = 'data:image/jpg;base64,' . base64_encode( $image );// @codingStandardsIgnoreLine
+			$src = 'data:image/jpg;base64,' . base64_encode( $image ); // @codingStandardsIgnoreLine
 		}
 
 		$this->qr_subscribe_src = $src;

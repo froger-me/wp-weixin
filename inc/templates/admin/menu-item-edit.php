@@ -39,7 +39,7 @@
 					<a href="<?php echo esc_url( $nonce_url_down ); ?>" class="item-move-down" aria-label="<?php esc_attr_e( 'Move down' ); ?>">&#8595;</a>
 				</span>
 				<?php
-					$edit_link = ( isset( $_GET['edit-menu-item'] ) && $item_id == $_GET['edit-menu-item'] ) ? admin_url( 'nav-menus.php' ) : add_query_arg( 'edit-menu-item', $item_id, remove_query_arg( $removed_args, admin_url( 'nav-menus.php#menu-item-settings-' . $item_id ) ) );// @codingStandardsIgnoreLine
+					$edit_link = ( isset( $_GET['edit-menu-item'] ) && $item_id == $_GET['edit-menu-item'] ) ? admin_url( 'nav-menus.php' ) : add_query_arg( 'edit-menu-item', $item_id, remove_query_arg( $removed_args, admin_url( 'nav-menus.php#menu-item-settings-' . $item_id ) ) ); // @codingStandardsIgnoreLine
 				?>
 				<a class="item-edit" id="edit-<?php echo esc_attr( $item_id ); ?>" href="<?php echo esc_url( $edit_link ); ?>" aria-label="<?php esc_attr_e( 'Edit menu item' ); ?>"><?php esc_html_e( 'Edit' ); ?></a>
 			</span>

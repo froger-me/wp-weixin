@@ -46,29 +46,32 @@ class WP_Weixin_Settings {
 	 *******************************************************************/
 
 	public function __call( $method_name, $args ) {
-		$field_key       = str_replace( 'wp_weixin_', '', str_replace( '_render', '', $method_name ) );
-		$is_field_render = ( strpos( $method_name, 'wp_weixin_' ) !== false );
-		$is_field_render = $is_field_render && ( strpos( $method_name, '_render' ) !== false );
-		$is_field_render = $is_field_render && $this->_get_field_attr( $field_key, 'id' );
+		$field_key      = str_replace( 'wp_weixin_', '', str_replace( '_render', '', $method_name ) );
+		$isfield_render = ( strpos( $method_name, 'wp_weixin_' ) !== false );
+		$isfield_render = $isfield_render && ( strpos( $method_name, '_render' ) !== false );
+		$isfield_render = $isfield_render && $this->get_field_attr( $field_key, 'id' );
 
 		$section_key         = str_replace( '_settings_section_callback', '', $method_name );
 		$is_section_callback = ( strpos( $method_name, '_settings_section_callback' ) !== false );
-		$is_section_callback = $is_section_callback && in_array( $section_key, array_keys( $this->settings_fields ) );// @codingStandardsIgnoreLine
+		$is_section_callback = $is_section_callback && in_array( $section_key, array_keys( $this->settings_fields ) ); // @codingStandardsIgnoreLine
 
-		if ( $is_field_render ) {
-			call_user_func_array( array( $this, '_field_render' ), array( $field_key ) );
+		if ( $isfield_render ) {
+			call_user_func_array( array( $this, 'field_render' ), array( $field_key ) );
 		} elseif ( $is_section_callback ) {
-			call_user_func_array( array( $this, '_section_render' ), array( $section_key ) );
+			call_user_func_array( array( $this, 'section_render' ), array( $section_key ) );
 		} else {
-			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . $method_name . '()', E_USER_ERROR );// @codingStandardsIgnoreLine
+			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . $method_name . '()', E_USER_ERROR ); // @codingStandardsIgnoreLine
 		}
 	}
 
 	public static function get_options() {
-		$settings = get_option( 'wp_weixin_settings' );
-		$filtered = array();
+		$settings                       = get_option( 'wp_weixin_settings' );
+		$filtered                       = array();
+		$force_custom_transfer_inactive = isset( $settings['wp_weixin_custom_transfer'] ) && $settings['wp_weixin_custom_transfer'];
+		$force_custom_transfer_inactive = $force_custom_transfer_inactive && ! is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' );
+		$force_custom_transfer_inactive = apply_filters( 'wp_weixin_force_custom_transfer_inactive', $force_custom_transfer_inactive );
 
-		if ( ! is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' ) && isset( $settings['wp_weixin_custom_transfer'] ) && $settings['wp_weixin_custom_transfer'] ) {
+		if ( $force_custom_transfer_inactive ) {
 			$settings['wp_weixin_custom_transfer'] = false;
 
 			update_option( 'wp_weixin_settings', $settings );
@@ -96,7 +99,7 @@ class WP_Weixin_Settings {
 				'alter_userscreen',
 			);
 
-			if ( in_array( $filtered_key, $bools ) ) {// @codingStandardsIgnoreLine
+			if ( in_array( $filtered_key, $bools ) ) { // @codingStandardsIgnoreLine
 				$filtered[ $filtered_key ] = (bool) $value;
 			} else {
 				$filtered[ $filtered_key ] = $value;
@@ -113,6 +116,8 @@ class WP_Weixin_Settings {
 		if ( 'ecommerce' === $key ) {
 			$value = $value || is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' ) || is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' );
 		}
+
+		$value = apply_filters( 'wp_weixin_get_' . $key . '_option', $value, $key );
 
 		return $value;
 	}
@@ -199,7 +204,7 @@ class WP_Weixin_Settings {
 
 			if ( 'get-qrcode' === $action ) {
 				$hash   = isset( $wp->query_vars['hash'] ) ? $wp->query_vars['hash'] : false;
-				$bundle = explode( '|', base64_decode( $hash ) );// @codingStandardsIgnoreLine
+				$bundle = explode( '|', base64_decode( $hash ) ); // @codingStandardsIgnoreLine
 				$url    = reset( $bundle );
 				$nonce  = end( $bundle );
 
@@ -208,13 +213,13 @@ class WP_Weixin_Settings {
 					exit();
 				}
 
-				self::_get_qrcode( $url, 5, 2, QR_ECLEVEL_L );
+				self::output_get_qrcode( $url, 5, 2, QR_ECLEVEL_L );
 			}
 		}
 	}
 
 	public static function get_qrcode( $url ) {
-		self::_get_qrcode( $url, 5, 2, QR_ECLEVEL_L );
+		self::output_get_qrcode( $url, 5, 2, QR_ECLEVEL_L );
 	}
 
 	public function get_qr() {
@@ -224,7 +229,6 @@ class WP_Weixin_Settings {
 		$url              = filter_input( INPUT_POST, 'url', FILTER_VALIDATE_URL );
 		$base_payment_url = site_url( 'wp-weixin-pay/transfer/' );
 		$hash             = false;
-
 
 		if ( ! $amount && $fixed ) {
 			$fixed = false;
@@ -236,17 +240,15 @@ class WP_Weixin_Settings {
 
 			$fixed  = ( $fixed ) ? '&fixed=1' : '';
 			$amount = '?amount=' . $amount;
-			$hash   = base64_encode( $base_payment_url . $amount . $product_name . $fixed . '|' . wp_create_nonce( 'qr_code' ) );// @codingStandardsIgnoreLine
+			$hash   = base64_encode( $base_payment_url . $amount . $product_name . $fixed . '|' . wp_create_nonce( 'qr_code' ) ); // @codingStandardsIgnoreLine
 		} elseif ( $url ) {
 
 			if ( $product_name ) {
 				$product_name = '?note=' . $product_name;
 			}
 
-			$hash = base64_encode( $url . $product_name . '|' . wp_create_nonce( 'qr_code' ) );// @codingStandardsIgnoreLine
+			$hash = base64_encode( $url . $product_name . '|' . wp_create_nonce( 'qr_code' ) ); // @codingStandardsIgnoreLine
 		}
-
-		error_log($product_name);
 
 		if ( $hash ) {
 			wp_send_json_success( $hash );
@@ -260,14 +262,14 @@ class WP_Weixin_Settings {
 	}
 
 	public function init_settings_definition() {
-		$this->_build_settings_fields();
+		$this->build_settings_fields();
 	}
 
 	/*******************************************************************
 	 * Private methods
 	 *******************************************************************/
 
-	private function _build_settings_fields() {// @codingStandardsIgnoreLine
+	private function build_settings_fields() {
 		global $sitepress;
 
 		$jsapi_urls       = array();
@@ -314,12 +316,13 @@ class WP_Weixin_Settings {
 					}
 				}
 			}
+
 			$jsapi_urls[] = site_url( 'wxpayagain/' );
 		}
 
 		$jsapi_urls = apply_filters( 'wp_weixin_jsapi_urls', $jsapi_urls );
 
-		$ecommerce_description  = __( 'Settings to use with a Wechat Service Account.', 'wp-weixin' );
+		$ecommerce_description  = __( 'Settings to use with a WeChat Service Account.', 'wp-weixin' );
 		$ecommerce_description .= '<br/>';
 		// translators: 1 is backend URL
 		$ecommerce_description .= sprintf( __( 'The URLs in the merchant platform backend at %1$s should be configured as follows:', 'wp-weixin' ), '<a href="https://pay.weixin.qq.com/index.php/extend/pay_setting" target="_blank">https://pay.weixin.qq.com/index.php/extend/pay_setting</a>' );
@@ -363,7 +366,7 @@ class WP_Weixin_Settings {
 			}
 
 			if ( $sitepress && ( WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN === (int) $sitepress->get_setting( 'language_negotiation_type' ) ) ) {
-				$ecommerce_description     .= '<span style="color: red; font-weight: bold;">' . sprintf( __( 'Multiple domains detected. With the current WPML configuration, WP Weixin will work only with the language of the main domain registered in the Wechat backends.', 'wp-weixin' ), $count_jsapi_urls ) . '</span>';
+				$ecommerce_description     .= '<span style="color: red; font-weight: bold;">' . sprintf( __( 'Multiple domains detected. With the current WPML configuration, WP Weixin will work only with the language of the main domain registered in the WeChat backends.', 'wp-weixin' ), $count_jsapi_urls ) . '</span>';
 				$ecommerce_description     .= '<br/>';
 				$ecommerce_description     .= __( 'Please select one of the "Language name added as a parameter" or "Different languages in directories" options for the "Language URL format" setting in WPML.', 'wp-weixin' );
 					$ecommerce_description .= '<br/>';
@@ -394,59 +397,59 @@ class WP_Weixin_Settings {
 				),
 				array(
 					'id'    => 'appid',
-					'label' => __( 'Wechat App ID', 'wp-weixin' ),
+					'label' => __( 'WeChat App ID', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The AppId in the backend at <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'secret',
-					'label' => __( 'Wechat App Secret', 'wp-weixin' ),
+					'label' => __( 'WeChat App Secret', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The AppSecret in the backend at <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'name',
-					'label' => __( 'Wechat OA Name', 'wp-weixin' ),
+					'label' => __( 'WeChat OA Name', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The name of the Official Account - you may enter any value, it is recommended to enter the actual name of the Official Account.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'logo_url',
-					'label' => __( 'Wechat OA Logo URL', 'wp-weixin' ),
+					'label' => __( 'WeChat OA Logo URL', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'A URL to the logo of the Official Account - you may enter any image URL, it is recommended to enter a URL of the actual square logo of the Official Account (external or from the Media Library).', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'enable_auth',
-					'label' => __( 'Enable Wechat mobile authentication', 'wp-weixin' ),
+					'label' => __( 'Enable WeChat mobile authentication', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'If enabled, users will be authenticated with their Wechat account.<br/>An account will be created in Wordpress with their openID if they do not have one already.<br/>If disabled, users will simply be identified with a cookie using their Wechat public information during their session, but not authenticated in Wordpress.', 'wp-weixin' ),
+					'help'  => __( 'If enabled, users will be authenticated with their WeChat account.<br/>An account will be created in Wordpress with their openID if they do not have one already.<br/>If disabled, users will simply be identified with a cookie using their WeChat public information during their session, but not authenticated in Wordpress.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'force_wechat',
-					'label' => __( 'Force Wechat mobile', 'wp-weixin' ),
+					'label' => __( 'Force WeChat mobile', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Make the website accessible only through the Wechat browser (except administrators and admin interface).', 'wp-weixin' ),
+					'help'  => __( 'Make the website accessible only through the WeChat browser (except administrators and admin interface).', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'force_follower',
 					'label' => __( 'Force follow (any page)', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Require the user to follow the Official Account before accessing the site with the Wechat browser (except administrators and admin interface).', 'wp-weixin' ),
+					'help'  => __( 'Require the user to follow the Official Account before accessing the site with the WeChat browser (except administrators and admin interface).', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'follow_welcome',
 					'label' => __( 'Send welcome message', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Send a welcome message when a user follows the Official Account. Requires using the Wechat Responder.', 'wp-weixin' ),
+					'help'  => __( 'Send a welcome message when a user follows the Official Account. Requires using the WeChat Responder.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'welcome_image_url',
@@ -457,20 +460,20 @@ class WP_Weixin_Settings {
 					'help'  => sprintf( __( 'A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br/>Default is %1$s', 'wp-weixin' ), '<a href="' . WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png">' . WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png</a>' ),
 				),
 				'title'       => __( 'Main Settings', 'wp-weixin' ),
-				'description' => __( 'Minimal required configuration to enable WP Weixin: "Wechat App ID", "Wechat App Secret".', 'wp-weixin' ),
+				'description' => __( 'Minimal required configuration to enable WP Weixin: "WeChat App ID", "WeChat App Secret".', 'wp-weixin' ),
 			),
 			'responder' => array(
 				array(
 					'id'    => 'responder',
-					'label' => __( 'Use Wechat Responder', 'wp-weixin' ),
+					'label' => __( 'Use WeChat Responder', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
 					// translators: %1s is site_url( '/weixin-responder', 'https' )
-					'help'  => sprintf( __( 'Allow the website to receive messages from the Wechat API and respond to them.<br/>Server configuration must be enabled and URL must be set to "%1$s" in <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.<br/>Required if using "Force follow" option.', 'wp-weixin' ), site_url( '/weixin-responder', 'https' ) ),
+					'help'  => sprintf( __( 'Allow the website to receive messages from the WeChat API and respond to them.<br/>Server configuration must be enabled and URL must be set to "%1$s" in <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.<br/>Required if using "Force follow" option.', 'wp-weixin' ), site_url( '/weixin-responder', 'https' ) ),
 				),
 				array(
 					'id'    => 'token',
-					'label' => __( 'Wechat Token', 'wp-weixin' ),
+					'label' => __( 'WeChat Token', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The Token in the backend at <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ),
@@ -480,17 +483,17 @@ class WP_Weixin_Settings {
 					'label' => __( 'Encode messages', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Encode the communication between the website and the Wechat API (recommended).', 'wp-weixin' ),
+					'help'  => __( 'Encode the communication between the website and the WeChat API (recommended).', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'aeskey',
-					'label' => __( 'Wechat AES Key', 'wp-weixin' ),
+					'label' => __( 'WeChat AES Key', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The EncodingAESKey in the backend at <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ),
 				),
-				'title'       => __( 'Wechat Responder Settings', 'wp-weixin' ),
-				'description' => __( 'Settings for the website to interact with the Wechat API.', 'wp-weixin' ),
+				'title'       => __( 'WeChat Responder Settings', 'wp-weixin' ),
+				'description' => __( 'Settings for the website to interact with the WeChat API.', 'wp-weixin' ),
 			),
 			'ecommerce' => array(
 				array(
@@ -498,7 +501,7 @@ class WP_Weixin_Settings {
 					'label' => __( 'Use merchant platform', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Allow users to send money to the Service Account with Wechat - an account at <a href="https://pay.weixin.qq.com" target="_blank">https://pay.weixin.qq.com/</a> is necessary.', 'wp-weixin' ),
+					'help'  => __( 'Allow users to send money to the Service Account with WeChat - an account at <a href="https://pay.weixin.qq.com" target="_blank">https://pay.weixin.qq.com/</a> is necessary.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'custom_transfer',
@@ -512,30 +515,30 @@ class WP_Weixin_Settings {
 					'label' => __( 'Force follow (user account and checkout pages)', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Require the user to follow the Official Account before accessing the checkout and user account pages with the Wechat browser (except administrators and admin interface).', 'wp-weixin' ),
+					'help'  => __( 'Require the user to follow the Official Account before accessing the checkout and user account pages with the WeChat browser (except administrators and admin interface).', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'mch_appid',
-					'label' => __( 'Wechat Merchant App ID', 'wp-weixin' ),
+					'label' => __( 'WeChat Merchant App ID', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
-					'help'  => __( 'The AppID in the backend at <a href="https://pay.weixin.qq.com" target="_blank">https://pay.weixin.qq.com/</a> - can be different from the Wechat App ID as the Wechat Pay account may be linked to a different AppID. Leave empty to use the Wechat App ID.', 'wp-weixin' ),
+					'help'  => __( 'The AppID in the backend at <a href="https://pay.weixin.qq.com" target="_blank">https://pay.weixin.qq.com/</a> - can be different from the WeChat App ID as the WeChat Pay account may be linked to a different AppID. Leave empty to use the WeChat App ID.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'mch_id',
-					'label' => __( 'Wechat Merchant ID', 'wp-weixin' ),
+					'label' => __( 'WeChat Merchant ID', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The Merchant ID in the backend at <a href="https://pay.weixin.qq.com/index.php/extend/pay_setting" target="_blank">https://pay.weixin.qq.com/index.php/extend/pay_setting</a>.', 'wp-weixin' ),
 				),
 				array(
 					'id'    => 'mch_key',
-					'label' => __( 'Wechat Merchant Key', 'wp-weixin' ),
+					'label' => __( 'WeChat Merchant Key', 'wp-weixin' ),
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The Merchant Key in the backend at <a href="https://pay.weixin.qq.com/index.php/core/cert/api_cert" target="_blank">https://pay.weixin.qq.com/index.php/core/cert/api_cert</a>.', 'wp-weixin' ),
 				),
-				'title'       => __( 'Wechat Pay Settings', 'wp-weixin' ),
+				'title'       => __( 'WeChat Pay Settings', 'wp-weixin' ),
 				'description' => $ecommerce_description,
 			),
 			'proxy'     => array(
@@ -563,7 +566,7 @@ class WP_Weixin_Settings {
 			'misc'      => array(
 				array(
 					'id'    => 'alter_userscreen',
-					'label' => __( 'Show Wechat name and pictures in Users list page', 'wp-weixin' ),
+					'label' => __( 'Show WeChat name and pictures in Users list page', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
 					'help'  => __( 'Instead of the default Wordpress account names and avatars', 'wp-weixin' ),
@@ -587,24 +590,39 @@ class WP_Weixin_Settings {
 			),
 		);
 
-		if ( is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' ) ) {
-			unset( $this->settings_fields['ecommerce'][0] );
-		}
+		$this->settings_fields = apply_filters( 'wp_weixin_settings_fields', $this->settings_fields );
 
-		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
-			unset( $this->settings_fields['ecommerce'][2] );
-		}
+		foreach ( $this->settings_fields as $section_name => $section ) {
 
-		if ( ! is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' ) ) {
-			unset( $this->settings_fields['ecommerce'][1] );
-		}
+			foreach ( $section as $index => $value ) {
+				$include_setting = true;
 
-		if ( ! is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' ) && ! is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' ) ) {
-			unset( $this->settings_fields['ecommerce'] );
+				if ( 'ecommerce' === $section_name && is_numeric( $index ) ) {
+
+					if (
+						( 0 === $index && is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' ) ) ||
+						( 2 === $index && ! is_plugin_active( 'woocommerce/woocommerce.php' ) ) ||
+						( 1 === $index && ! is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' ) ) ||
+						( ! is_plugin_active( 'wp-weixin-pay/wp-weixin-pay.php' ) && ! is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' ) )
+					) {
+						$include_setting = false;
+					}
+				}
+
+				$include_setting = apply_filters( 'wp_weixin_show_setting', $include_setting, $section_name, $index, $value );
+
+				if ( ! $include_setting ) {
+					unset( $this->settings_fields[ $section_name ][ $index ] );
+				}
+			}
+
+			if ( 2 === count( $this->settings_fields[ $section_name ] ) ) {
+				unset( $this->settings_fields[ $section_name ] );
+			}
 		}
 	}
 
-	private function _get_input_text_option( $key, $class ) {// @codingStandardsIgnoreLine
+	private function get_input_text_option( $key, $class ) {
 		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
 		$input  = '<input type="text" name="wp_weixin_settings[wp_weixin_' . $key . ']" value="';
 		$input .= isset( $this->settings[ $key ] ) ? $this->settings[ $key ] : '';
@@ -613,7 +631,7 @@ class WP_Weixin_Settings {
 		return $input;
 	}
 
-	private function _get_input_checkbox_option( $key, $class ) {// @codingStandardsIgnoreLine
+	private function get_input_checkbox_option( $key, $class ) {
 		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
 		$input  = '<input type="checkbox" name="wp_weixin_settings[wp_weixin_' . $key . ']" value="1" ';
 		$input .= ( isset( $this->settings[ $key ] ) && $this->settings[ $key ] ) ? 'checked' : '';
@@ -622,31 +640,33 @@ class WP_Weixin_Settings {
 		return $input;
 	}
 
-	private function _field_render( $key ) {// @codingStandardsIgnoreLine
+	private function field_render( $key ) {
 
-		if ( $this->_get_field_attr( $key, 'type' ) === 'text' ) {
-			echo $this->_get_input_text_option( $key, $this->_get_field_attr( $key, 'class' ) );// @codingStandardsIgnoreLine
+		if ( $this->get_field_attr( $key, 'type' ) === 'text' ) {
+			echo $this->get_input_text_option( $key, $this->get_field_attr( $key, 'class' ) ); // @codingStandardsIgnoreLine
 		}
 
-		if ( $this->_get_field_attr( $key, 'type' ) === 'checkbox' ) {
-			echo $this->_get_input_checkbox_option( $key, $this->_get_field_attr( $key, 'class' ) );// @codingStandardsIgnoreLine
+		if ( $this->get_field_attr( $key, 'type' ) === 'checkbox' ) {
+			echo $this->get_input_checkbox_option( $key, $this->get_field_attr( $key, 'class' ) ); // @codingStandardsIgnoreLine
 		}
 
-		if ( $this->_get_field_attr( $key, 'help' ) ) {
-			echo '<p class="description">' . $this->_get_field_attr( $key, 'help' ) . '</p>';// @codingStandardsIgnoreLine
+		if ( $this->get_field_attr( $key, 'help' ) ) {
+			echo '<p class="description">' . $this->get_field_attr( $key, 'help' ) . '</p>'; // @codingStandardsIgnoreLine
 		}
 	}
 
-	private function _section_render( $key ) {// @codingStandardsIgnoreLine
-		echo $this->settings_fields[ $key ]['description'];// @codingStandardsIgnoreLine
+	private function section_render( $key ) {
+		echo $this->settings_fields[ $key ]['description']; // @codingStandardsIgnoreLine
 	}
 
-	private function _get_field_attr( $key, $attr ) {// @codingStandardsIgnoreLine
+	private function get_field_attr( $key, $attr ) {
 
 		foreach ( $this->settings_fields as $section ) {
 
 			foreach ( $section as $field ) {
+
 				if ( is_array( $field ) && $field['id'] === $key && isset( $field[ $attr ] ) ) {
+
 					return $field[ $attr ];
 				}
 			}
@@ -655,7 +675,7 @@ class WP_Weixin_Settings {
 		return false;
 	}
 
-	private static function _get_qrcode( $url, $size = 4, $margin = 4, $quality = QR_ECLEVEL_H ) {// @codingStandardsIgnoreLine
+	private static function output_get_qrcode( $url, $size = 4, $margin = 4, $quality = QR_ECLEVEL_H ) {
 
 		if ( ! empty( $url ) ) {
 			ob_start();

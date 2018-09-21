@@ -12,7 +12,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 $base_payment_qr_url = site_url( 'wp-weixin-pay/transfer/' );
 $base_qr_url         = site_url( 'wp-weixin/get-qrcode/hash/' );
 $url_nonce           = wp_create_nonce( 'qr_code' );
-$base_payment_qr_src = site_url( 'wp-weixin/get-qrcode/hash/' . base64_encode( $base_payment_qr_url . '|' . $url_nonce ) );// @codingStandardsIgnoreLine
+$base_payment_qr_src = site_url( 'wp-weixin/get-qrcode/hash/' . base64_encode( $base_payment_qr_url . '|' . $url_nonce ) ); // @codingStandardsIgnoreLine
 
 ?>
 <div class="wrap">
@@ -68,7 +68,7 @@ $base_payment_qr_src = site_url( 'wp-weixin/get-qrcode/hash/' . base64_encode( $
 						<td>
 							<input id="wp_weixin_qr_product_name" type="text" name="wp_weixin_qr_product_name" value="">
 							<p class="description">
-								<?php esc_html_e( 'Product name that will appear on the Wechat payment details.', 'wp-weixin' ); ?><br>
+								<?php esc_html_e( 'Product name that will appear on the WeChat payment details.', 'wp-weixin' ); ?><br>
 								<?php esc_html_e( 'If filled, the value will use the notes field of the money transfer screen and therefore the "Add Note" link will not be displayed.', 'wp-weixin' ); ?>
 							</p>
 						</td>

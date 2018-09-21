@@ -42,7 +42,7 @@ class WP_Weixin_Responder {
 
 			if ( isset( $wp->query_vars['action'] ) && 'responder' === $wp->query_vars['action'] ) {
 				$this->wechat->checkBind();
-				$this->_handle_request();
+				$this->handle_request();
 
 				exit();
 			}
@@ -73,7 +73,7 @@ class WP_Weixin_Responder {
 					return;
 				}
 
-				$message = $this->_get_follower_welcome_message( $follower_info, $user );
+				$message = $this->get_follower_welcome_message( $follower_info, $user );
 
 				$this->wechat->response( 'news', $message );
 			}
@@ -84,7 +84,7 @@ class WP_Weixin_Responder {
 	 * Private methods
 	 *******************************************************************/
 
-	private function _handle_request() {// @codingStandardsIgnoreLine
+	private function handle_request() {
 		global $wp;
 
 		if ( ! $this->wechat->checkSignature() ) {
@@ -95,7 +95,7 @@ class WP_Weixin_Responder {
 		$request_data = $this->wechat->request();
 
 		if ( apply_filters( 'wp_weixin_debug', false ) ) {
-			error_log( print_r( $request_data, true ) );// @codingStandardsIgnoreLine
+			error_log( print_r( $request_data, true ) ); // @codingStandardsIgnoreLine
 		}
 
 		do_action( 'wp_weixin_responder', $request_data, $this->wechat );
@@ -103,7 +103,7 @@ class WP_Weixin_Responder {
 		exit();
 	}
 
-	private function _get_follower_welcome_message( $follower_info, $user ) {// @codingStandardsIgnoreLine
+	private function get_follower_welcome_message( $follower_info, $user ) {
 		global $sitepress;
 
 		$language = isset( $follower_info['language'] ) ? $follower_info['language'] : false;

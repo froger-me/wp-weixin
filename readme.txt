@@ -45,5 +45,16 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.3 =
+* Ensure compatibility with [Open Social](https://wordpress.org/plugins/open-social/)
+* Improve formatting
+
+= 1.0.2 =
+* Adjust hooks priorities
+* Add Chinese translation
+
+= 1.0.1 =
+* Fix activation settings issue
+
 = 1.0 =
 * First version

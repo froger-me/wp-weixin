@@ -51,7 +51,7 @@ class WP_Weixin {
 			// Filter wechat update meta - add better setters for raw data
 			add_filter( 'update_user_metadata', array( $this, 'filter_wechat_update_user_meta' ), 1, 5 );
 			// Add main query vars
-			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0, 1 );
+			add_filter( 'query_vars', array( $this, 'add_query_vars' ), -99, 1 );
 
 			if ( WP_Weixin_Settings::get_option( 'alter_userscreen' ) ) {
 				// Add wechat name column
@@ -78,7 +78,7 @@ class WP_Weixin {
 		$prefix = $wpdb->esc_like( '_transient_wp_weixin_' );
 		$sql    = "DELETE FROM $wpdb->options WHERE `option_name` LIKE '%s'";
 
-		$wpdb->query( $wpdb->prepare( $sql, $prefix . '%' ) );// @codingStandardsIgnoreLine
+		$wpdb->query( $wpdb->prepare( $sql, $prefix . '%' ) ); // @codingStandardsIgnoreLine
 		flush_rewrite_rules();
 	}
 
@@ -105,7 +105,7 @@ class WP_Weixin {
 
 						$message .= __( '(minimum compatible version: 6.5.8)', 'wp-weixin' );
 
-						wp_die( $title . $message );// @codingStandardsIgnoreLine
+						wp_die( $title . $message ); // @codingStandardsIgnoreLine
 					} else {
 						$is_wechat_mobile = true;
 					}
@@ -177,7 +177,7 @@ class WP_Weixin {
 			wp_enqueue_style( $key, WP_WEIXIN_PLUGIN_URL . 'css/main' . $css_ext, array(), $version );
 
 			$abspath   = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, ABSPATH );
-			$condition = ( in_array( $abspath . 'wp-login.php', get_included_files() ) || in_array( $abspath . 'wp-register.php', get_included_files() ) );// @codingStandardsIgnoreLine
+			$condition = ( in_array( $abspath . 'wp-login.php', get_included_files() ) || in_array( $abspath . 'wp-register.php', get_included_files() ) ); // @codingStandardsIgnoreLine
 			$condition = $condition || 'wp-login.php' === $GLOBALS['pagenow'] || '/wp-login.php' === $_SERVER['PHP_SELF'];
 
 			if ( ! $condition ) {
@@ -250,10 +250,10 @@ class WP_Weixin {
 				$avatar = get_user_meta( $id, 'wp_weixin_headimgurl', true );
 
 				if ( empty( $avatar ) ) {
-					$image  = WP_WEIXIN_PLUGIN_PATH . '/images/default-avatar.png';
+					$image  = WP_WEIXIN_PLUGIN_URL . 'images/default-avatar.png';
 					$type   = pathinfo( $image, PATHINFO_EXTENSION );
 					$data   = wp_remote_retrieve_body( wp_remote_get( $image ) );
-					$avatar = 'data:image/' . $type . ';base64,' . base64_encode( $data );// @codingStandardsIgnoreLine
+					$avatar = 'data:image/' . $type . ';base64,' . base64_encode( $data ); // @codingStandardsIgnoreLine
 				}
 
 				$avatar  = "<img alt='{$alt}' src='{$avatar}'";
@@ -280,13 +280,13 @@ class WP_Weixin {
 
 			$data = array(
 				'openid'     => $data['openid'],
-				'nickname'   => $this->_cleanup_wechat_info( $data['nickname'] ),
+				'nickname'   => $this->cleanup_wechat_info( $data['nickname'] ),
 				'headimgurl' => '<a target="_blank" href="' . $data['headimgurl'] . '">' . $data['headimgurl'] . '</a>',
 				'sex'        => $sex,
 				'language'   => $data['language'],
-				'city'       => $this->_cleanup_wechat_info( $data['city'] ),
-				'province'   => $this->_cleanup_wechat_info( $data['province'] ),
-				'country'    => $this->_cleanup_wechat_info( $data['country'] ),
+				'city'       => $this->cleanup_wechat_info( $data['city'] ),
+				'province'   => $this->cleanup_wechat_info( $data['province'] ),
+				'country'    => $this->cleanup_wechat_info( $data['country'] ),
 				'unionid'    => $data['unionid'],
 			);
 
@@ -294,7 +294,7 @@ class WP_Weixin {
 
 			require_once WP_WEIXIN_PLUGIN_PATH . 'inc/templates/admin/wechat-public-info.php';
 
-			echo ob_get_clean();// @codingStandardsIgnoreLine
+			echo ob_get_clean(); // @codingStandardsIgnoreLine
 		}
 	}
 
@@ -375,7 +375,7 @@ class WP_Weixin {
 	public function alter_user_table_rows( $val, $column_name, $user_id ) {
 
 		if ( 'wechat_name' === $column_name ) {
-			$val = $this->_build_username_cell( $user_id );
+			$val = $this->build_username_cell( $user_id );
 		}
 
 		return $val;
@@ -399,48 +399,23 @@ class WP_Weixin {
 	 * Private methods
 	 *******************************************************************/
 
-	private function _build_username_cell( $user_id ) {// @codingStandardsIgnoreLine
+	private function build_username_cell( $user_id ) { // @codingStandardsIgnoreLine
 		$user_object = get_user_by( 'ID', $user_id );
 		$edit_link   = esc_url( add_query_arg( 'wp_http_referer', rawurlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ), get_edit_user_link( $user_object->ID ) ) );
 
 		if ( current_user_can( 'edit_user', $user_object->ID ) ) {
-			$edit            = "<strong><a href=\"$edit_link\">$user_object->display_name</a></strong><br />";
-			$actions['edit'] = '<a href="' . $edit_link . '">' . __( 'Edit' ) . '</a>';
+			$edit = '<strong><a href="' . $edit_link . '">' . $user_object->display_name . '</a></strong><br />';
 		} else {
-			$edit = "<strong>$user_object->display_name</strong><br />";
+			$edit = '<strong>' . $user_object->display_name . '</strong><br />';
 		}
-
-		if ( ! is_multisite() && get_current_user_id() !== $user_object->ID && current_user_can( 'delete_user', $user_object->ID ) ) {
-			$actions['delete'] = "<a class='submitdelete' href='" . wp_nonce_url( "users.php?action=delete&amp;user=$user_object->ID", 'bulk-users' ) . "'>" . __( 'Delete' ) . '</a>';
-		}
-
-		if ( is_multisite() && get_current_user_id() !== $user_object->ID && current_user_can( 'remove_user', $user_object->ID ) ) {
-			$actions['remove'] = "<a class='submitdelete' href='" . wp_nonce_url( $url . "action=remove&amp;user=$user_object->ID", 'bulk-users' ) . "'>" . __( 'Remove' ) . '</a>';
-		}
-
-		$actions      = apply_filters( 'user_row_actions', $actions, $user_object );
-		$action_count = count( $actions );
-		$i            = 0;
 
 		$avatar = '<div style="float: left; margin-right: 10px; margin-top: 1px;">' . get_avatar( $user_object->ID, 32 ) . '</div>';
-
-		$cell  = $avatar . ' ' . $edit;
-		$cell .= '<div class="row-actions">';
-
-		foreach ( $actions as $action => $link ) {
-			++$i;
-			( $i === $action_count ) ? $sep = '' : $sep = ' | ';
-
-			$cell .= "<span class='$action'>$link$sep</span>";
-		}
-
-		$cell .= '</div>';
-		$cell .= '<button type="button" class="toggle-row"><span class="screen-reader-text">' . __( 'Show more details' ) . '</span></button>';
+		$cell   = $avatar . ' ' . $edit;
 
 		return $cell;
 	}
 
-	private function _cleanup_wechat_info( $string ) {// @codingStandardsIgnoreLine
+	private function cleanup_wechat_info( $string ) { // @codingStandardsIgnoreLine
 		$regex  = '/u[[:xdigit:]]{4}/';
 		$string = preg_replace( '/(u[[:xdigit:]]{4})/', '\\\$1', $string );
 		$string = json_decode( sprintf( '"%s"', $string ) );

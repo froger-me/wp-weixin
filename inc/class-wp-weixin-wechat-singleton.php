@@ -18,8 +18,8 @@ class WP_Weixin_Wechat_Singleton {
 			self::$wechat = wp_cache_get( 'wechat', 'wp_weixin' );
 
 			if ( ! self::$wechat ) {
-				$access_info  = self::_get_access_info();
-				$config       = self::_get_wechat_config( $access_info['token'], $access_info['expiry'] );
+				$access_info  = self::get_access_info();
+				$config       = self::get_wechat_config( $access_info['token'], $access_info['expiry'] );
 				$wechat_sdk   = new Wechat( $config );
 				self::$wechat = new WP_Weixin_Wechat( $wechat_sdk );
 
@@ -43,7 +43,7 @@ class WP_Weixin_Wechat_Singleton {
 			$access_token = self::$wechat->getAccessToken( true );
 			$token_expiry = self::$wechat->getAccessTokenExpiry();
 
-			self::_save_access_info( $access_token, $token_expiry );
+			self::save_access_info( $access_token, $token_expiry );
 			set_transient( 'wp_weixin_requesting_token', false );
 		}
 	}
@@ -53,14 +53,14 @@ class WP_Weixin_Wechat_Singleton {
 		$message = __( 'WP Weixin is not ready. ', 'wp-weixin' );
 		$link    = '<a href="' . admin_url( '?page=wp-weixin' ) . '">' . __( 'Edit configuration', 'wp-weixin' ) . '</a>';
 
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . self::$error );// @codingStandardsIgnoreLine
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . self::$error ); // @codingStandardsIgnoreLine
 	}
 
 	/*******************************************************************
 	 * Private methods
 	 *******************************************************************/
 
-	private static function _get_access_info() {// @codingStandardsIgnoreLine
+	private static function get_access_info() {
 		$settings    = get_option( 'wp_weixin_settings' );
 		$access_info = array(
 			'token'  => '',
@@ -72,9 +72,9 @@ class WP_Weixin_Wechat_Singleton {
 			if ( ! has_filter( 'wp_weixin_get_access_info' ) ) {
 
 				if ( ! is_admin() ) {
-					self::_show_frontend_error();
+					self::show_frontend_error();
 				} else {
-					self::_set_error( 'custom_token_persistence' );
+					self::set_error( 'custom_token_persistence' );
 					add_action( 'admin_notices', array( 'WP_Weixin_Wechat_Singleton', 'settings_error' ) );
 				}
 			}
@@ -87,7 +87,7 @@ class WP_Weixin_Wechat_Singleton {
 		return $access_info;
 	}
 
-	private static function _save_access_info( $access_token, $token_expiry ) {// @codingStandardsIgnoreLine
+	private static function save_access_info( $access_token, $token_expiry ) {
 		$settings    = get_option( 'wp_weixin_settings' );
 		$access_info = array(
 			'token'  => $access_token,
@@ -99,9 +99,9 @@ class WP_Weixin_Wechat_Singleton {
 			if ( ! has_action( 'wp_weixin_save_access_info' ) ) {
 
 				if ( ! is_admin() ) {
-					self::_show_frontend_error();
+					self::show_frontend_error();
 				} else {
-					self::_set_error( 'custom_token_persistence' );
+					self::set_error( 'custom_token_persistence' );
 					add_action( 'admin_notices', array( 'WP_Weixin_Wechat_Singleton', 'settings_error' ) );
 				}
 			}
@@ -112,7 +112,7 @@ class WP_Weixin_Wechat_Singleton {
 		}
 	}
 
-	private static function _get_wechat_config( $access_token, $token_expiry ) {// @codingStandardsIgnoreLine
+	private static function get_wechat_config( $access_token, $token_expiry ) {
 		$settings   = get_option( 'wp_weixin_settings' );
 		$appid      = isset( $settings['wp_weixin_appid'] ) && ! empty( 'wp_weixin_appid' ) ? $settings['wp_weixin_appid'] : null;
 		$secret     = isset( $settings['wp_weixin_secret'] ) && ! empty( 'wp_weixin_secret' ) ? $settings['wp_weixin_secret'] : null;
@@ -137,7 +137,7 @@ class WP_Weixin_Wechat_Singleton {
 		if ( $configuration_fail ) {
 
 			if ( WP_Weixin_Auth::is_auth_needed() && ! is_admin() ) {
-				self::_show_frontend_error();
+				self::show_frontend_error();
 			} else {
 				$error_vars = array(
 					'appid'     => $appid,
@@ -152,7 +152,7 @@ class WP_Weixin_Wechat_Singleton {
 					'mch_key'   => $mch_key,
 				);
 
-				self::_set_error( 'main_config', $error_vars );
+				self::set_error( 'main_config', $error_vars );
 				add_action( 'admin_notices', array( 'WP_Weixin_Wechat_Singleton', 'settings_error' ) );
 			}
 		}
@@ -176,19 +176,19 @@ class WP_Weixin_Wechat_Singleton {
 		return $options;
 	}
 
-	private static function _show_frontend_error() {// @codingStandardsIgnoreLine
+	private static function show_frontend_error() {
 		$title   = '<h2>' . __( 'Configuration error', 'wp-weixin' ) . '</h2>';
 		$message = '<p>' . __( 'WP Weixin is not configured properly. ', 'wp-weixin' );
 
 		$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-		wp_die( $title . $message );// @codingStandardsIgnoreLine
+		wp_die( $title . $message ); // @codingStandardsIgnoreLine
 	}
 
-	private static function _set_error( $context, $error_vars = null ) {// @codingStandardsIgnoreLine
+	private static function set_error( $context, $error_vars = null ) {
 
 		if ( is_array( $error_vars ) && ! empty( $error_vars ) ) {
-			extract( $error_vars );// @codingStandardsIgnoreLine
+			extract( $error_vars ); // @codingStandardsIgnoreLine
 		}
 
 		$error = '<ul>';
@@ -208,7 +208,7 @@ class WP_Weixin_Wechat_Singleton {
 				$message .= 'Please make sure <code>wp_weixin_get_access_info</code>';
 				$message .= 'and <code>wp_weixin_save_access_info</code> are implemented';
 
-				$error .= '<li>' . __( $message, 'wp-weixin' ) . '</li>';// @codingStandardsIgnoreLine
+				$error .= '<li>' . __( $message, 'wp-weixin' ) . '</li>'; // @codingStandardsIgnoreLine
 				break;
 			default:
 				$error .= '<li>' . __( 'An unexpected configuration error has occured.', 'wp-weixin' ) . '</li>';
