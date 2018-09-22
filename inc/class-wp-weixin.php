@@ -18,6 +18,7 @@ class WP_Weixin {
 		if ( $init_hooks ) {
 			$this->meta_keys = array(
 				'wp_weixin_openid',
+				'wp_weixin_unionid',
 				'wp_weixin_headimgurl',
 				'wp_weixin_subscribe',
 				'wp_weixin_sex',
@@ -114,6 +115,47 @@ class WP_Weixin {
 		}
 
 		return $is_wechat_mobile;
+	}
+
+	public static function get_user_by_openid( $openid ) {
+		$user = false;
+
+		if ( ! username_exists( 'wx-' . $openid ) ) {
+			$maybe_users = get_users(
+				array(
+					'meta_key'    => 'wx_openid',
+					'meta_value'  => $openid,
+					'number'      => 1,
+					'count_total' => false,
+				)
+			);
+
+			if ( ! empty( $maybe_users ) ) {
+				$user = reset( $maybe_users );
+			}
+		} else {
+			$user = get_user_by( 'login', 'wx-' . $openid );
+		}
+
+		return $user;
+	}
+
+	public static function get_user_by_unionid( $unionid ) {
+		$user        = false;
+		$maybe_users = get_users(
+			array(
+				'meta_key'    => 'wx_unionid',
+				'meta_value'  => $unionid,
+				'number'      => 1,
+				'count_total' => false,
+			)
+		);
+
+		if ( ! empty( $maybe_users ) ) {
+			$user = reset( $maybe_users );
+		}
+
+		return $user;
 	}
 
 	public static function format_emoji( $text ) {
@@ -307,13 +349,9 @@ class WP_Weixin {
 
 	public function filter_wechat_get_user_meta( $check, $object_id, $meta_key, $single ) {
 
-		if ( 'wx_openid' === $meta_key ) {
+		if ( 'wp_weixin_openid' === $meta_key && ! WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
 
-			if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
-				$meta = get_user_meta( $object_id, 'wp_weixin_openid', $single );
-			} else {
-				$meta = filter_input( INPUT_COOKIE, 'wx_openId', FILTER_SANITIZE_STRING );
-			}
+			$meta = filter_input( INPUT_COOKIE, 'wx_openId', FILTER_SANITIZE_STRING );
 
 			return $meta;
 		}
@@ -334,13 +372,8 @@ class WP_Weixin {
 
 	public function filter_wechat_update_user_meta( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
 
-		if ( 'wx_openid' === $meta_key ) {
-
-			if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
-				$result = update_user_meta( $object_id, 'wp_weixin_openid', $meta_value, $prev_value );
-			} else {
-				$result = setcookie( 'wx_openId', $meta_value );
-			}
+		if ( 'wp_weixin_openid' === $meta_key && ! WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
+			$result = setcookie( 'wx_openId', $meta_value );
 
 			return $result;
 		}

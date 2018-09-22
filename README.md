@@ -142,6 +142,32 @@ Wether the visitor is using the WeChat browser.
 **Return value**  
 > (bool) true if using the WeChat browser, false otherwise
 
+```php
+wp_weixin_get_user_by_openid( string $openid );
+```  
+
+**Description**  
+Get a WordPress user by WeChat openid.  
+
+**Parameters**  
+> (string) A WeChat openid.
+
+**Return value**  
+> (mixed) a WP_User if a WordPress user with a corresponding WeChat openid exists, false otherwise
+
+```php
+wp_weixin_get_user_by_unionid( string $openid );
+```  
+
+**Description**  
+Get a WordPress user by WeChat unionid.  
+
+**Parameters**  
+> (string) A WeChat unionid.
+
+**Return value**  
+> (mixed) a WP_User if a WordPress user with a corresponding WeChat unionid exists, false otherwise
+
 ## Hooks - actions & filters
 
 WP Weixin gives developers the possibilty to customise its behavior with a series of custom actions and filters. 

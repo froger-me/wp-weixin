@@ -38,13 +38,13 @@ class WP_Weixin_Wechat_Singleton {
 		$requesting_token = get_transient( 'wp_weixin_requesting_token' );
 
 		if ( ! $requesting_token && ! is_ajax() ) {
-			set_transient( 'wp_weixin_requesting_token', true );
+			set_transient( 'wp_weixin_requesting_token', true, 60 );
 
 			$access_token = self::$wechat->getAccessToken( true );
 			$token_expiry = self::$wechat->getAccessTokenExpiry();
 
 			self::save_access_info( $access_token, $token_expiry );
-			set_transient( 'wp_weixin_requesting_token', false );
+			set_transient( 'wp_weixin_requesting_token', false, 60 );
 		}
 	}
 

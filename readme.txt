@@ -45,6 +45,10 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.4 =
+* Add transient expiry to avoid deadlocks on somehow corrupted databases
+* Add possibility to get WordPress users by openid and unionid
+
 = 1.0.3 =
 * Ensure compatibility with [Open Social](https://wordpress.org/plugins/open-social/)
 * Improve formatting

@@ -34,7 +34,7 @@ class WP_Weixin_Auth {
 
 	public static function is_auth_needed() {
 		$needs_auth = WP_Weixin_Settings::get_option( 'force_wechat' );
-		$needs_auth = apply_filters( 'wp_weixin_auth_needed', $needs_auth );
+		$needs_auth = apply_filters( 'wp_weixin_auth_needed', $needs_auth || WP_Weixin::is_wechat_mobile() );
 
 		return $needs_auth;
 	}
@@ -50,8 +50,15 @@ class WP_Weixin_Auth {
 			add_action( 'template_redirect', array( $this, 'show_browser_qr' ), 0, 0 );
 		}
 
-		if ( isset( $_GET['code'] ) && is_plugin_active( 'open-social/open-social.php' ) ) { //@codingStandardsIgnoreLine
-			unset( $_GET['code'] );
+		if ( is_plugin_active( 'open-social/open-social.php' ) ) {
+
+			if ( isset( $_GET['code'] ) ) { //@codingStandardsIgnoreLine
+				unset( $_GET['code'] );
+			}
+
+			if ( isset( $_GET['state'] ) ) { //@codingStandardsIgnoreLine
+				unset( $_GET['state'] );
+			}
 		}
 	}
 
@@ -165,7 +172,7 @@ class WP_Weixin_Auth {
 		$follower_cookie       = $recently_unsubscribed ? false : filter_input( INPUT_COOKIE, 'wx_follower' );
 
 		if ( ! $follower_cookie ) {
-			$is_follower = $this->wechat->follower( get_user_meta( $user_id, 'wx_openid', true ) );
+			$is_follower = $this->wechat->follower( get_user_meta( $user_id, 'wp_weixin_openid', true ) );
 
 			if ( ! $is_follower ) {
 				global $wp;
@@ -185,7 +192,7 @@ class WP_Weixin_Auth {
 				if ( ! $qr_url ) {
 					$qr_url = $this->wechat->getQRUrl( 1, false, 0, 'wp_wexin_subscribe' );
 
-					set_transient( 'wp_weixin_subscribe_url', $qr_url );
+					set_transient( 'wp_weixin_subscribe_url', $qr_url, 3600 );
 				}
 
 				$this->set_subscribe_image_base64_src( $qr_url );
@@ -202,7 +209,7 @@ class WP_Weixin_Auth {
 	public function force_logout( $request_data ) {
 
 		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'unsubscribe' === $request_data['event'] ) {
-			$user = get_user_by( 'login', 'wx-' . $request_data['fromusername'] );
+			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
 
 			if ( $user ) {
 				$sessions = WP_Session_Tokens::get_instance( $user->ID );
@@ -250,22 +257,22 @@ class WP_Weixin_Auth {
 		$this->expire_length = $oauth_access_token_info['expires_in'];
 
 		if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
-			$user = get_user_by( 'login', 'wx-' . $openid );
+			$user = WP_Weixin::get_user_by_openid( $openid );
 
-			if ( ! username_exists( 'wx-' . $openid ) ) {
-				$user_id = $this->register_user( $openid, $access_token, $refresh_token );
+			if ( ! $user ) {
+				$user = $this->register_user( $openid, $access_token, $refresh_token );
 			} else {
-				$user_id = $this->update_user_info( $access_token, $openid );
+				$user = $this->update_user_info( $access_token, $openid, $user );
 			}
 
-			wp_set_current_user( $user_id, 'wx-' . $openid );
-			wp_set_auth_cookie( $user_id );
+			wp_set_current_user( $user->ID, $user->user_login );
+			wp_set_auth_cookie( $user->ID );
 		}
 
 		setcookie( 'wx_openId', $openid, current_time( 'timestamp' ) + (int) $this->expire_length );
 	}
 
-	private function update_user_info( $access_token, $openid ) {
+	private function update_user_info( $access_token, $openid, $user ) {
 		$user_info = $this->wechat->getOauthUserInfo( $access_token, $openid );
 		$result    = false;
 
@@ -284,11 +291,8 @@ class WP_Weixin_Auth {
 				$avatar = substr( $avatar, 0, -2 ) . '/132';
 			}
 
-			$user = get_user_by( 'login', 'wx-' . $user_info['openid'] );
-
 			$user_data = array(
 				'ID'           => $user->ID,
-				'user_login'   => 'wx-' . $user_info['openid'],
 				'display_name' => WP_Weixin::format_emoji( $user_info['nickname'] ),
 				'user_pass'    => $user_info['openid'],
 				'nickname'     => WP_Weixin::format_emoji( $user_info['nickname'] ),
@@ -302,8 +306,10 @@ class WP_Weixin_Auth {
 			}
 
 			update_user_meta( $user_id, 'wp_weixin_rawdata', wp_json_encode( $user_info ) );
+			update_user_meta( $user_id, 'wx_openid', $user_info['openid'] );
+			update_user_meta( $user_id, 'wx_unionid', $user_info['unionid'] );
 
-			$result = $user_id;
+			$result = $user;
 		}
 
 		return $result;
@@ -353,8 +359,10 @@ class WP_Weixin_Auth {
 		}
 
 		update_user_meta( $user_id, 'wp_weixin_rawdata', wp_json_encode( $user_info ) );
+		update_user_meta( $user_id, 'wx_openid', $user_info['openid'] );
+		update_user_meta( $user_id, 'wx_unionid', $user_info['unionid'] );
 
-		return $user_id;
+		return get_user_by( 'ID', $user_id );
 	}
 
 	private function auth_refresh( $user_id ) {

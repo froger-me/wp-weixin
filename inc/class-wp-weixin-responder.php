@@ -55,7 +55,7 @@ class WP_Weixin_Responder {
 			$user = get_user_by( 'login', 'wx-' . $request_data['fromusername'] );
 
 			if ( $user ) {
-				$openid = get_user_meta( $user->ID, 'wx_openid', true );
+				$openid = get_user_meta( $user->ID, 'wp_weixin_openid', true );
 				$openid = $openid ? $openid : $_COOKIE['wx_openId'];
 				$openid = $openid ? $openid : '';
 
