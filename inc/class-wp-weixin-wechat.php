@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin_Wechat {
 
-	private $wechat;
+	protected $wechat;
 
 	public function __construct( $wechat ) {
 		$this->wechat = $wechat;

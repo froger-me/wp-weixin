@@ -2,6 +2,7 @@
 # WP Weixin - WordPress WeChat integration
 
 * [General description](#user-content-general-description)
+	* [Important notes](#user-content-important-notes)
 	* [Overview](#user-content-overview)
 	* [Screenshots](#user-content-screenshots)
 	* [Object Cache considerations](#user-content-object-cache-considerations)
@@ -21,8 +22,12 @@
 
 ## General Description
 
-WP Weixin enables integration between WordPress and WeChat. It is fully functional as a standalone plugin, and also acts as a core for [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension. It is also a library for WordPress developers to build their own integration with WeChat.  
-It can be used with both Official Subscription Account and Official Service Account.
+WP Weixin enables integration between WordPress and WeChat. It is fully functional as a standalone plugin, and acts as a core for [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension.
+
+### Important notes
+
+* Although the plugin does provide really useful functionalities out of the box, such as WeChat authentication and Official Account menu integration, it really shines when used by developers to extend its functionalities (mainly through the pre-initialised JS SDK, the WeChat Responder, and various actions and filters).
+* The plugin does not support multisite at this stage, and is to be used with a China Mainland WeChat Official Account (Subscription or Service - Service is required if used with companion plugins dealing with payments).
 
 ### Overview
 
@@ -32,17 +37,15 @@ This plugin adds the following major features to WordPress:
 * **WeChat Share:** Share posts and pages on Moments or Send to chat, in a pretty way. Triggers javascript events for developers on success and failure.
 * **WeChat JS_SDK:** the `wx` global variable is pre-configured with a signed package to leverage the javascript SDK of WeChat in WordPress themes more easily. 
 * **WP Weixin QR code generator:** to create custom codes.
-* **WeChat Authentication:** to automatically create and authenticate a user in WordPress.
+* **WeChat Authentication:** to automatically create and authenticate users in WordPress on WeChat browser, or allow users to scan a QR code with WeChat when using other browsers (social login).
 * **Force WeChat mobile:** to prevent users from browsing the website outside of WeChat. If accessed with an other browser, the page displays a QR code.
 * **WeChat Responder:** acts as an API for developers to receive and respond to calls made by WeChat.
 * **Force following the Official Account:** to harvest WeChat followers, forcing users to follow the Official Account before accessing the content.
 * **Welcome message:** sends a welcome message in WeChat when a user follows the Official Account ; allows to do so with WordPress when the WeChat Responder is enabled.
 * **Menu integration:** allows to set the Official Account menus in WordPress when the WeChat Responder is enabled.
-* **Proxy (beta):** use a proxy to connect to WeChat.
 * **WordPress Users screen override:** to display WeChat names and WeChat avatars if they exist, instead of the default values in the user screen.
 
-Developers can also build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.
-
+Developers are encouraged to build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.  
 ### Screenshots
 
 <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-welcome-default.png" alt="Welcome default message" width="30%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-force-wechat-mobile.png" alt="Force WeChat mobile" width="65%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-settings.png" alt="WP Weixin Settings" width="100%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-responder-settings.png" alt="WP Weixin Responder settings" width="100%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-misc-settings.png" alt="WP Weixin Miscellaneous settings" width="100%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-qr-generator.png" alt="WP Weixin QR code generator" width="42%"> <img src="https://froger.me/wp-content/uploads/2018/04/wp-weixin-users-screen.png" alt="WP Weixin Users screen" width="55%"> 
@@ -118,7 +121,7 @@ Name                                             | Type     | Description
 ------------------------------------------------ |:--------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Show WeChat name and pictures in Users list page | checkbox | Override the display of the WordPress account names and avatars.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 Official Account menu language awareness         | checkbox | Customise the menu of the Official Account depending on user's language. By default, the language of the menu corresponding to the website's default language is used.<br/>This setting is only available if WPML is activated.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter( 'wp_weixin_get_access_info', $access_info, 10, 0 );`</li><li>`add_action( 'wp_weixin_save_access_info', $access_info, 10, 1 );`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `4` or less.<br/>Useful to avoid a race condition if the access_token information needs to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the WordPress options table in the database.
+Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter( 'wp_weixin_get_access_info', $access_info, 10, 0 );`</li><li>`add_action( 'wp_weixin_save_access_info', $access_info, 10, 1 );`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `5` or less.<br/>Useful to avoid a race condition if the access_token information needs to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the WordPress options table in the database.
 
 ## Go PRO!
 
@@ -339,12 +342,11 @@ ___
 apply_filters( 'wp_weixin_get_access_info', array $access_info );
 ```
 
-Filters the access_token and expiry when requesting the WeChat object if custom persistence is used - particularly useful to avoid a race condition if the access_token needs to be shared between multiple platforms.
+Filter the access_token and expiry when requesting the WeChat object if custom persistence is used - particularly useful to avoid a race condition if the access_token needs to be shared between multiple platforms.
 
 **Parameters**  
 $access_info
 > (array) The access information in an associative array. Keys are `token` and `expiry`.
-
 ___
 
 ```php
@@ -352,17 +354,67 @@ apply_filters( 'wp_weixin_jsapi_urls', array $jsapi_urls );
 ```
 
 As an effect only if [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and/or [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension is activated.  
-Filters the URLs necessary to register on the WeChat merchant account's API configuration screen - particularly useful if another plugin implements some sort of custom checkout page with a URL not registered in WooCommerce.
+Filter the URLs necessary to register on the WeChat merchant account's API configuration screen - particularly useful if another plugin implements some sort of custom checkout page with a URL not registered in WooCommerce.
 
 **Parameters**  
 $jsapi_urls
 > (array) The URLs to register on the WeChat merchant account's API configuration screen.
+___
 
+```php
+apply_filters( 'wp_weixin_auth_redirect', $redirect, $auth, $has_error );
+```
+
+Filter the url to redirect to when QR code authentication in classic browsers is performed.
+
+**Parameters**  
+$redirect
+> (mixed) The url to redirect to when authentication is performed, or false if no redirect. Default is `home_ulr( '/' )` in case of successful authentication.  
+
+$auth
+> (bool) Wether the authentication was a performed - `true` if successful, `false` if an error occurred.  
+
+$has_error
+> (bool) Wether an error occurred.  
+___
+
+```php
+apply_filters( 'wp_weixin_auth_heartbeat_frequency', $frequency );
+```
+
+Filter the frequency of the checks when performing QR code authentication in classic browsers.
+
+**Parameters**  
+$frequency
+> (int) The frequency in milliseconds. Default `1000`.  
+___
+
+```php
+apply_filters( 'wp_weixin_auth_qr_cleanup_frequency', $frequency );
+```
+
+Filter the frequency to clean up expired authentication QR code data.
+
+**Parameters**  
+$frequency
+> (string) The frequency. Default `'hourly'`.  
+___
+
+```php
+apply_filters( 'wp_weixin_auth_qr_lifetime', $lifetime );
+```
+
+Filter the lifetime of an authentication QR code.
+
+**Parameters**  
+$lifetime
+> (int) The lifetime in seconds. Default `600`.  
 ___
 
 ## Templates
 
-The following plugin files are included using `locate_template()` function of WordPress. This means they can be overloaded in the active WordPress theme if a file with the same name exists at the root of the theme.
+The following plugin files are included using `locate_template()` function of WordPress. This means they can be overloaded in the active WordPress theme if a file with the same name exists at the root of the theme.  
+The style applied to this template is in `wp-weixin/css/main.css`.
 ___
 
 ```
@@ -373,10 +425,7 @@ wp-weixin-subscribe.php
 The template of the page displaying the QR code to follow the Official Account.  
 
 **Variables**  
-No variable is provided to this template by default: it uses the `wp_weixin_subscribe_src` filter to get the source of the QR code image.
-
-**Associated styles**  
-`wp-weixin/css/main.css`  
+None. It uses the `wp_weixin_subscribe_src` filter to get the source of the QR code image.
 
 ___
 
@@ -388,9 +437,46 @@ wp-weixin-browser-qr.php
 The template of the page displaying the QR code when the website is accessible only through the WeChat browser.  
 
 **Variables**  
-No variable is provided to this template by default: it uses the `wp_weixin_browser_page_qr_src` filter to get the source of the QR code image.
+None. It uses the `wp_weixin_browser_page_qr_src` filter to get the source of the QR code image.
 
 ___
+
+```
+wp-weixin-auth-form-link.php
+```  
+
+**Description**  
+The template of the link displayed below the login, registration and forgot password forms.  
+
+**Variables**  
+None.
+
+___
+
+```
+wp-weixin-auth-page.php
+```  
+
+**Description**  
+The template of the WeChat screen displayed for QR code authentication in classic browsers.  
+
+**Variables**  
+None.
+
+___
+
+```
+wp-weixin-mobile-auth-check.php
+```  
+
+**Description**  
+The template of the WeChat mobile browser screen displayed when authenticating via QR code authentication in classic browsers.  
+
+**Variables**  
+$auth_qr_data
+(array) Data related to the authentication. Value type and keys: (bool) `auth`, (int) `user_id`, (array) `error`, (bool|string) `redirect`. The `redirect` value is not actually used for redirection by default on mobile (used after authentication on desktop).
+___
+
 
 ## Javascript
 

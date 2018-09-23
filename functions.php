@@ -31,6 +31,7 @@ if ( ! function_exists( 'wp_weixin_get_user_by_unionid' ) ) {
 if ( ! function_exists( 'is_ajax' ) ) {
 
 	function is_ajax() {
+
 		return defined( 'DOING_AJAX' );
 	}
 }

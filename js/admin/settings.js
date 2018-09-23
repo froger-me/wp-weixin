@@ -114,7 +114,7 @@ jQuery(document).ready(function($) {
 			};
 		}
 
-		data.action = 'wp_weixin_get_qr';
+		data.action = 'wp_weixin_get_settings_qr';
 
 		$.ajax({
 			url: WpWeixin.ajax_url,

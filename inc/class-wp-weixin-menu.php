@@ -6,8 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin_Menu {
 
-	private $wechat;
-	private $published;
+	protected $wechat;
+	protected $published;
 
 	public function __construct( $wechat, $init_hooks = false ) {
 
@@ -40,7 +40,7 @@ class WP_Weixin_Menu {
 	public function add_admin_scripts( $hook ) {
 
 		if ( 'nav-menus.php' === $hook ) {
-			$debug   = apply_filters( 'wp_weixin_debug', false );
+			$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 			$js_ext  = ( $debug ) ? '.js' : '.min.js';
 			$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'js/admin/menu' . $js_ext );
 
@@ -198,7 +198,7 @@ class WP_Weixin_Menu {
 					}
 				}
 
-				if ( apply_filters( 'wp_weixin_debug', false ) ) {
+				if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
 					error_log( print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
 				}
 
@@ -211,7 +211,7 @@ class WP_Weixin_Menu {
 					$this->wechat->menu_delete();
 				}
 
-				if ( apply_filters( 'wp_weixin_debug', false ) ) {
+				if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
 					error_log( print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
 				}
 			}
@@ -307,10 +307,10 @@ class WP_Weixin_Menu {
 	}
 
 	/*******************************************************************
-	 * Private methods
+	 * Protected methods
 	 *******************************************************************/
 
-	private function save_nav_menu_data( $menu_id = 0, $menu_data = array() ) {
+	protected function save_nav_menu_data( $menu_id = 0, $menu_data = array() ) {
 		$menu_id     = (int) $menu_id;
 		$items_saved = array();
 
@@ -361,7 +361,7 @@ class WP_Weixin_Menu {
 		return $items_saved;
 	}
 
-	private function save_nav_menu_item( $menu_id = 0, $menu_item_db_id = 0, $menu_item_data = array() ) {
+	protected function save_nav_menu_item( $menu_id = 0, $menu_item_db_id = 0, $menu_item_data = array() ) {
 		$menu_id         = (int) $menu_id;
 		$menu_item_db_id = (int) $menu_item_db_id;
 

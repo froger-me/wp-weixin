@@ -1,7 +1,97 @@
-/* global wx, WP_Weixin */
-/* jshint ignore:start */
+/* global wx, WP_Weixin, console */
 jQuery(function($) {
-/* jshint ignore:end */
+
+    $(document).ready(function() {
+        if ( $('.wechat-auth').length ) {
+            get_auth_qr_code();
+        
+            $('.refresh').on('click', function(e) {
+                e.preventDefault();
+                get_auth_qr_code();
+            });
+
+            window.registerAuthScanSuccessListener(handleScanSuccess);
+            window.registerAuthScanFailureListener(handleScanFailure);
+            window.registerAuthBeatSuccessListener(handleBeatSuccess);
+            window.registerAuthBeatFailureListener(handleBeatFailure);
+        }
+
+        function get_auth_qr_code() {
+            var data      = {
+                    nonce: $('#auth_qr_nonce').val(),
+                    action: 'wp_weixin_get_auth_qr'
+                },
+                img       = $('.auth-qr-code'),
+                hashField = $('#auth_hash');
+
+            $.ajax({
+                url: WP_Weixin.ajax_url,
+                type: 'POST',
+                data: data
+            }).done(function(response) {
+
+                if (response.success) {
+                    img.attr('src', response.data.qrSrc);
+                    img.css('visibility', 'visible');
+                    hashField.val(response.data.hash);
+                    $('.desktop-qr-content .message').show();
+                    $('.waiting').show();
+                    window.authListenerStart();
+                } else {
+                    img.css('visibility', 'hidden');
+                    img.attr('src', '');
+                    hashField.val('');
+                    window.authListenerStop();
+                }
+            }).fail(function(qXHR, textStatus) {
+                WP_Weixin.debug && window.console.log(textStatus);
+            });
+        }
+
+        function handleScanSuccess(data) {
+            $('.waiting').hide();
+            $('.success').show();
+            WP_Weixin.debug && console.log(data);
+
+            if (data.redirect) {
+                $('.success .redirect-message').show();
+                setTimeout(function() {
+                    window.location = data.redirect;
+                }, 4000);
+            }
+        }
+
+        function handleScanFailure(data) {
+            $('.waiting').hide();
+            $('.failure').show();
+            $('.error').show();
+            $('.auth-qr-code').css('visibility', 'hidden');
+            $.each(data.error, function(idx, value) {
+                $('.error').append('<br/>' + value + '<br/>');
+            });
+            WP_Weixin.debug && console.log(data);
+
+            if (data.redirect) {
+                $('.failure .redirect-message').show();
+                setTimeout(function() {
+                    window.location = data.redirect;
+                }, 4000);
+            }
+        }
+
+        function handleBeatSuccess(data) {
+            $('.network-on').show();
+            $('.network-off').hide();
+            WP_Weixin.debug && console.log(data);
+        }
+
+        function handleBeatFailure(data) {
+            $('.network-on').hide();
+            $('.network-off').show();
+            WP_Weixin.debug && console.log(data);
+        }
+    });
+
     window.wpWeixinShareTimelineSuccessTrigger = function(data) {
         window.wpWeixinShareTimelineSuccess = new CustomEvent('wpWeixinShareTimelineSuccess', {'detail' : data});
         window.dispatchEvent(window.wpWeixinShareTimelineSuccess);
@@ -100,6 +190,11 @@ jQuery(function($) {
 
     wx.ready(function() {
 
+        $('.wechat-close').on('click', function(e) {
+            e.preventDefault();
+            wx.closeWindow();
+        });
+
         if (WP_Weixin.share) {
             wx.onMenuShareTimeline({
                 title: WP_Weixin.share.title,
@@ -127,6 +222,4 @@ jQuery(function($) {
             });
         }
     });
-/* jshint ignore:start */
 });
-/* jshint ignore:end */

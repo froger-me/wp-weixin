@@ -6,10 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin_Settings {
 
-	private $settings_fields;
-	private $settings;
+	protected $settings_fields;
+	protected $settings;
 
-	private static $error;
+	protected static $error;
 
 	const MAX_JSAPI_URLS = 5;
 
@@ -32,8 +32,7 @@ class WP_Weixin_Settings {
 			// Parse the endpoint request
 			add_action( 'parse_request', array( $this, 'parse_request' ), 0, 0 );
 			// Add QR code generation ajax callback
-			add_action( 'wp_ajax_wp_weixin_get_qr', array( $this, 'get_qr' ), 10, 0 );
-			add_action( 'wp_ajax_nopriv_wp_weixin_get_qr', array( $this, 'get_qr' ), 10, 0 );
+			add_action( 'wp_ajax_wp_weixin_get_settings_qr', array( $this, 'get_qr_hash' ), 10, 0 );
 
 			// Add settings pages query vars
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0, 1 );
@@ -125,7 +124,7 @@ class WP_Weixin_Settings {
 	public function add_admin_scripts( $hook ) {
 
 		if ( 'toplevel_page_wp-weixin' === $hook ) {
-			$debug   = apply_filters( 'wp_weixin_debug', false );
+			$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 			$js_ext  = ( $debug ) ? '.js' : '.min.js';
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
 			$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'js/admin/settings' . $js_ext );
@@ -222,7 +221,7 @@ class WP_Weixin_Settings {
 		self::output_get_qrcode( $url, 5, 2, QR_ECLEVEL_L );
 	}
 
-	public function get_qr() {
+	public function get_qr_hash() {
 		$amount           = filter_input( INPUT_POST, 'amount', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
 		$fixed            = filter_input( INPUT_POST, 'fixed', FILTER_VALIDATE_BOOLEAN );
 		$product_name     = filter_input( INPUT_POST, 'productName', FILTER_SANITIZE_STRING );
@@ -266,10 +265,10 @@ class WP_Weixin_Settings {
 	}
 
 	/*******************************************************************
-	 * Private methods
+	 * Protected methods
 	 *******************************************************************/
 
-	private function build_settings_fields() {
+	protected function build_settings_fields() {
 		global $sitepress;
 
 		$jsapi_urls       = array();
@@ -622,7 +621,7 @@ class WP_Weixin_Settings {
 		}
 	}
 
-	private function get_input_text_option( $key, $class ) {
+	protected function get_input_text_option( $key, $class ) {
 		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
 		$input  = '<input type="text" name="wp_weixin_settings[wp_weixin_' . $key . ']" value="';
 		$input .= isset( $this->settings[ $key ] ) ? $this->settings[ $key ] : '';
@@ -631,7 +630,7 @@ class WP_Weixin_Settings {
 		return $input;
 	}
 
-	private function get_input_checkbox_option( $key, $class ) {
+	protected function get_input_checkbox_option( $key, $class ) {
 		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
 		$input  = '<input type="checkbox" name="wp_weixin_settings[wp_weixin_' . $key . ']" value="1" ';
 		$input .= ( isset( $this->settings[ $key ] ) && $this->settings[ $key ] ) ? 'checked' : '';
@@ -640,7 +639,7 @@ class WP_Weixin_Settings {
 		return $input;
 	}
 
-	private function field_render( $key ) {
+	protected function field_render( $key ) {
 
 		if ( $this->get_field_attr( $key, 'type' ) === 'text' ) {
 			echo $this->get_input_text_option( $key, $this->get_field_attr( $key, 'class' ) ); // @codingStandardsIgnoreLine
@@ -655,11 +654,11 @@ class WP_Weixin_Settings {
 		}
 	}
 
-	private function section_render( $key ) {
+	protected function section_render( $key ) {
 		echo $this->settings_fields[ $key ]['description']; // @codingStandardsIgnoreLine
 	}
 
-	private function get_field_attr( $key, $attr ) {
+	protected function get_field_attr( $key, $attr ) {
 
 		foreach ( $this->settings_fields as $section ) {
 
@@ -675,7 +674,7 @@ class WP_Weixin_Settings {
 		return false;
 	}
 
-	private static function output_get_qrcode( $url, $size = 4, $margin = 4, $quality = QR_ECLEVEL_H ) {
+	protected static function output_get_qrcode( $url, $size = 4, $margin = 4, $quality = QR_ECLEVEL_H ) {
 
 		if ( ! empty( $url ) ) {
 			ob_start();

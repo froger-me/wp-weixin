@@ -115,7 +115,7 @@
  */
      
     define('QR_CACHEABLE', false);       // use cache - more disk reads but less CPU power, masks and format templates are stored there
-    // define('QR_CACHE_DIR', false);       // used when QR_CACHEABLE === true
+    define('QR_CACHE_DIR', false);       // used when QR_CACHEABLE === true
     define('QR_LOG_DIR', false);         // default error logs dir   
     
     define('QR_FIND_BEST_MASK', true);                                                          // if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code

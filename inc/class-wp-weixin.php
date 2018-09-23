@@ -6,8 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin {
 
-	private $wechat;
-	private $meta_keys;
+	protected $wechat;
+	protected $meta_keys;
 
 	public function __construct( $wechat, $init_hooks = false ) {
 
@@ -210,7 +210,7 @@ class WP_Weixin {
 	public function add_frontend_scripts() {
 
 		if ( ! is_admin() ) {
-			$debug   = apply_filters( 'wp_weixin_debug', false );
+			$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
 
 			$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'css/main' . $css_ext );
@@ -226,9 +226,10 @@ class WP_Weixin {
 				$js_ext  = ( $debug ) ? '.js' : '.min.js';
 				$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'js/main' . $js_ext );
 				$params  = array(
-					'weixin' => $this->wechat->get_signed_package(),
-					'debug'  => $debug,
-					'share'  => false,
+					'weixin'   => $this->wechat->get_signed_package(),
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+					'debug'    => $debug,
+					'share'    => false,
 				);
 
 				$queried_object = get_queried_object();
@@ -429,10 +430,10 @@ class WP_Weixin {
 	}
 
 	/*******************************************************************
-	 * Private methods
+	 * Protected methods
 	 *******************************************************************/
 
-	private function build_username_cell( $user_id ) { // @codingStandardsIgnoreLine
+	protected function build_username_cell( $user_id ) { // @codingStandardsIgnoreLine
 		$user_object = get_user_by( 'ID', $user_id );
 		$edit_link   = esc_url( add_query_arg( 'wp_http_referer', rawurlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ), get_edit_user_link( $user_object->ID ) ) );
 
@@ -448,7 +449,7 @@ class WP_Weixin {
 		return $cell;
 	}
 
-	private function cleanup_wechat_info( $string ) { // @codingStandardsIgnoreLine
+	protected function cleanup_wechat_info( $string ) { // @codingStandardsIgnoreLine
 		$regex  = '/u[[:xdigit:]]{4}/';
 		$string = preg_replace( '/(u[[:xdigit:]]{4})/', '\\\$1', $string );
 		$string = json_decode( sprintf( '"%s"', $string ) );

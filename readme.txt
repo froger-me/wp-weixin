@@ -12,8 +12,12 @@ WordPress WeChat integration
 
 == Description ==
 
-WP Weixin enables integration between WordPress and WeChat. It is fully functional as a standalone plugin, and also acts as a core for [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension. It is also a library for WordPress developers to build their own integration with WeChat.  
-It can be used with both Official Subscription Account and Official Service Account.
+WP Weixin enables integration between WordPress and WeChat. It is fully functional as a standalone plugin, and acts as a core for [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension.
+
+### Important notes
+
+* Although the plugin does provide really useful functionalities out of the box, such as WeChat authentication and Official Account menu integration, it really shines when used by developers to extend its functionalities (mainly through the pre-initialised JS SDK, the WeChat Responder, and various actions and filters).
+* The plugin does not support multisite at this stage, and is to be used with a China Mainland WeChat Official Account (Subscription or Service - Service is required if used with companion plugins dealing with payments).
 
 ### Overview
 
@@ -23,7 +27,7 @@ This plugin adds the following major features to WordPress:
 * **WeChat Share:** Share posts and pages on Moments or Send to chat, in a pretty way. Triggers javascript events for developers on success and failure.
 * **WeChat JS_SDK:** the `wx` global variable is pre-configured with a signed package to leverage the javascript SDK of WeChat in WordPress themes more easily. 
 * **WP Weixin QR code generator:** to create custom codes.
-* **WeChat Authentication:** to automatically create and authenticate a user in WordPress.
+* **WeChat Authentication:** to automatically create and authenticate users in WordPress on WeChat browser, or allow users to scan a QR code with WeChat when using other browsers (social login).
 * **Force WeChat mobile:** to prevent users from browsing the website outside of WeChat. If accessed with an other browser, the page displays a QR code.
 * **WeChat Responder:** acts as an API for developers to receive and respond to calls made by WeChat.
 * **Force following the Official Account:** to harvest WeChat followers, forcing users to follow the Official Account before accessing the content.
@@ -31,7 +35,7 @@ This plugin adds the following major features to WordPress:
 * **Menu integration:** allows to set the Official Account menus in WordPress when the WeChat Responder is enabled.
 * **WordPress Users screen override:** to display WeChat names and WeChat avatars if they exist, instead of the default values in the user screen.
 
-Developers can also build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.  
+Developers are encouraged to build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.  
 
 For more information, see [the full documentation](https://github.com/froger-me/wp-weixin).
 
@@ -44,6 +48,11 @@ This section describes how to install the plugin and get it working.
 3. Edit plugin settings
 
 == Changelog ==
+
+= 1.1 =
+* Add WeChat authentication for browsers by using temporary, secure QR codes (social login)
+* Cleanup and minor refactor
+* Added 2 functions, 4 filters, 3 templates
 
 = 1.0.4 =
 * Add transient expiry to avoid deadlocks on somehow corrupted databases

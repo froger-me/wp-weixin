@@ -6,9 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin_Auth {
 
-	private $expire_length;
-	private $wechat;
-	private $qr_subscribe_src;
+	const MAX_QR_LIFETIME = 600;
+
+	protected $expire_length;
+	protected $wechat;
+	protected $qr_subscribe_src;
+	protected $doing_wechat_auth = false;
+	protected $auth_qr_data;
 
 	public function __construct( $wechat, $init_hooks = false ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -20,6 +24,22 @@ class WP_Weixin_Auth {
 			add_action( 'init', array( $this, 'manage_auth' ), -99, 0 );
 			// Logout when unsubscribed
 			add_action( 'wp_weixin_responder', array( $this, 'force_logout' ), -99, 1 );
+
+			if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
+				// Add the API endpoints
+				add_action( 'init', array( $this, 'add_endpoints' ), 0, 0 );
+				// Parse the endpoint request
+				add_action( 'parse_request', array( $this, 'parse_request' ), 10, 0 );
+				// Add QR code generation ajax callback
+				add_action( 'wp_ajax_nopriv_wp_weixin_get_auth_qr', array( $this, 'get_qr_src' ), 10, 0 );
+				// Add QR code heartbeat ajax callback
+				add_action( 'wp_ajax_nopriv_wp_weixin_auth_heartbeat_pulse', array( $this, 'heartbeat_pulse' ), 10, 0 );
+				// Add link to WeChat qr authentication page
+				add_action( 'login_footer', array( $this, 'login_form_link' ), 10, 1 );
+				// Schedule WeChat auth qr cleanup
+				add_action( 'init', array( $this, 'register_auth_qr_cleanup' ), 10, 0 );
+				add_action( 'wp_weixin_auth_qr_cleanup', array( $this, 'auth_qr_cleanup' ), 10, 0 );
+			}
 
 			// Detemine where wechat authentication is needed
 			add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), -99, 1 );
@@ -35,6 +55,70 @@ class WP_Weixin_Auth {
 	public static function is_auth_needed() {
 		$needs_auth = WP_Weixin_Settings::get_option( 'force_wechat' );
 		$needs_auth = apply_filters( 'wp_weixin_auth_needed', $needs_auth || WP_Weixin::is_wechat_mobile() );
+
+		return $needs_auth;
+	}
+
+	public function add_endpoints() {
+		add_rewrite_rule( '^wp-weixin/wechat-auth$', 'index.php?__wp_weixin_api=1&action=wechat-auth', 'top' );
+		add_rewrite_rule( '^wp-weixin/wechat-auth-qr/hash/(.*)$', 'index.php?__wp_weixin_api=1&action=wechat-auth-qr&hash=$matches[1]', 'top' );
+		add_rewrite_rule( '^wp-weixin/wechat-auth-validate/hash/(.*)$', 'index.php?__wp_weixin_api=1&action=wechat-auth-validate&hash=$matches[1]', 'top' );
+	}
+
+	public function parse_request() {
+		global $wp;
+
+		if ( ! $this->doing_wechat_auth && isset( $wp->query_vars['__wp_weixin_api'] ) ) {
+			$action = $wp->query_vars['action'];
+
+			if ( 'wechat-auth' === $action ) {
+				add_action( 'template_redirect', array( $this, 'wechat_auth_page' ), 0, 0 );
+			}
+
+			if ( 'wechat-auth-qr' === $action ) {
+				$hash   = isset( $wp->query_vars['hash'] ) ? $wp->query_vars['hash'] : false;
+				$bundle = explode( '|', base64_decode( $hash ) ); // @codingStandardsIgnoreLine
+				$nonce  = array_pop( $bundle );
+				$qr_id  = array_pop( $bundle );
+
+				if ( ! wp_verify_nonce( $nonce, 'qr_code' ) ) {
+
+					exit();
+				}
+
+				WP_Weixin_Settings::get_qrcode( home_url( 'wp-weixin/wechat-auth-validate/hash/' . $qr_id ) );
+			}
+
+			if ( 'wechat-auth-validate' === $action ) {
+				$qr_id = isset( $wp->query_vars['hash'] ) ? $wp->query_vars['hash'] : false;
+
+				$this->check_wechat_qr_auth( $qr_id );
+			}
+		}
+	}
+
+	public function register_auth_qr_cleanup() {
+		$hook = 'wp_weixin_auth_qr_cleanup';
+
+		if ( ! wp_next_scheduled( $hook ) ) {
+			$frequency = apply_filters( 'wp_weixin_auth_qr_cleanup_frequency', 'hourly' );
+			$timestamp = current_time( 'timestamp' );
+
+			wp_schedule_event( $timestamp, $frequency, $hook );
+		}
+	}
+
+	public function page_needs_wechat_auth( $needs_auth ) {
+		$current_url = ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$path        = wp_parse_url( $current_url, PHP_URL_PATH );
+		$is_admin    = current_user_can( 'administrator' );
+
+		$needs_auth = $needs_auth && strpos( $path, 'wp-login' ) === false;
+		$needs_auth = $needs_auth && strpos( $path, 'wp-admin' ) === false;
+		$needs_auth = $needs_auth && strpos( $path, 'wc-api' ) === false;
+		$needs_auth = $needs_auth && strpos( $path, 'wp-weixin/wechat-auth' ) === false;
+		$needs_auth = $needs_auth && strpos( $path, 'weixin-responder' ) === false;
+		$needs_auth = $needs_auth && ! $is_admin;
 
 		return $needs_auth;
 	}
@@ -62,35 +146,11 @@ class WP_Weixin_Auth {
 		}
 	}
 
-	public function show_browser_qr() {
-		add_action( 'template_include', array( $this, 'browser_qr_template' ), 99, 0 );
-	}
-
-	public function browser_qr_template() {
-		$template = locate_template( array( 'wp-weixin-browser-qr.php' ) );
-
-		if ( empty( $template ) ) {
-			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-browser-qr.php';
-		}
-
-		return $template;
-	}
-
-	public function get_browser_page_qr_src( $page_qr_src = '' ) {
-		global $wp;
-		$current_url = home_url( $wp->request );
-
-		$hash = base64_encode( $current_url . '|' . wp_create_nonce( 'qr_code' ) ); // @codingStandardsIgnoreLine
-
-		$page_qr_src = home_url( 'wp-weixin/get-qrcode/hash/' . $hash );
-
-		return $page_qr_src;
-	}
-
 	public function oauth() {
 		$user_id = false;
 
 		if ( ! is_user_logged_in() ) {
+			$this->doing_wechat_auth = true;
 			$oauth_access_token_info = $this->wechat->getOauthAccessToken();
 
 			if ( false !== $oauth_access_token_info ) {
@@ -125,39 +185,6 @@ class WP_Weixin_Auth {
 		}
 
 		return $length;
-	}
-
-	public function get_subscribe_src( $src = '' ) {
-
-		if ( empty( $src ) ) {
-			$src = $this->qr_subscribe_src;
-		}
-
-		return $src;
-	}
-
-	public function subscribe_template() {
-		$template = locate_template( array( 'wp-weixin-subscribe.php' ) );
-
-		if ( empty( $template ) ) {
-			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-subscribe.php';
-		}
-
-		return $template;
-	}
-
-	public function page_needs_wechat_auth( $needs_auth ) {
-		$current_url = ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$path        = wp_parse_url( $current_url, PHP_URL_PATH );
-		$is_admin    = current_user_can( 'administrator' );
-
-		$needs_auth = $needs_auth && strpos( $path, 'wp-login' ) === false;
-		$needs_auth = $needs_auth && strpos( $path, 'wp-admin' ) === false;
-		$needs_auth = $needs_auth && strpos( $path, 'wc-api' ) === false;
-		$needs_auth = $needs_auth && strpos( $path, 'weixin-responder' ) === false;
-		$needs_auth = $needs_auth && ! $is_admin;
-
-		return $needs_auth;
 	}
 
 	public function maybe_force_follow( $force_follow = true ) {
@@ -220,11 +247,205 @@ class WP_Weixin_Auth {
 		}
 	}
 
+	public function get_subscribe_src( $src = '' ) {
+
+		if ( empty( $src ) ) {
+			$src = $this->qr_subscribe_src;
+		}
+
+		return $src;
+	}
+
+	public function subscribe_template() {
+		$template = locate_template( array( 'wp-weixin-subscribe.php' ) );
+
+		if ( empty( $template ) ) {
+			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-subscribe.php';
+		}
+
+		return $template;
+	}
+
+	public function show_browser_qr() {
+		add_action( 'template_include', array( $this, 'browser_qr_template' ), 99, 0 );
+	}
+
+	public function browser_qr_template() {
+		$template = locate_template( array( 'wp-weixin-browser-qr.php' ) );
+
+		if ( empty( $template ) ) {
+			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-browser-qr.php';
+		}
+
+		return $template;
+	}
+
+	public function get_browser_page_qr_src( $page_qr_src = '' ) {
+		global $wp;
+		$current_url = home_url( $wp->request );
+
+		$hash = base64_encode( $current_url . '|' . wp_create_nonce( 'qr_code' ) ); // @codingStandardsIgnoreLine
+
+		$page_qr_src = home_url( 'wp-weixin/get-qrcode/hash/' . $hash );
+
+		return $page_qr_src;
+	}
+
+	public function auth_qr_cleanup() {
+		global $wpdb;
+
+		$transient_prefix = $wpdb->esc_like( '_transient_timeout_wp_weixin_auth_qr_' ) . '%';
+		$sql              = "
+			SELECT REPLACE(option_name, '_transient_timeout_', '') AS transient_name
+			FROM {$wpdb->options}
+			WHERE option_name LIKE %s
+			AND option_value < %s;
+		";
+
+		$query         = $wpdb->prepare( $sql, $transient_prefix, current_time( 'timestamp', true ) );  // @codingStandardsIgnoreLine
+		$transients    = $wpdb->get_col( $query ); // @codingStandardsIgnoreLine
+		$options_names = array();
+
+		if ( ! empty( $transients ) ) {
+
+			foreach ( $transients as $transient ) {
+				$options_names[] = '_transient_' . $transient;
+				$options_names[] = '_transient_timeout_' . $transient;
+			}
+		}
+
+		if ( $options_names ) {
+			$options_names = array_map(
+				'esc_sql',
+				$options_names
+			);
+			$options_names = "'" . implode( "','", $options_names ) . "'";
+			$query         = "DELETE FROM {$wpdb->options} WHERE option_name IN ({$options_names})";
+
+			$wpdb->query( $query );  // @codingStandardsIgnoreLine
+		}
+	}
+
+	public function login_form_link() {
+		ob_start();
+
+		$template = locate_template( array( 'wp-weixin-auth-form-link.php' ) );
+
+		if ( empty( $template ) ) {
+			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-auth-form-link.php';
+
+			require_once $template;
+		}
+
+		echo ob_get_clean(); // @codingStandardsIgnoreLine
+	}
+
+	public function heartbeat_pulse() {
+		$hash   = filter_input( INPUT_POST, 'hash', FILTER_SANITIZE_STRING );
+		$bundle = explode( '|', base64_decode( $hash ) ); // @codingStandardsIgnoreLine
+		$nonce  = array_pop( $bundle );
+		$qr_id  = array_pop( $bundle );
+
+		if ( wp_verify_nonce( $nonce, 'qr_code' ) ) {
+			$result = $this->do_wechat_qr_auth( $qr_id );
+
+			if ( is_array( $result ) ) {
+				wp_send_json_success( $result );
+			} else {
+				wp_send_json_success( false );
+			}
+		} else {
+			$error = new WP_Error( 'WP_Weixin_Auth::heartbeat', __( 'Invalid parameters', 'wp-weixin' ) );
+
+			wp_send_json_error( $error );
+		}
+
+		wp_die();
+	}
+
+	public function wechat_auth_result() {
+		$auth_qr_data = $this->auth_qr_data;
+		ob_start();
+
+		$template = locate_template( array( 'wp-weixin-mobile-auth-check.php' ) );
+
+		if ( empty( $template ) ) {
+			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-mobile-auth-check.php';
+
+			require_once $template;
+		}
+
+		echo ob_get_clean(); // @codingStandardsIgnoreLine
+
+		exit();
+	}
+
+	public function get_qr_src() {
+		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+
+		if ( wp_verify_nonce( $nonce, 'qr_code' ) ) {
+			$qr_id = bin2hex( openssl_random_pseudo_bytes( 10 ) );
+			$hash  = base64_encode( $qr_id . '|' . wp_create_nonce( 'qr_code' ) ); // @codingStandardsIgnoreLine
+
+			set_transient(
+				'wp_weixin_auth_qr_' . $qr_id,
+				current_time( 'timestamp' ) + apply_filters( 'wp_weixin_auth_qr_lifetime', self::MAX_QR_LIFETIME ),
+				apply_filters( 'wp_weixin_auth_qr_lifetime', self::MAX_QR_LIFETIME )
+			);
+
+			$url = home_url( 'wp-weixin/wechat-auth-qr/hash/' ) . $hash;
+
+			wp_send_json_success(
+				array(
+					'qrSrc' => $url,
+					'hash'  => $hash,
+				)
+			);
+		} else {
+			$error = new WP_Error( 'WP_Weixin_Auth::get_qr', __( 'Invalid parameters', 'wp-weixin' ) );
+
+			wp_send_json_error( $error );
+		}
+
+		wp_die();
+	}
+
+	public function wechat_auth_page() {
+		if ( is_user_logged_in() ) {
+			$redirect = apply_filters( 'wp_weixin_auth_redirect', home_url( '/' ), true, false );
+
+			wp_redirect( $redirect );
+
+			exit();
+		}
+		$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
+		$js_ext  = ( $debug ) ? '.js' : '.min.js';
+		$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'js/auth-heartbeat' . $js_ext );
+		$params  = array(
+			'heartbeatFreq' => apply_filters( 'wp_weixin_auth_heartbeat_frequency', 1000 ),
+			'ajax_url'      => admin_url( 'admin-ajax.php' ),
+			'debug'         => $debug,
+		);
+		wp_enqueue_script( 'wp-weixin-auth-heartbeat', WP_WEIXIN_PLUGIN_URL . 'js/auth-heartbeat' . $js_ext, array( 'jquery' ), $version, true );
+		wp_localize_script( 'wp-weixin-auth-heartbeat', 'WP_WeixinAuthHeartBeat', $params );
+		add_action( 'template_include', array( $this, 'wechat_auth_template' ), 99, 0 );
+	}
+
+	public function wechat_auth_template() {
+		$template = locate_template( array( 'wp-weixin-auth-page.php' ) );
+
+		if ( empty( $template ) ) {
+			$template = WP_WEIXIN_PLUGIN_PATH . 'inc/templates/wp-weixin-auth-page.php';
+		}
+
+		return $template;
+	}
+
 	/*******************************************************************
-	 * Private methods
+	 * Protected methods
 	 *******************************************************************/
 
-	private function pre_oauth() {
+	protected function pre_oauth() {
 		$current_url = ( isset( $_SERVER['HTTPS'] ) ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 		$scope = 'snsapi_userinfo';
@@ -237,7 +458,7 @@ class WP_Weixin_Auth {
 	}
 
 
-	private function login( $oauth_access_token_info ) {
+	protected function login( $oauth_access_token_info ) {
 		$error = $this->wechat->getError();
 		$error = ( $error ) ? $error['code'] . ': ' . $error['message'] : false;
 
@@ -272,7 +493,7 @@ class WP_Weixin_Auth {
 		setcookie( 'wx_openId', $openid, current_time( 'timestamp' ) + (int) $this->expire_length );
 	}
 
-	private function update_user_info( $access_token, $openid, $user ) {
+	protected function update_user_info( $access_token, $openid, $user ) {
 		$user_info = $this->wechat->getOauthUserInfo( $access_token, $openid );
 		$result    = false;
 
@@ -315,7 +536,7 @@ class WP_Weixin_Auth {
 		return $result;
 	}
 
-	private function register_user( $openid, $access_token, $refresh_token ) {
+	protected function register_user( $openid, $access_token, $refresh_token ) {
 		$user_info = $this->wechat->getOauthUserInfo( $access_token, $openid );
 
 		$error = $this->wechat->getError();
@@ -365,7 +586,7 @@ class WP_Weixin_Auth {
 		return get_user_by( 'ID', $user_id );
 	}
 
-	private function auth_refresh( $user_id ) {
+	protected function auth_refresh( $user_id ) {
 		$json_user_info = get_user_meta( $user_id, 'wp_weixin_rawdata', true );
 		$user_info      = json_decode( $json_user_info, true );
 		$refresh_token  = isset( $user_info['refresh_token'] ) ? $user_info['refresh_token'] : false;
@@ -387,7 +608,7 @@ class WP_Weixin_Auth {
 		}
 	}
 
-	private function set_subscribe_image_base64_src( $url ) {
+	protected function set_subscribe_image_base64_src( $url ) {
 		$src   = false;
 		$image = false;
 
@@ -400,5 +621,92 @@ class WP_Weixin_Auth {
 		}
 
 		$this->qr_subscribe_src = $src;
+	}
+
+	protected function check_wechat_qr_auth( $qr_id ) {
+		$recorded_qr_value = get_transient( 'wp_weixin_auth_qr_' . $qr_id, false );
+		$error             = false;
+		$user_id           = 0;
+		$redirect          = false;
+
+		if (
+			! $recorded_qr_value ||
+			is_array( $recorded_qr_value )
+		) {
+			$error = __( 'The QR code is invalid', 'wp-weixin' );
+		}
+
+		if (
+			is_numeric( $recorded_qr_value ) &&
+			current_time( 'timestamp' ) > $recorded_qr_value
+		) {
+			$error = __( 'The QR code is expired', 'wp-weixin' );
+		}
+
+		if ( ! is_user_logged_in() ) {
+			$error = __( 'Authentication error - check mobile WeChat authentication is enabled.', 'wp-weixin' );
+		}
+
+		if ( $error ) {
+			$auth = false;
+		} else {
+			$auth     = true;
+			$user     = wp_get_current_user();
+			$user_id  = $user->ID;
+			$redirect = home_url( '/' );
+		}
+
+		$this->auth_qr_data = array(
+			'auth'     => $auth,
+			'user_id'  => $user_id,
+			'redirect' => apply_filters( 'wp_weixin_auth_redirect', $redirect, $auth, (bool) $error ),
+		);
+
+		if ( $error ) {
+			$this->auth_qr_data['error'] = array( $error );
+		} else {
+			$this->auth_qr_data['error'] = false;
+		}
+
+		set_transient(
+			'wp_weixin_auth_qr_' . $qr_id,
+			$this->auth_qr_data,
+			apply_filters( 'wp_weixin_auth_qr_lifetime', self::MAX_QR_LIFETIME )
+		);
+
+		add_action( 'template_redirect', array( $this, 'wechat_auth_result' ), 0, 0 );
+	}
+
+	protected function do_wechat_qr_auth( $qr_id ) {
+		$recorded_qr_value = get_transient( 'wp_weixin_auth_qr_' . $qr_id, false );
+		$return            = array(
+			'auth'     => false,
+			'error'    => array( __( 'Unkown Error.', 'wp-weixin' ) ),
+			'redirect' => apply_filters( 'wp_weixin_auth_redirect', false, false, true ),
+		);
+
+		if ( is_numeric( $recorded_qr_value ) ) {
+			$return = false;
+		} elseif (
+			is_array( $recorded_qr_value ) &&
+			isset( $recorded_qr_value['auth'], $recorded_qr_value['user_id'] ) &&
+			$recorded_qr_value['auth'] &&
+			$recorded_qr_value['user_id']
+		) {
+			wp_set_current_user( $recorded_qr_value['user_id'] );
+			wp_set_auth_cookie( $recorded_qr_value['user_id'] );
+
+			$return = $recorded_qr_value;
+		} elseif ( is_array( $recorded_qr_value ) ) {
+			$return = $recorded_qr_value;
+		} elseif ( false === $recorded_qr_value ) {
+			$return['error'] = array( __( 'The QR code is expired.', 'wp-weixin' ) );
+		}
+
+		if ( false !== $return ) {
+			delete_transient( 'wp_weixin_auth_qr_' . $qr_id );
+		}
+
+		return $return;
 	}
 }

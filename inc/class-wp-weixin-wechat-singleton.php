@@ -6,8 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin_Wechat_Singleton {
 
-	private static $wechat;
-	private static $error;
+	protected static $wechat;
+	protected static $error;
 
 	/*******************************************************************
 	 * Public methods
@@ -57,10 +57,10 @@ class WP_Weixin_Wechat_Singleton {
 	}
 
 	/*******************************************************************
-	 * Private methods
+	 * Protected methods
 	 *******************************************************************/
 
-	private static function get_access_info() {
+	protected static function get_access_info() {
 		$settings    = get_option( 'wp_weixin_settings' );
 		$access_info = array(
 			'token'  => '',
@@ -87,7 +87,7 @@ class WP_Weixin_Wechat_Singleton {
 		return $access_info;
 	}
 
-	private static function save_access_info( $access_token, $token_expiry ) {
+	protected static function save_access_info( $access_token, $token_expiry ) {
 		$settings    = get_option( 'wp_weixin_settings' );
 		$access_info = array(
 			'token'  => $access_token,
@@ -112,7 +112,7 @@ class WP_Weixin_Wechat_Singleton {
 		}
 	}
 
-	private static function get_wechat_config( $access_token, $token_expiry ) {
+	protected static function get_wechat_config( $access_token, $token_expiry ) {
 		$settings   = get_option( 'wp_weixin_settings' );
 		$appid      = isset( $settings['wp_weixin_appid'] ) && ! empty( 'wp_weixin_appid' ) ? $settings['wp_weixin_appid'] : null;
 		$secret     = isset( $settings['wp_weixin_secret'] ) && ! empty( 'wp_weixin_secret' ) ? $settings['wp_weixin_secret'] : null;
@@ -176,7 +176,7 @@ class WP_Weixin_Wechat_Singleton {
 		return $options;
 	}
 
-	private static function show_frontend_error() {
+	protected static function show_frontend_error() {
 		$title   = '<h2>' . __( 'Configuration error', 'wp-weixin' ) . '</h2>';
 		$message = '<p>' . __( 'WP Weixin is not configured properly. ', 'wp-weixin' );
 
@@ -185,7 +185,7 @@ class WP_Weixin_Wechat_Singleton {
 		wp_die( $title . $message ); // @codingStandardsIgnoreLine
 	}
 
-	private static function set_error( $context, $error_vars = null ) {
+	protected static function set_error( $context, $error_vars = null ) {
 
 		if ( is_array( $error_vars ) && ! empty( $error_vars ) ) {
 			extract( $error_vars ); // @codingStandardsIgnoreLine
