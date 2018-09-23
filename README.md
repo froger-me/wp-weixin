@@ -369,7 +369,7 @@ Filter the url to redirect to when QR code authentication in classic browsers is
 
 **Parameters**  
 $redirect
-> (mixed) The url to redirect to when authentication is performed, or false if no redirect. Default is `home_ulr( '/' )` in case of successful authentication.  
+> (mixed) The url to redirect to when authentication is performed, or false if no redirect. Default is `home_url( '/' )` in case of successful authentication.  
 
 $auth
 > (bool) Wether the authentication was a performed - `true` if successful, `false` if an error occurred.  
