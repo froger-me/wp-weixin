@@ -414,7 +414,7 @@ ___
 ## Templates
 
 The following plugin files are included using `locate_template()` function of WordPress. This means they can be overloaded in the active WordPress theme if a file with the same name exists at the root of the theme.  
-The style applied to this template is in `wp-weixin/css/main.css`.
+The style applied to these templates is in `wp-weixin/css/main.css`.
 ___
 
 ```
