@@ -222,7 +222,7 @@ class WP_Weixin {
 			$condition = ( in_array( $abspath . 'wp-login.php', get_included_files() ) || in_array( $abspath . 'wp-register.php', get_included_files() ) ); // @codingStandardsIgnoreLine
 			$condition = $condition || 'wp-login.php' === $GLOBALS['pagenow'] || '/wp-login.php' === $_SERVER['PHP_SELF'];
 
-			if ( ! $condition ) {
+			if ( ! $condition && apply_filters( 'wp_weixin_include_script', true ) ) {
 				$js_ext  = ( $debug ) ? '.js' : '.min.js';
 				$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'js/main' . $js_ext );
 				$params  = array(

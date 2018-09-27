@@ -20,16 +20,16 @@ class WP_Weixin_Auth {
 		$this->wechat = $wechat;
 
 		if ( $init_hooks ) {
-			// Manage wechat authentication
-			add_action( 'init', array( $this, 'manage_auth' ), -99, 0 );
 			// Logout when unsubscribed
 			add_action( 'wp_weixin_responder', array( $this, 'force_logout' ), -99, 1 );
 
 			if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
+				// Manage wechat authentication
+				add_action( 'init', array( $this, 'manage_auth' ), PHP_INT_MIN, 0 );
 				// Add the API endpoints
 				add_action( 'init', array( $this, 'add_endpoints' ), 0, 0 );
 				// Parse the endpoint request
-				add_action( 'parse_request', array( $this, 'parse_request' ), 10, 0 );
+				add_action( 'parse_request', array( $this, 'parse_request' ), PHP_INT_MIN, 0 );
 				// Add QR code generation ajax callback
 				add_action( 'wp_ajax_nopriv_wp_weixin_get_auth_qr', array( $this, 'get_qr_src' ), 10, 0 );
 				// Add QR code heartbeat ajax callback
@@ -411,6 +411,7 @@ class WP_Weixin_Auth {
 	}
 
 	public function wechat_auth_page() {
+
 		if ( is_user_logged_in() ) {
 			$redirect = apply_filters( 'wp_weixin_auth_redirect', home_url( '/' ), true, false );
 
@@ -418,6 +419,7 @@ class WP_Weixin_Auth {
 
 			exit();
 		}
+
 		$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 		$js_ext  = ( $debug ) ? '.js' : '.min.js';
 		$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'js/auth-heartbeat' . $js_ext );

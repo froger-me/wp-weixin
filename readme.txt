@@ -49,6 +49,13 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.1.1 =
+* Proper 401 error if the server signature is not valid when visiting the WeChat Responder endpoint
+* Fix menu integration - make sure all types of button can be configured
+* Make sure authentication hooks registration is done only when necessary
+* WeChat SDK: fix media upload methods
+* WeChat SDK: add image response type
+
 = 1.1 =
 * Add WeChat authentication for browsers by using temporary, secure QR codes (social login)
 * Cleanup and minor refactor

@@ -77,7 +77,7 @@
 		<p class="field-title-attribute field-attr-title description description-wide">
 			<label for="edit-menu-item-attr-title-<?php echo esc_attr( $item_id ); ?>">
 				<?php esc_html_e( 'Type', 'wp-weixin' ); ?><br />
-				<select id="wechat-menu-item-attr-title" name="menu-item[<?php echo esc_attr( $_nav_menu_placeholder ); ?>][menu-item-attr-title]">
+				<select id="edit-menu-item-attr-title-<?php echo esc_attr( $item_id ); ?>" name="menu-item-attr-title[<?php echo esc_attr( $item_id ); ?>]">
 					<option value="click" <?php echo ( 'click' === $item->post_excerpt ) ? 'selected' : ''; ?>>click</option>
 					<option value="scancode_push" <?php echo ( 'scancode_push' === $item->post_excerpt ) ? 'selected' : ''; ?>>scancode_push</option>
 					<option value="scancode_waitmsg" <?php echo ( 'scancode_waitmsg' === $item->post_excerpt ) ? 'selected' : ''; ?>>scancode_waitmsg</option>

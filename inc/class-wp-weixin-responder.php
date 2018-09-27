@@ -52,7 +52,7 @@ class WP_Weixin_Responder {
 	public function send_subscribe_message( $request_data ) {
 
 		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'subscribe' === $request_data['event'] ) {
-			$user = get_user_by( 'login', 'wx-' . $request_data['fromusername'] );
+			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
 
 			if ( $user ) {
 				$openid = get_user_meta( $user->ID, 'wp_weixin_openid', true );
@@ -85,11 +85,31 @@ class WP_Weixin_Responder {
 	 *******************************************************************/
 
 	protected function handle_request() {
-		global $wp;
 
 		if ( ! $this->wechat->checkSignature() ) {
 
-			exit( 'wuut?' );
+			if ( ! isset( $_SERVER['SERVER_PROTOCOL'] ) || '' === $_SERVER['SERVER_PROTOCOL'] ) {
+				$protocol = 'HTTP/1.1';
+			} else {
+				$protocol = $_SERVER['SERVER_PROTOCOL'];
+			}
+
+			$output = '
+				<html>
+					<head>
+						<title>401 Unauthorized</title>
+					</head>
+					<body>
+						<h1>401 Unauthorized</h1>
+						<p>Invalid signature</p>
+					</body>
+				</html>
+			';
+
+			header( $protocol . ' 401 Unauthorized' );
+			echo $output; // @codingStandardsIgnoreLine
+
+			exit( -1 );
 		}
 
 		$request_data = $this->wechat->request();

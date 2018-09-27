@@ -56,6 +56,8 @@ class Walker_Nav_Menu_Wechat_Edit extends Walker_Nav_Menu {
 	 * @param int    $id     Not used.
 	 */
 	public function start_el( &$output, $item, $depth = 0, $args = array(), $id = 0 ) {
+		global $_nav_menu_placeholder, $nav_menu_selected_id;
+
 		$item_id        = esc_attr( $item->ID );
 		$original_title = false;
 		$removed_args   = array(

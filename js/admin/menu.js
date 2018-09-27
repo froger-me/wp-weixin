@@ -1,5 +1,6 @@
 /* global api, menus, ajaxurl */
 jQuery(document).ready(function($) {
+	$('.menu-item-depth-0 .is-submenu').hide();
 	$('#submit-wechatlinkdiv').on('click', function() {
 		var processMethod = function(menuMarkup) { 
 				var $menuMarkup = $( menuMarkup );

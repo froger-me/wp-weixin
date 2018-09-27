@@ -779,6 +779,17 @@ class Wechat {
 		) = $music;
 		$this->data['Music'] = $music;
 	}
+
+	/**
+	 * Sets image response content
+	 * @param  string $image image content
+	 */
+	private function image($image) {
+		list(
+			$image['MediaId']
+		) = $image;
+		$this->data['Image'] = $image;
+	}
 	
 	/**
 	 * Sets Rich Media response content
@@ -1434,8 +1445,9 @@ class Wechat {
 
 		$url    	= self::MEDIA_UPLOAD_URL . '?access_token=' . $this->getAccessToken() . '&type=' . $type;
 		$params 	= array(
-			'media' => '@' . $file . ";type=" . $type . ";filename=" . basename($file),
+			'media' => new CurlFile( $file, mime_content_type($file), basename($file) ),
 		);
+
 
 		if ($type === 'video') {
 			$video_description = array(

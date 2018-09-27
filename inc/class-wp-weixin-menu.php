@@ -19,7 +19,7 @@ class WP_Weixin_Menu {
 			// Add menu location for WeChat
 			add_action( 'after_setup_theme', array( $this, 'add_menu_location' ), 10, 0 );
 			// Publish the menu to wechat on save
-			add_action( 'wp_update_nav_menu', array( $this, 'publish' ), 10, 1 );
+			add_action( 'wp_update_nav_menu', array( $this, 'publish' ), 10, 2 );
 			// Add admin scripts
 			add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 99, 1 );
 			// Add callback when adding a menu item: handle WeChat Menu Item menu type
@@ -30,6 +30,8 @@ class WP_Weixin_Menu {
 
 			// Use a custom Walker class to handle WeChat Menu Item menu type
 			add_filter( 'wp_edit_nav_menu_walker', array( $this, 'alter_menu_walker' ), 1, 2 );
+			// Make sure the key value is saved when saving a WeChat event button menu item
+			add_filter( 'update_post_metadata', array( $this, 'save_wechat_event_key' ), 10, 5 );
 		}
 	}
 
@@ -69,7 +71,7 @@ class WP_Weixin_Menu {
 		return $walker_class_name;
 	}
 
-	public function publish( $menu_id ) {
+	public function publish( $menu_id, $menu_data = array() ) {
 		global $sitepress;
 
 		$theme_locations = get_nav_menu_locations();
@@ -189,7 +191,7 @@ class WP_Weixin_Menu {
 						foreach ( $oa_menus['conditionalmenu'] as $key => $menu ) {
 							$condition = isset( $menu['matchrule'] ) && count( $menu['matchrule'] ) === 1;
 							$condition = $condition && isset( $menu['matchrule']['language'] );
-							$cnosition = $condition && $menu['matchrule']['language'] === $lang_rule;
+							$condition = $condition && $menu['matchrule']['language'] === $lang_rule;
 
 							if ( $condition ) {
 								$this->wechat->menu_delete( $menu['menuid'] );
@@ -304,6 +306,33 @@ class WP_Weixin_Menu {
 
 			update_post_meta( $menu_item_db_id, '_menu_item_url', $args['menu-item-url'] );
 		}
+	}
+
+	public function save_wechat_event_key( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
+		$menu_item_post = get_post( $object_id );
+
+		if ( 'nav_menu_item' !== $menu_item_post->post_type ) {
+
+			return $check;
+		}
+
+		$is_wechat_menu = ( 'wechat' === get_post_meta( $object_id, '_menu_item_type', true ) );
+
+		if ( $is_wechat_menu && '_menu_item_url' === $meta_key ) {
+			$url_array = filter_input( INPUT_POST, 'menu-item-url', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+			if ( is_array( $url_array ) && in_array( $object_id, array_keys( $url_array ), true ) ) {
+				$meta_value = filter_var( $url_array[ $object_id ], FILTER_SANITIZE_SPECIAL_CHARS );
+
+				remove_filter( 'update_post_metadata', array( $this, 'save_wechat_event_key' ), 10, 5 );
+				update_post_meta( $object_id, $meta_key, $meta_value, $prev_value );
+				add_filter( 'update_post_metadata', array( $this, 'save_wechat_event_key' ), 10, 5 );
+
+				return true;
+			}
+		}
+
+		return $check;
 	}
 
 	/*******************************************************************
