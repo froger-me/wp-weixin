@@ -13,6 +13,7 @@ class WP_Weixin_Auth {
 	protected $qr_subscribe_src;
 	protected $doing_wechat_auth = false;
 	protected $auth_qr_data;
+	protected static $needs_auth;
 
 	public function __construct( $wechat, $init_hooks = false ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -39,12 +40,12 @@ class WP_Weixin_Auth {
 				// Schedule WeChat auth qr cleanup
 				add_action( 'init', array( $this, 'register_auth_qr_cleanup' ), 10, 0 );
 				add_action( 'wp_weixin_auth_qr_cleanup', array( $this, 'auth_qr_cleanup' ), 10, 0 );
-			}
 
-			// Detemine where wechat authentication is needed
-			add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), -99, 1 );
-			// Get the QR code for browsers
-			add_filter( 'wp_weixin_browser_page_qr_src', array( $this, 'get_browser_page_qr_src' ), -99, 1 );
+				// Detemine where wechat authentication is needed
+				add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), PHP_INT_MIN, 1 );
+				// Get the QR code for browsers
+				add_filter( 'wp_weixin_browser_page_qr_src', array( $this, 'get_browser_page_qr_src' ), -99, 1 );
+			}
 		}
 	}
 
@@ -54,9 +55,11 @@ class WP_Weixin_Auth {
 
 	public static function is_auth_needed() {
 		$needs_auth = WP_Weixin_Settings::get_option( 'force_wechat' );
-		$needs_auth = apply_filters( 'wp_weixin_auth_needed', $needs_auth || WP_Weixin::is_wechat_mobile() );
+		$needs_auth = $needs_auth || WP_Weixin::is_wechat_mobile();
 
-		return $needs_auth;
+		self::$needs_auth = apply_filters( 'wp_weixin_auth_needed', $needs_auth );
+
+		return self::$needs_auth;
 	}
 
 	public function add_endpoints() {
@@ -118,6 +121,7 @@ class WP_Weixin_Auth {
 		$needs_auth = $needs_auth && strpos( $path, 'wc-api' ) === false;
 		$needs_auth = $needs_auth && strpos( $path, 'wp-weixin/wechat-auth' ) === false;
 		$needs_auth = $needs_auth && strpos( $path, 'weixin-responder' ) === false;
+		$needs_auth = $needs_auth && strpos( $path, 'admin-ajax.php' ) === false;
 		$needs_auth = $needs_auth && ! $is_admin;
 
 		return $needs_auth;

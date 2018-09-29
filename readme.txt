@@ -49,6 +49,10 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.1.2 =
+* Adjust hooks priorities and condition for authentication hooks registration
+* Do not require mobile authentication for ajax calls by default (can be altered with `wp_weixin_auth_needed` filter hook)
+
 = 1.1.1 =
 * Proper 401 error if the server signature is not valid when visiting the WeChat Responder endpoint
 * Fix menu integration - make sure all types of button can be configured

@@ -235,7 +235,7 @@ class Wechat {
 
 		$token = $this->token;
 
-		if (!$token) { 
+		if (!$token) {
 			return false;
 		}
 
