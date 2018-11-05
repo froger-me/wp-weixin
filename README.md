@@ -1,4 +1,3 @@
-
 # WP Weixin - WordPress WeChat integration
 
 * [General description](#user-content-general-description)
@@ -9,10 +8,9 @@
 * [Settings](#user-content-settings)
 	* [Main Settings](#user-content-main-settings)
 	* [WeChat Responder Settings](#user-content-wechat-responder-settings)
-	* [WeChat Pay Settings](#user-content-wechat-pay-settings---pro)
+	* [WeChat Pay Settings](#user-content-wechat-pay-settings)
 	* [Proxy Settings (beta)](#user-content-proxy-settings-beta)
 	* [Miscellaneous Settings](#user-content-miscellaneous-settings)
-* [Go PRO!](#user-content-go-pro)
 * [Functions](#user-content-functions)
 * [Hooks - actions & filters](#user-content-hooks---actions--filters)
 	* [Actions](#user-content-actions)
@@ -75,7 +73,7 @@ WeChat App ID                       | Yes      | text      | The AppId in the ba
 WeChat App Secret                   | Yes      | text      | The AppSecret in the backend at `https://mp.weixin.qq.com/` under Development > Basic configuration.                          
 WeChat OA Name                      | No       | text      | The name of the Official Account (recommended to enter the actual name).                                                      
 WeChat OA Logo URL                  | No       | text      | A URL to the logo of the Official Account - (recommended enter the URL of a picture of the actual logo).                      
-Enable WeChat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their wechat account in WordPress (if not, a session cookie `wx_openId` is set). 
+Enable WeChat mobile authentication | No       | checkbox  | If enabled, users will be authenticated with their WeChat account in WordPress (if not, a session cookie `wx_openId` is set). 
 Force WeChat mobile                 | No       | checkbox  | Make the website accessible only through the WeChat browser.<br>If accessed with another browser, the page displays a QR code.
 Force follow (any page)             | No       | checkbox  | Require the user to follow the Official Account before accessing the site with the WeChat browser.                            
 
@@ -90,9 +88,9 @@ WeChat AES Key            | text      | The EncodingAESKey in the backend at `ht
 Send welcome message      | checkbox  | Send a welcome message when a user follows the Official Account.<br/>The following filters can be used to change the default values of the message:<ul><li>`apply_filters( 'wp_weixin_follower_welcome_title', string $title, mixed $before_subscription );`</li><li>`apply_filters( 'wp_weixin_follower_welcome_description', string $description, mixed $before_subscription );`</li><li>`apply_filters( 'wp_weixin_follower_welcome_url', string $url, mixed $before_subscription );`</li><li>`apply_filters( 'wp_weixin_follower_welcome_pic_url', string $pic_url, mixed $before_subscription );`</li></ul>
 Welcome message image URL | text      | A URL to the image used for the welcome message sent after a user follows the Official Account (external or from the Media Library).<br>Default image is in `/wp-weixin/images/default-welcome.png`.                                                                                                                                                                                                                                                                                                                                                                                                    
 
-### WeChat Pay Settings - PRO
+### WeChat Pay Settings
 
-These settings are only available if WP Weixin Pay and/or Woo WeChatPay are installed and activated. See [Go PRO!](#user-content-go-pro) for more details.
+These settings are only available if WP Weixin Pay and/or Woo WeChatPay are installed and activated.
 
 Name                                | Type      | Description                                                                                                                                                                                                                     | Requirement                             
 ----------------------------------- |:---------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------:
@@ -122,15 +120,6 @@ Name                                             | Type     | Description
 Show WeChat name and pictures in Users list page | checkbox | Override the display of the WordPress account names and avatars.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 Official Account menu language awareness         | checkbox | Customise the menu of the Official Account depending on user's language. By default, the language of the menu corresponding to the website's default language is used.<br/>This setting is only available if WPML is activated.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 Use custom persistence for access_token          | checkbox | Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br/>**Warning** - requires the implementation of:<ul><li>`add_filter( 'wp_weixin_get_access_info', $access_info, 10, 0 );`</li><li>`add_action( 'wp_weixin_save_access_info', $access_info, 10, 1 );`</li></ul>The parameter `$access_info` is an array with the keys `token` and `expiry`.<br/>Add the hooks above in a `plugins_loaded` action with a priority of `5` or less.<br/>Useful to avoid a race condition if the access_token information needs to be shared between multiple platforms.<br/>When unchecked, access_token & expiry timestamp are stored in the WordPress options table in the database.
-
-## Go PRO!
-
-To integrate WeChat Pay with WordPress, there are several possibilities using exclusive plugins:
-* **Use Woo WeChatPay** with WP Weixin on a WooCommerce website: Woo WeChatPay is a payment gateway for WooCommerce allowing a website to receive payments for orders via WeChat, both on mobile and desktop/laptop. See [Woo WeChatPay details](https://anyape.com/woo-wechatpay.html) to see how to get it.
-* **Use WP Weixin Pay** with WP Weixin: with this extension, you can receive payments with an emulated "Transfer" screen, without needing any e-commerce plugin. See [WP Weixin Pay details](https://anyape.com/wp-weixin-pay.html) to see how to get it.
-* Combine all the plugins!
-
-The combination of WP Weixin, WP Weixin Pay and Woo WeChatPay is maybe the best clean, fully documented, i18n-ready, powerful suite of plugins integrating WordPress with WeChat.
 
 ## Functions
 The functions listed below are made publicly available by the plugin for theme and plugin developers. Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
@@ -409,6 +398,34 @@ Filter the lifetime of an authentication QR code.
 **Parameters**  
 $lifetime
 > (int) The lifetime in seconds. Default `600`.  
+___
+
+```php
+apply_filters( 'wp_weixin_ms_auto_add_to_blog', $auto_add_to_blog, $blog_id, $user_id );
+```
+
+Filter wether to automatically add the user to the visited blog on the network when authenticated with WeChat.
+
+**Parameters**  
+$auto_add_to_blog
+> (bool) Wether to automatically add the user to the visited blog on the network when authenticated with WeChat. Default `true`.  
+
+$blog_id
+> (int) The ID of the visited blog.  
+
+$user_id
+> (int) The ID of the user visiting the blog.  
+___
+
+```php
+apply_filters( 'wp_weixin_ms_auth_blog_id', $auth_blog_id );
+```
+
+Filter the blog id used for authentication - by default, it is assumend the domain name of the default blog is registered in WeChat backend.
+
+**Parameters**  
+$auth_blog_id
+> (bool) The id of the blog to use when doing WeChat authentication. Default `0`.  
 ___
 
 ## Templates

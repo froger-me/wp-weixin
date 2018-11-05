@@ -37,29 +37,29 @@ class WP_Weixin {
 			add_action( 'wp_enqueue_scripts', array( $this, 'add_frontend_scripts' ), 5, 0 );
 			// Allow user profile update with empty email
 			add_action( 'user_profile_update_errors', array( $this, 'remove_empty_email_error' ), 10, 1 );
-			// Add sort by wechat name logic
+			// Add sort by WeChat name logic
 			add_action( 'pre_user_query', array( $this, 'alter_user_sort_query' ), 10, 1 );
 			// Flush rewrite rules if necessary - do it late
-			add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
+			add_action( 'init', array( $this, 'maybe_flush' ), PHP_INT_MIN + 5, 0 );
 			// Add WeChat public information to user profile
 			add_action( 'show_user_profile', array( $this, 'user_profile_wechat_info' ), 10, 1 );
 			add_action( 'edit_user_profile', array( $this, 'user_profile_wechat_info' ), 10, 1 );
 
-			// Get wechat avatar if exists
+			// Get WeChat avatar if exists
 			add_filter( 'get_avatar', array( $this, 'avatar' ), 1, 5 );
-			// Filter wechat get meta - add better getters for raw rata
+			// Filter WeChat get meta - add better getters for raw rata
 			add_filter( 'get_user_metadata', array( $this, 'filter_wechat_get_user_meta' ), 1, 4 );
-			// Filter wechat update meta - add better setters for raw data
+			// Filter WeChat update meta - add better setters for raw data
 			add_filter( 'update_user_metadata', array( $this, 'filter_wechat_update_user_meta' ), 1, 5 );
 			// Add main query vars
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), -99, 1 );
 
 			if ( WP_Weixin_Settings::get_option( 'alter_userscreen' ) ) {
-				// Add wechat name column
+				// Add WeChat name column
 				add_filter( 'manage_users_columns', array( $this, 'alter_user_table_columns' ), 10, 1 );
-				// Add content of the wechat name column
+				// Add content of the WeChat name column
 				add_filter( 'manage_users_custom_column', array( $this, 'alter_user_table_rows' ), 10, 3 );
-				// Add sort by wechat name on user screen
+				// Add sort by WeChat name on user screen
 				add_filter( 'manage_users_sortable_columns', array( $this, 'alter_user_sortable_columns' ), 10, 1 );
 			}
 		}

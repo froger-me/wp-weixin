@@ -14,11 +14,11 @@ class WP_Weixin_Responder {
 
 		$this->wechat = $wechat;
 
-		if ( $init_hooks && ! is_admin() ) {
+		if ( $init_hooks ) {
 			// Parse responder request
 			add_action( 'parse_request', array( $this, 'parse_request' ), 0, 0 );
 			// Add responder endpoint
-			add_action( 'init', array( $this, 'add_endpoints' ), 0, 0 );
+			add_action( 'wp_weixin_endpoints', array( $this, 'add_endpoints' ), 0, 0 );
 
 			if ( WP_Weixin_Settings::get_option( 'follow_welcome' ) ) {
 				// Send templated message on subscription to the official account

@@ -3,7 +3,7 @@
 /**
  * WeChat PHP SDK
  *
- * Helper class to handle wechat authentication, official account manipulation and ecommerce
+ * Helper class to handle WeChat authentication, official account manipulation and ecommerce
  * Requires Curl
  *
  * Inspired from the work of 小陈叔叔 <cjango@163.com> - https://coding.net/u/cjango/p/wechat_sdk/git
@@ -143,7 +143,7 @@ class Wechat {
 	}
 
 	/**
-	 * Checks if accessing the app using the wechat browser
+	 * Checks if accessing the app using the WeChat browser
 	 * @param 	string $version Minimum required version - format: 3 numbers separated by "." - default empty string 
 	 * @return 	bool
 	 */
@@ -155,7 +155,7 @@ class Wechat {
             $version_parts 	= explode('.', $version_browser);
 
             if (count($version_parts) !== 3) {
-            	$this->setError('Invalid wechat version format');
+            	$this->setError('Invalid WeChat version format');
 
             	$is_wechat_mobile = false;
             } else {
@@ -193,7 +193,7 @@ class Wechat {
     }
 
 	/**
-	 * Checks if the website is bound to the wechat official account
+	 * Checks if the website is bound to the WeChat official account
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function checkBind() {
@@ -301,7 +301,7 @@ class Wechat {
 	}
 
 	/**
-	 * Retrieves the official account's access_token from the wechat remote interface
+	 * Retrieves the official account's access_token from the WeChat remote interface
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	private function requestAccessToken() {
@@ -369,6 +369,8 @@ class Wechat {
 		} else {
 			$url = self::MENU_CREATE_URL . '?access_token=' . $this->getAccessToken();
 		}
+
+		error_log(print_r($params, true));
 
 		$jsonStr = $this->http($url, $params, 'POST');
 		$jsonArr = $this->parseJson($jsonStr);
@@ -569,8 +571,8 @@ class Wechat {
 	}
 
 	/**
-	 * Gets the information of a wechat user
-	 * @param  string $openid the wechat user openID
+	 * Gets the information of a WeChat user
+	 * @param  string $openid the WeChat user openID
 	 * @return array|boolean
 	 */
 	public function user($openid = '') {
@@ -656,7 +658,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets data pushed by wechat to the server
+	 * Gets data pushed by WeChat to the server
 	 * @return array An array of data with keys all converted to lowercase
 	 */
 	public function request() {
@@ -688,7 +690,7 @@ class Wechat {
 	}
 	
 	/**
-	 * Replies to a wechat message (auto-reply)
+	 * Replies to a WeChat message (auto-reply)
 	 * @param  string $to      Receiver's OpenID
 	 * @param  string $from    Developer's ID
 	 * @param  string $type    Message type - "text", "music", "news", "event" - default "text"
@@ -704,7 +706,7 @@ class Wechat {
 		);
 
 		if (!method_exists($this, $type)) {
-			$this->setError('Invalid wechat response message type "' . $type . '"');
+			$this->setError('Invalid WeChat response message type "' . $type . '"');
 
 			return false;
 		}
@@ -888,7 +890,7 @@ class Wechat {
 		$sendtype 				= 'send' . $type;
 
 		if (!method_exists($this, $type)) {
-			$this->setError('Invalid wechat customer service message type "' . $type . '"');
+			$this->setError('Invalid WeChat customer service message type "' . $type . '"');
 
 			exit(false);
 		}
@@ -990,7 +992,7 @@ class Wechat {
 	}
 	
 	/**
-	 * Gets authentication redirect URL for wechat browser authentication
+	 * Gets authentication redirect URL for WeChat browser authentication
 	 * @param 	string 	$callback 	Callback URL (including http(s)://)
 	 * @param 	sting 	$state 		Any state information (a-zA-Z0-9) to preserve across the OAuth process, for example a token to prevent CSRF attacks - default empty string
 	 * @param 	string 	$scope 		'snsapi_userinfo' will require user approval and get the user's full public profile ; 'snsapi_base' will get the user's openid - default "snsapi_base"
@@ -998,7 +1000,7 @@ class Wechat {
 	 */
 	public function getOAuthRedirect($callback, $state = '', $scope = 'snsapi_base') {
 
-		return self::OAUTH_AUTHORIZE_URL . '?appid=' . $this->appid . '&redirect_uri=' . urlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
+		return self::OAUTH_AUTHORIZE_URL . '?appid=' . $this->appid . '&redirect_uri=' . rawurlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
 	}
 
 	/**
@@ -1010,7 +1012,7 @@ class Wechat {
 	 */
 	public function getOAuthQR($callback, $state = '', $scope = 'snsapi_base') {
 
-		return self::QR_AUTHORIZATION_URL . '?appid='.$this->appid . '&redirect_uri=' . urlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
+		return self::QR_AUTHORIZATION_URL . '?appid='.$this->appid . '&redirect_uri=' . rawurlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
 	}
 	
 	/**
@@ -1661,7 +1663,7 @@ class Wechat {
 	 * @param  string 		$orderId    	Local order ID
 	 * @param  float  		$money 			Amound in RMB
 	 * @param  string 		$notify_url 	Callback URL - default empty string
-	 * @param  array|string $extend  		Used to extend the parameters sent to the wechat payment interface - if string, will be attributed to 'attach' - default empty array
+	 * @param  array|string $extend  		Used to extend the parameters sent to the WeChat payment interface - if string, will be attributed to 'attach' - default empty array
 	 * @return string|bool
 	 */
 	public function webUnifiedOrder($product_id, $body, $orderId, $money, $notify_url = '', $extend = array()) {
@@ -1720,13 +1722,13 @@ class Wechat {
 	}
 
 	/**
-	 * Gets JSON Unified order (use with JSAPI in wechat browser)
+	 * Gets JSON Unified order (use with JSAPI in WeChat browser)
 	 * @param  string 		$openid     	User OpenID
 	 * @param  string 		$body       	Product Description - 126 bytes max.
 	 * @param  string 		$orderId    	Local order ID
 	 * @param  float  		$money 			Amound in RMB
 	 * @param  string 		$notify_url 	Callback URL - default empty string
-	 * @param  array|string $extend  		Used to extend the parameters sent to the wechat payment interface - if string, will be attributed to 'attach' - default empty array
+	 * @param  array|string $extend  		Used to extend the parameters sent to the WeChat payment interface - if string, will be attributed to 'attach' - default empty array
 	 * @return array|boolean
 	 */
 	public function unifiedOrder($openid, $body, $orderId, $money, $notify_url = '', $extend = array()) {
@@ -1788,7 +1790,7 @@ class Wechat {
 
 	/**
 	 * Generates payment parameters
-	 * @param  string $prepay_id The prepay_id parameter generated by the wechat payment interface
+	 * @param  string $prepay_id The prepay_id parameter generated by the WeChat payment interface
 	 * @return string
 	 */
 	private function createPayParams($prepay_id) {
@@ -1810,9 +1812,9 @@ class Wechat {
 	}
 
 	/**
-	 * Gets order info from the wechat pay interface
+	 * Gets order info from the WeChat pay interface
 	 * @param  string 	$orderId 	Order ID
-	 * @param  bool 	$local 		If set to true, order ID is a Local order ID ; wechat payment interface transaction_id otherwise - default false
+	 * @param  bool 	$local 		If set to true, order ID is a Local order ID ; WeChat payment interface transaction_id otherwise - default false
 	 * @return boolean|array
 	 */
 	public function getOrderInfo($orderId, $local = false) {
@@ -1875,7 +1877,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets Local order refund status from the wechat payment interface 
+	 * Gets Local order refund status from the WeChat payment interface 
 	 * @param  string $orderId Local order ID
 	 * @return boolean|array
 	 */
@@ -2000,7 +2002,7 @@ class Wechat {
 	}
 
 	/**
-	 * Parses result of the wechat payment interface
+	 * Parses result of the WeChat payment interface
 	 * @param  xmlstring $data      The data returned by the interface
 	 * @param  boolean   $checkSign Whether signature verification is required - default true
 	 * @return boolean|array
@@ -2040,7 +2042,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets wechat payment interface notification
+	 * Gets WeChat payment interface notification
 	 * @return array
 	 */
 	public function getNotify() {
@@ -2050,8 +2052,8 @@ class Wechat {
 	}
 
 	/**
-	 * Return a notification to the wechat payment interface
-	 * @param  string $return_msg Error message to return to the wechat payment interface - default empty string
+	 * Return a notification to the WeChat payment interface
+	 * @param  string $return_msg Error message to return to the WeChat payment interface - default empty string
 	 * @return string
 	 */
 	public function returnNotify($return_msg = '') {
@@ -2073,7 +2075,7 @@ class Wechat {
 
 	/**
 	 * Checks payment data signature
-	 * @param  $data The data from wechat interface
+	 * @param  $data The data from WeChat interface
 	 * @return boolean
 	 */
 	private function _checkSign($data) {

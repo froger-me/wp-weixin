@@ -12,12 +12,13 @@ WordPress WeChat integration
 
 == Description ==
 
-WP Weixin enables integration between WordPress and WeChat. It is fully functional as a standalone plugin, and acts as a core for [Woo WeChatPay](https://anyape.com/woo-wechatpay.html) payment gateway for WooCommerce and [WP Weixin Pay](https://anyape.com/wp-weixin-pay.html) extension.
+WP Weixin enables integration between WordPress and WeChat. It is fully functional as a standalone plugin, and acts as a core for [Woo WeChatPay](https://wordpress.org/plugins/woo-wechatpay) payment gateway for WooCommerce and [WP Weixin Pay](https://wordpress.org/plugins/wp-weixin-pay) money transfer extension.
 
 ### Important notes
 
 * Although the plugin does provide really useful functionalities out of the box, such as WeChat authentication and Official Account menu integration, it really shines when used by developers to extend its functionalities (mainly through the pre-initialised JS SDK, the WeChat Responder, and various actions and filters).
-* The plugin does not support multisite at this stage, and is to be used with a China Mainland WeChat Official Account (Subscription or Service - Service is required if used with companion plugins dealing with payments).
+* The plugin is to be used with a China Mainland WeChat Official Account (Subscription or Service - Service is required if used with companion plugins dealing with payments).
+* Make sure to read the "TROUBLESHOOT, FEATURE REQUESTS AND 3RD PARTY INTEGRATION" section below and [the full documentation](https://github.com/froger-me/wp-weixin) before contacting the author.
 
 ### Overview
 
@@ -37,7 +38,25 @@ This plugin adds the following major features to WordPress:
 
 Developers are encouraged to build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available functions, actions and filters.  
 
-For more information, see [the full documentation](https://github.com/froger-me/wp-weixin).
+### Multisite
+
+WP Weixin supports multisite installs of WordPress, wether using subdomains or subdirectories. WP Weixin needs to be configured with the same settings and enabled on all the blogs where authentication is needed for a given Official Account.
+With WeChat mobile authentication enabled, users visiting one of the blogs are automatically registered to the network, and added to the visited blog with the blog's default user role.
+Users are also automatically added to other blogs of the network upon visit when already logged in on one of the blogs (the behavior can be changed with the `wp_weixin_ms_auto_add_to_blog` filter, for example if some of the blogs do not accept pre-authenticated WeChat users).
+When using a domain-based network of blogs, the main blog's subdomain is used for cross-domain authentication (the behavior can be changed with the filter `wp_weixin_ms_auth_blog_id` if another domain is registered in the WeChat Official Account's backend).
+Because WP Weixin's settings page can be edited for each blog of a network, it is possible to use the plugin with mutliple Official Accounts.
+
+### Troubleshoot, feature requests and 3rd party integration
+
+WP Weixin and its companion plugins are provided for free.  
+
+WP Weixin is regularly updated, and bug reports are welcome, preferably on [Github](https://github.com/froger-me/wp-weixin/issues). Each bug report will be addressed in a timely manner, but issues reported on WordPress may take significantly longer to receive a response.  
+
+WP Weixin and all the companion plugins have been tested with the latest version of WordPress and WooCommerce - in case of issue, please ensure you are able to reproduce it with a default installation of WordPress, WooCommerce plugin, and Storefront theme before reporting a bug.  
+
+Feature requests ("it would be nice to have XYZ") or 3rd party integration requests (such as "it is not working with XYZ plugin" or "it is not working with my theme") for WP Weixin and all its companion plugins will be considered only after receiving a WeChat red envelope (红包) of a minimum RMB 500 on WeChat. 
+
+To add the author on WeChat, click [here](https://froger.me/wp-content/uploads/2018/04/wechat-qr.png), scan the WeChat QR code, and add "WP Weixin" as a comment in your contact request.  
 
 == Installation ==
 
@@ -48,6 +67,13 @@ This section describes how to install the plugin and get it working.
 3. Edit plugin settings
 
 == Changelog ==
+
+= 1.2 =
+* Optimized rewrite rules registration
+* Multisite support with cross-domain authentication
+* Fix unnecessary redirect when visiting QR code auth the first time
+* Better compatibility with WPML and WooCommerce
+* Better compatibility with Open Social
 
 = 1.1.2 =
 * Adjust hooks priorities and condition for authentication hooks registration

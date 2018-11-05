@@ -18,12 +18,11 @@ class WP_Weixin_Menu {
 			add_action( 'admin_head-nav-menus.php', array( $this, 'add_meta_box' ), 10, 0 );
 			// Add menu location for WeChat
 			add_action( 'after_setup_theme', array( $this, 'add_menu_location' ), 10, 0 );
-			// Publish the menu to wechat on save
+			// Publish the menu to WeChat on save
 			add_action( 'wp_update_nav_menu', array( $this, 'publish' ), 10, 2 );
 			// Add admin scripts
 			add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 99, 1 );
 			// Add callback when adding a menu item: handle WeChat Menu Item menu type
-			add_action( 'wp_ajax_add_wechat_menu_item', array( $this, 'wp_ajax_add_menu_item' ), 10, 0 );
 			add_action( 'wp_ajax_add_wechat_menu_item', array( $this, 'wp_ajax_add_menu_item' ), 10, 0 );
 			// Add save logic when adding a menu item: handle WeChat Menu Item menu type
 			add_action( 'wpupdate_nav_menu_item', array( $this, 'update_nav_menu_item' ), 0, 3 );

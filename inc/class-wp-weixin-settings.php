@@ -28,11 +28,13 @@ class WP_Weixin_Settings {
 			// Build WP Weixin settings page
 			add_action( 'admin_init', array( $this, 'build_settings_page' ) );
 			// Add the API endpoints
-			add_action( 'init', array( $this, 'add_endpoints' ), 0, 0 );
+			add_action( 'init', array( $this, 'add_endpoints' ), PHP_INT_MIN, 0 );
 			// Parse the endpoint request
 			add_action( 'parse_request', array( $this, 'parse_request' ), 0, 0 );
 			// Add QR code generation ajax callback
 			add_action( 'wp_ajax_wp_weixin_get_settings_qr', array( $this, 'get_qr_hash' ), 10, 0 );
+			// set transient flush on option save
+			add_action( 'update_option_wp_weixin_settings', array( $this, 'set_wp_weixin_flush' ), 10, 3 );
 
 			// Add settings pages query vars
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0, 1 );
@@ -121,6 +123,10 @@ class WP_Weixin_Settings {
 		return $value;
 	}
 
+	public function set_wp_weixin_flush( $old_value, $value, $option ) {
+		set_transient( 'wp_weixin_flush', 1, 60 );
+	}
+
 	public function add_admin_scripts( $hook ) {
 
 		if ( 'toplevel_page_wp-weixin' === $hook ) {
@@ -192,6 +198,7 @@ class WP_Weixin_Settings {
 	}
 
 	public function add_endpoints() {
+		do_action( 'wp_weixin_endpoints' );
 		add_rewrite_rule( '^wp-weixin/get-qrcode/hash/(.*)$', 'index.php?__wp_weixin_api=1&action=get-qrcode&hash=$matches[1]', 'top' );
 	}
 
@@ -323,8 +330,10 @@ class WP_Weixin_Settings {
 
 		$ecommerce_description  = __( 'Settings to use with a WeChat Service Account.', 'wp-weixin' );
 		$ecommerce_description .= '<br/>';
-		// translators: 1 is backend URL
-		$ecommerce_description .= sprintf( __( 'The URLs in the merchant platform backend at %1$s should be configured as follows:', 'wp-weixin' ), '<a href="https://pay.weixin.qq.com/index.php/extend/pay_setting" target="_blank">https://pay.weixin.qq.com/index.php/extend/pay_setting</a>' );
+		// translators: %s is "permalinks structure" with link to admin page
+		$ecommerce_description .= '<span style="font-weight: bold;">' . sprintf( __( 'Make sure the %s ends with a forward slash ("/") to ensure compatibility with WeChat Pay API.', 'wp-weixin' ), '<a href="' . admin_url( 'options-permalink.php' ) . '" target="_blank">permalinks structure</a>' ) . '</span><br/>';
+		// translators: %s is backend URL
+		$ecommerce_description .= sprintf( __( 'The URLs in the merchant platform backend at %s should be configured as follows:', 'wp-weixin' ), '<a href="https://pay.weixin.qq.com/index.php/extend/pay_setting" target="_blank">https://pay.weixin.qq.com/index.php/extend/pay_setting</a>' );
 		$ecommerce_description .= '<br/>';
 
 		if ( ! empty( $jsapi_urls ) ) {
@@ -492,7 +501,7 @@ class WP_Weixin_Settings {
 					'help'  => __( 'The EncodingAESKey in the backend at <a href="https://mp.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a> under Development > Basic configuration.', 'wp-weixin' ),
 				),
 				'title'       => __( 'WeChat Responder Settings', 'wp-weixin' ),
-				'description' => __( 'Settings for the website to interact with the WeChat API.', 'wp-weixin' ),
+				'description' => __( 'Settings for the website to interact with the WeChat API.<br/>Enabling the Responder will remove the Official Account menu set in <a href="https://pay.weixin.qq.com" target="_blank">https://mp.weixin.qq.com/</a>, and the Official Account menu can be set with "Wechat menu (WeChat Official Account menu)" in Appearance > Menu in WordPress.', 'wp-weixin' ),
 			),
 			'ecommerce' => array(
 				array(
