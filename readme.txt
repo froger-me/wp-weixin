@@ -52,7 +52,7 @@ WP Weixin and its companion plugins are provided for free.
 
 WP Weixin is regularly updated, and bug reports are welcome, preferably on [Github](https://github.com/froger-me/wp-weixin/issues). Each bug report will be addressed in a timely manner, but issues reported on WordPress may take significantly longer to receive a response.  
 
-WP Weixin and all the companion plugins have been tested with the latest version of WordPress and WooCommerce - in case of issue, please ensure you are able to reproduce it with a default installation of WordPress, WooCommerce plugin, and Storefront theme before reporting a bug.  
+Wp Weixin and all the companion plugins have been tested with the latest version of WordPress and WooCommerce - in case of issue, please ensure you are able to reproduce it with a default installation of WordPress, WooCommerce plugin, and Storefront theme before reporting a bug.  
 
 Feature requests ("it would be nice to have XYZ") or 3rd party integration requests (such as "it is not working with XYZ plugin" or "it is not working with my theme") for WP Weixin and all its companion plugins will be considered only after receiving a WeChat red envelope (红包) of a minimum RMB 500 on WeChat. 
 
@@ -67,6 +67,19 @@ This section describes how to install the plugin and get it working.
 3. Edit plugin settings
 
 == Changelog ==
+
+= 1.2.2 =
+* Fixed bug redirecting to posts list after first authentication
+* Do authentication in `wp_loaded` instead of `template_redirect`
+* WeChat Pay Settings: add PEM certificates fields
+* SDK: add `public function cert_files_exist()`
+* SDK: fix refund method
+* SDK: fix payment request parsing method
+* Update documentation
+
+= 1.2.1 =
+* Better error log
+* Fix persistent cache handling
 
 = 1.2 =
 * Optimized rewrite rules registration

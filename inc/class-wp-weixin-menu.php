@@ -200,7 +200,7 @@ class WP_Weixin_Menu {
 				}
 
 				if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
-					error_log( print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
+					error_log( __METHOD__ . ': ' . print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
 				}
 
 				if ( ! empty( $menus['button'] ) ) {
@@ -213,7 +213,7 @@ class WP_Weixin_Menu {
 				}
 
 				if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
-					error_log( print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
+					error_log( __METHOD__ . ': ' . print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
 				}
 			}
 		}

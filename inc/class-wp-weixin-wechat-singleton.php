@@ -23,7 +23,11 @@ class WP_Weixin_Wechat_Singleton {
 				$wechat_sdk   = new Wechat( $config );
 				self::$wechat = new WP_Weixin_Wechat( $wechat_sdk );
 
-				if ( ( current_time( 'timestamp' ) + 1800 ) >= absint( self::$wechat->getAccessTokenExpiry() ) || ! $access_info['token'] || ! $access_info['expiry'] ) {
+				if (
+					( current_time( 'timestamp' ) + 1800 ) >= absint( self::$wechat->getAccessTokenExpiry() ) ||
+					! $access_info['token'] ||
+					! $access_info['expiry']
+				) {
 					self::renew_access_token();
 				}
 
@@ -128,6 +132,14 @@ class WP_Weixin_Wechat_Singleton {
 		$proxy      = isset( $settings['wp_weixin_proxy'] ) ? (bool) $settings['wp_weixin_proxy'] : null;
 		$host       = isset( $settings['wp_weixin_proxy_host'] ) && ! empty( 'wp_weixin_proxy_host' ) ? $settings['wp_weixin_proxy_host'] : null;
 		$port       = isset( $settings['wp_weixin_proxy_port'] ) && ! empty( 'wp_weixin_proxy_port' ) ? $settings['wp_weixin_proxy_port'] : null;
+		$pem        = isset( $settings['wp_weixin_pem'] ) && ! empty( 'wp_weixin_pem' ) ? $settings['wp_weixin_pem'] : 'apiclient';
+		$pem_path   = isset( $settings['wp_weixin_pem_path'] ) && ! empty( 'wp_weixin_pem_path' ) ? $settings['wp_weixin_pem_path'] : null;
+
+		if ( ! isset( $settings['wp_weixin_pem'] ) ) {
+			$settings['wp_weixin_pem'] = 'apiclient';
+
+			update_option( 'wp_weixin_settings', $settings );
+		}
 
 		$ecommerce_active = $ecommerce || is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' );
 
@@ -171,6 +183,8 @@ class WP_Weixin_Wechat_Singleton {
 			'proxy'               => $proxy,
 			'proxyHost'           => $host,
 			'proxyPort'           => $port,
+			'pem'                 => $pem,
+			'pemPath'             => trailingslashit( $pem_path ),
 		];
 
 		return $options;

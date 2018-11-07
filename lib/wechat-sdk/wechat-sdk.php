@@ -370,8 +370,6 @@ class Wechat {
 			$url = self::MENU_CREATE_URL . '?access_token=' . $this->getAccessToken();
 		}
 
-		error_log(print_r($params, true));
-
 		$jsonStr = $this->http($url, $params, 'POST');
 		$jsonArr = $this->parseJson($jsonStr);
 
@@ -1423,6 +1421,11 @@ class Wechat {
 		}
 	}
 
+	public function cert_files_exist() {
+
+		return file_exists( $this->pemPath . $this->pem . '_cert.pem' ) && file_exists( $this->pemPath . $this->pem . '_key.pem' );
+	}
+
 	/**
 	 * Creates a temporary Asset (aka media)
 	 * @param  string $file  Absolute path to a file
@@ -1855,7 +1858,7 @@ class Wechat {
 	/**
 	 * Requests a refund (Requires an SSL certificate)
 	 * @param  string 	$orderId 		Local order ID
-	 * @param  string 	$orderId 		Merchant refund ID ([A-Za-z_- | * @])
+	 * @param  string 	$refundId 		Merchant refund ID ([A-Za-z_- | * @])
 	 * @param  float 	$total_fee 		Total order fee in RMB
 	 * @param  float 	$refund_fee 	Refund fee in RMB - default 0
 	 * @return boolean|array
@@ -2016,15 +2019,16 @@ class Wechat {
 			return false;
 		}
 
-		if ($checkSign) {
-
-			if (!self::_checkSign($data)) {
-
-				return false;
-			}
-		}
 
 		if ($data['return_code'] === 'SUCCESS') {
+
+			if ($checkSign) {
+
+				if (!self::_checkSign($data)) {
+
+					return false;
+				}
+			}
 
 			if ($data['result_code'] === 'SUCCESS') {
 

@@ -23,11 +23,13 @@ class WP_Weixin_Wechat {
 			$error  = $this->wechat->getError();
 
 			if ( $error && absint( $error['code'] ) === 40001 ) {
-				error_log( __CLASS__ . ': Error - access token is most likely expired ; retry after renewing' ); // @codingStandardsIgnoreLine
+				error_log( __METHOD__ . ': Error - access token is most likely expired ; retry after renewing' ); // @codingStandardsIgnoreLine
 				WP_Weixin_Wechat_Singleton::renew_access_token( $this->wechat );
 
 				$result = call_user_func_array( array( $this->wechat, $method_name ), $args );
-				error_log( __CLASS__ . ': End retry after renewing' ); // @codingStandardsIgnoreLine
+				error_log( __METHOD__ . ': End retry after renewing' ); // @codingStandardsIgnoreLine
+			} elseif ( $error ) {
+				error_log( __METHOD__ . ': ' . print_r( $error, true ) ); // @codingStandardsIgnoreLine
 			}
 
 			return $result;

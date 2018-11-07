@@ -29,8 +29,6 @@ class WP_Weixin {
 				'wp_weixin_subscribe_time',
 			);
 
-			// Make sure we're not caching in a persistent object cache if a persistent plugin is installed
-			add_action( 'init', array( $this, 'set_cache_policy' ), 0, 0 );
 			// Add translation
 			add_action( 'init', array( $this, 'load_textdomain' ), 0, 0 );
 			// Add main scripts & styles
@@ -46,13 +44,13 @@ class WP_Weixin {
 			add_action( 'edit_user_profile', array( $this, 'user_profile_wechat_info' ), 10, 1 );
 
 			// Get WeChat avatar if exists
-			add_filter( 'get_avatar', array( $this, 'avatar' ), 1, 5 );
+			add_filter( 'get_avatar', array( $this, 'avatar' ), PHP_INT_MAX, 5 );
 			// Filter WeChat get meta - add better getters for raw rata
 			add_filter( 'get_user_metadata', array( $this, 'filter_wechat_get_user_meta' ), 1, 4 );
 			// Filter WeChat update meta - add better setters for raw data
 			add_filter( 'update_user_metadata', array( $this, 'filter_wechat_update_user_meta' ), 1, 5 );
 			// Add main query vars
-			add_filter( 'query_vars', array( $this, 'add_query_vars' ), -99, 1 );
+			add_filter( 'query_vars', array( $this, 'add_query_vars' ), PHP_INT_MIN, 1 );
 
 			if ( WP_Weixin_Settings::get_option( 'alter_userscreen' ) ) {
 				// Add WeChat name column
@@ -197,10 +195,6 @@ class WP_Weixin {
 				$sitepress->switch_lang( $language );
 			}
 		}
-	}
-
-	public function set_cache_policy() {
-		wp_cache_add_non_persistent_groups( 'wp_weixin' );
 	}
 
 	public function load_textdomain() {

@@ -19,6 +19,8 @@ class WP_Weixin_Settings {
 
 		if ( $init_hooks ) {
 
+			// Make sure we're not caching in a persistent object cache if a persistent plugin is installed
+			$this->set_cache_policy();
 			// Init settings definition
 			add_action( 'wp_loaded', array( $this, 'init_settings_definition' ), 10, 0 );
 			// Add admin scripts
@@ -39,7 +41,6 @@ class WP_Weixin_Settings {
 			// Add settings pages query vars
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0, 1 );
 		}
-
 	}
 
 	/*******************************************************************
@@ -121,6 +122,10 @@ class WP_Weixin_Settings {
 		$value = apply_filters( 'wp_weixin_get_' . $key . '_option', $value, $key );
 
 		return $value;
+	}
+
+	public function set_cache_policy() {
+		wp_cache_add_non_persistent_groups( 'wp_weixin' );
 	}
 
 	public function set_wp_weixin_flush( $old_value, $value, $option ) {
@@ -545,6 +550,20 @@ class WP_Weixin_Settings {
 					'type'  => 'text',
 					'class' => 'regular-text',
 					'help'  => __( 'The Merchant Key in the backend at <a href="https://pay.weixin.qq.com/index.php/core/cert/api_cert" target="_blank">https://pay.weixin.qq.com/index.php/core/cert/api_cert</a>.', 'wp-weixin' ),
+				),
+				array(
+					'id'    => 'pem',
+					'label' => __( 'PEM certificate prefix', 'wp-weixin' ),
+					'type'  => 'text',
+					'class' => 'regular-text',
+					'help'  => __( 'The prefix of the certificate files downloaded from <a href="https://pay.weixin.qq.com/index.php/extend/pay_setting" target="_blank">https://pay.weixin.qq.com/index.php/core/cert/api_cert</a> - certificate files default prefix is <code>apiclient</code> (for <code>apiclient_cert.pem</code> and <code>apiclient_key.pem</code> files). Required notably to handle refunds through WeChat Pay.', 'wp-weixin' ),
+				),
+				array(
+					'id'    => 'pem_path',
+					'label' => __( 'PEM certificate files path', 'wp-weixin' ),
+					'type'  => 'text',
+					'class' => 'regular-text',
+					'help'  => __( 'The absolute path to the containing folder of the certificate files downloaded from <a href="https://pay.weixin.qq.com/index.php/core/cert/api_cert" target="_blank">https://pay.weixin.qq.com/index.php/core/cert/api_cert</a> on the current file system. Example: <code>/home/user/wechat-certificates</code>. Must have read permissions for the user running PHP, and located outside of the web root. Required notably to handle refunds through WeChat Pay.', 'wp-weixin' ),
 				),
 				'title'       => __( 'WeChat Pay Settings', 'wp-weixin' ),
 				'description' => $ecommerce_description,

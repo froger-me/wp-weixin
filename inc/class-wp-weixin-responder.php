@@ -66,6 +66,8 @@ class WP_Weixin_Responder {
 					WP_Weixin_Wechat_Singleton::renew_access_token( $this->wechat );
 
 					$follower_info = $this->wechat->follower( $openid );
+				} elseif ( $error ) {
+					error_log( __METHOD__ . ': ' . print_r( $error, true ) ); // @codingStandardsIgnoreLine
 				}
 
 				if ( ! $follower_info ) {
