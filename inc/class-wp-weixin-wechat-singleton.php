@@ -12,6 +12,7 @@ class WP_Weixin_Wechat_Singleton {
 	/*******************************************************************
 	 * Public methods
 	 *******************************************************************/
+
 	public static function get_wechat() {
 
 		if ( ! self::$wechat ) {
@@ -20,7 +21,7 @@ class WP_Weixin_Wechat_Singleton {
 			if ( ! self::$wechat ) {
 				$access_info  = self::get_access_info();
 				$config       = self::get_wechat_config( $access_info['token'], $access_info['expiry'] );
-				$wechat_sdk   = new Wechat( $config );
+				$wechat_sdk   = new Wechat_SDK( $config );
 				self::$wechat = new WP_Weixin_Wechat( $wechat_sdk );
 
 				if (
@@ -57,7 +58,7 @@ class WP_Weixin_Wechat_Singleton {
 		$message = __( 'WP Weixin is not ready. ', 'wp-weixin' );
 		$link    = '<a href="' . admin_url( '?page=wp-weixin' ) . '">' . __( 'Edit configuration', 'wp-weixin' ) . '</a>';
 
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . self::$error ); // @codingStandardsIgnoreLine
+		echo sprintf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . self::$error ); // WPCS: XSS ok
 	}
 
 	/*******************************************************************
@@ -71,7 +72,10 @@ class WP_Weixin_Wechat_Singleton {
 			'expiry' => '',
 		);
 
-		if ( isset( $settings['wp_weixin_custom_token_persistence'] ) && $settings['wp_weixin_custom_token_persistence'] ) {
+		if (
+			isset( $settings['wp_weixin_custom_token_persistence'] ) &&
+			$settings['wp_weixin_custom_token_persistence']
+		) {
 
 			if ( ! has_filter( 'wp_weixin_get_access_info' ) ) {
 
@@ -84,8 +88,8 @@ class WP_Weixin_Wechat_Singleton {
 			}
 			$access_info = apply_filters( 'wp_weixin_get_access_info', $access_info );
 		} else {
-			$access_info['token']  = get_option( 'wp_weixin_access_token' );
-			$access_info['expiry'] = get_option( 'wp_weixin_access_token_expiry' );
+			$access_info['token']  = get_site_option( 'wp_weixin_access_token_' . $settings['wp_weixin_appid'] );
+			$access_info['expiry'] = get_site_option( 'wp_weixin_access_token_expiry_' . $settings['wp_weixin_appid'] );
 		}
 
 		return $access_info;
@@ -111,8 +115,8 @@ class WP_Weixin_Wechat_Singleton {
 			}
 			do_action( 'wp_weixin_save_access_info', $access_info );
 		} else {
-			update_option( 'wp_weixin_access_token', $access_token, false );
-			update_option( 'wp_weixin_access_token_expiry', $token_expiry, false );
+			update_site_option( 'wp_weixin_access_token_' . $settings['wp_weixin_appid'], $access_token, false );
+			update_site_option( 'wp_weixin_access_token_expiry_' . $settings['wp_weixin_appid'], $token_expiry, false );
 		}
 	}
 
@@ -141,10 +145,8 @@ class WP_Weixin_Wechat_Singleton {
 			update_option( 'wp_weixin_settings', $settings );
 		}
 
-		$ecommerce_active = $ecommerce || is_plugin_active( 'woo-wechatpay/woo-wechatpay.php' );
-
 		$configuration_fail = ! $appid || ! $secret || ( $encode && ! $aeskey ) || ( $responder && ! $token );
-		$configuration_fail = $configuration_fail || ( $ecommerce_active && ( ! $mch_id || ! $mch_key ) );
+		$configuration_fail = $configuration_fail || ( $ecommerce && ( ! $mch_id || ! $mch_key ) );
 
 		if ( $configuration_fail ) {
 
@@ -191,12 +193,11 @@ class WP_Weixin_Wechat_Singleton {
 	}
 
 	protected static function show_frontend_error() {
-		$title   = '<h2>' . __( 'Configuration error', 'wp-weixin' ) . '</h2>';
-		$message = '<p>' . __( 'WP Weixin is not configured properly. ', 'wp-weixin' );
-
+		$title    = '<h2>' . __( 'Configuration error', 'wp-weixin' ) . '</h2>';
+		$message  = '<p>' . __( 'WP Weixin is not configured properly. ', 'wp-weixin' );
 		$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-		wp_die( $title . $message ); // @codingStandardsIgnoreLine
+		wp_die( $title . $message ); // WPCS: XSS ok
 	}
 
 	protected static function set_error( $context, $error_vars = null ) {
@@ -218,11 +219,8 @@ class WP_Weixin_Wechat_Singleton {
 				break;
 			case 'custom_token_persistence':
 				$message = 'Missing custom persistence hook. ';
-
-				$message .= 'Please make sure <code>wp_weixin_get_access_info</code>';
-				$message .= 'and <code>wp_weixin_save_access_info</code> are implemented';
-
-				$error .= '<li>' . __( $message, 'wp-weixin' ) . '</li>'; // @codingStandardsIgnoreLine
+				$message = __( 'Please make sure <code>wp_weixin_get_access_info</code> and <code>wp_weixin_save_access_info</code> are implemented', 'wp-weixin' );
+				$error  .= '<li>' . $message . '</li>';
 				break;
 			default:
 				$error .= '<li>' . __( 'An unexpected configuration error has occured.', 'wp-weixin' ) . '</li>';

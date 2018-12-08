@@ -13,76 +13,77 @@
  * @author     Alexandre Froger
  * @copyright  2017 froger.me
  * @license    MIT License
- * @version    1.0
- * @link       TBD
+ * @version    2.0
  * @see        http://froger.me
  */
 
-class Wechat {
-
+class Wechat_SDK {
 	/* Get access_token URL */
-	const AUTH_URL                			= 'https://api.weixin.qq.com/cgi-bin/token';
+	const AUTH_URL = 'https://api.weixin.qq.com/cgi-bin/token';
 	/* Menu URLs */
-	const MENU_CREATE_URL         			= 'https://api.weixin.qq.com/cgi-bin/menu/create';
-	const MENU_GET_URL            			= 'https://api.weixin.qq.com/cgi-bin/menu/get';
-	const MENU_DELETE_URL         			= 'https://api.weixin.qq.com/cgi-bin/menu/delete';
-	const MENU_CREATE_CONDITIONAL_URL    	= 'https://api.weixin.qq.com/cgi-bin/menu/addconditional';
-	const MENU_DELETE_CONDITIONAL_URL    	= 'https://api.weixin.qq.com/cgi-bin/menu/delconditional';
+	const MENU_CREATE_URL             = 'https://api.weixin.qq.com/cgi-bin/menu/create';
+	const MENU_GET_URL                = 'https://api.weixin.qq.com/cgi-bin/menu/get';
+	const MENU_DELETE_URL             = 'https://api.weixin.qq.com/cgi-bin/menu/delete';
+	const MENU_CREATE_CONDITIONAL_URL = 'https://api.weixin.qq.com/cgi-bin/menu/addconditional';
+	const MENU_DELETE_CONDITIONAL_URL = 'https://api.weixin.qq.com/cgi-bin/menu/delconditional';
 	/* User and user group URLs */
-	const USER_GET_URL            			= 'https://api.weixin.qq.com/cgi-bin/user/get';
-	const USER_INFO_URL           			= 'https://api.weixin.qq.com/cgi-bin/user/info';
-	const USER_IN_GROUP_URL       			= 'https://api.weixin.qq.com/cgi-bin/groups/getid';
-	const GROUP_GET_URL           			= 'https://api.weixin.qq.com/cgi-bin/groups/get';
-	const GROUP_CREATE_URL        			= 'https://api.weixin.qq.com/cgi-bin/groups/create';
-	const GROUP_UPDATE_URL        			= 'https://api.weixin.qq.com/cgi-bin/groups/update';
-	const GROUP_MEMBER_UPDATE_URL 			= 'https://api.weixin.qq.com/cgi-bin/groups/members/update';
+	const USER_GET_URL            = 'https://api.weixin.qq.com/cgi-bin/user/get';
+	const USER_INFO_URL           = 'https://api.weixin.qq.com/cgi-bin/user/info';
+	const USER_IN_GROUP_URL       = 'https://api.weixin.qq.com/cgi-bin/groups/getid';
+	const GROUP_GET_URL           = 'https://api.weixin.qq.com/cgi-bin/groups/get';
+	const GROUP_CREATE_URL        = 'https://api.weixin.qq.com/cgi-bin/groups/create';
+	const GROUP_UPDATE_URL        = 'https://api.weixin.qq.com/cgi-bin/groups/update';
+	const GROUP_MEMBER_UPDATE_URL = 'https://api.weixin.qq.com/cgi-bin/groups/members/update';
 	/* Send customer service message URL */
-	const CUSTOM_SEND_URL         			= 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
+	const CUSTOM_SEND_URL = 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
 	/* Parametric QR code URLs */
-	const QRCODE_URL              			= 'https://api.weixin.qq.com/cgi-bin/qrcode/create';
-	const QRCODE_SHOW_URL         			= 'https://mp.weixin.qq.com/cgi-bin/showqrcode';
+	const QRCODE_URL      = 'https://api.weixin.qq.com/cgi-bin/qrcode/create';
+	const QRCODE_SHOW_URL = 'https://mp.weixin.qq.com/cgi-bin/showqrcode';
 	/* Web browser authentication QR code URL */
-	const QR_AUTHORIZATION_URL 	  			= 'https://open.weixin.qq.com/connect/qrconnect';
+	const QR_AUTHORIZATION_URL = 'https://open.weixin.qq.com/connect/qrconnect';
 	/* OAuth2.0 URLs */
-	const OAUTH_AUTHORIZE_URL     			= 'https://open.weixin.qq.com/connect/oauth2/authorize';
-	const OAUTH_USER_TOKEN_URL    			= 'https://api.weixin.qq.com/sns/oauth2/access_token';
-	const OAUTH_REFRESH_URL       			= 'https://api.weixin.qq.com/sns/oauth2/refresh_token';
+	const OAUTH_AUTHORIZE_URL  = 'https://open.weixin.qq.com/connect/oauth2/authorize';
+	const OAUTH_USER_TOKEN_URL = 'https://api.weixin.qq.com/sns/oauth2/access_token';
+	const OAUTH_REFRESH_URL    = 'https://api.weixin.qq.com/sns/oauth2/refresh_token';
 	/* Get user info URL */
-	const GET_USER_INFO_URL	  	  			= 'https://api.weixin.qq.com/sns/userinfo';
+	const GET_USER_INFO_URL = 'https://api.weixin.qq.com/sns/userinfo';
 	/* Message template URL */
-	const TEMPLATE_SEND_URL		  			= 'https://api.weixin.qq.com/cgi-bin/message/template/send';
+	const TEMPLATE_SEND_URL = 'https://api.weixin.qq.com/cgi-bin/message/template/send';
 	/* JS-SDK jsapi_ticket URL */
-	const JSAPI_TICKET_URL        			= 'https://api.weixin.qq.com/cgi-bin/ticket/getticket';
-	/* Unified order URL */
-	const UNIFIED_ORDER_URL       			= 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+	const JSAPI_TICKET_URL = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket';
+	/* Unified order */
+	const UNIFIED_ORDER_URL               = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+	const UNIFIED_ORDER_INTERFACE_VERSION = '1.0';
 	/* Order status inquiry URL */
-	const ORDER_QUERY_URL         			= 'https://api.mch.weixin.qq.com/pay/orderquery';
+	const ORDER_QUERY_URL = 'https://api.mch.weixin.qq.com/pay/orderquery';
 	/* Close order URL */
-	const CLOSE_ORDER_URL         			= 'https://api.mch.weixin.qq.com/pay/closeorder';
+	const CLOSE_ORDER_URL = 'https://api.mch.weixin.qq.com/pay/closeorder';
+	/* Cancel payment URL */
+	const REVERSE_TRANSACTION_URL = 'https://api.mch.weixin.qq.com/secapi/pay/reverse';
 	/* Refund URL */
-	const PAY_REFUND_ORDER_URL	  			= 'https://api.mch.weixin.qq.com/secapi/pay/refund';
+	const PAY_REFUND_ORDER_URL = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
 	/* Refund inquiry URL */
-	const REFUND_QUERY_URL        			= 'https://api.mch.weixin.qq.com/pay/refundquery';
+	const REFUND_QUERY_URL = 'https://api.mch.weixin.qq.com/pay/refundquery';
 	/* Download bill URL */
-	const DOWNLOAD_BILL_URL       			= 'https://api.mch.weixin.qq.com/pay/downloadbill';
+	const DOWNLOAD_BILL_URL = 'https://api.mch.weixin.qq.com/pay/downloadbill';
 	/* URL shortener tool URL */
-	const GET_SHORT_URL           			= 'https://api.mch.weixin.qq.com/tools/shorturl';
+	const GET_SHORT_URL = 'https://api.mch.weixin.qq.com/tools/shorturl';
 	/* Send red envelope URL */
-	const SEND_RED_PACK_URL       			= 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack';
+	const SEND_RED_PACK_URL = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack';
 	/* Send shared red envelope URL */
-	const SEND_GROUP_RED_PACK_URL 			= 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendgroupredpack';
+	const SEND_GROUP_RED_PACK_URL = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendgroupredpack';
 	/* Red envelope inquiry URL */
-	const GET_RED_PACK_INFO_URL   			= 'https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo';
+	const GET_RED_PACK_INFO_URL = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo';
 	/* Assets management URLs */
-	const MEDIA_UPLOAD_URL        			= 'https://api.weixin.qq.com/cgi-bin/media/upload';               // add temporary Asset
-	const MEDIA_GET_URL           			= 'https://api.weixin.qq.com/cgi-bin/media/get';                  // get temporary Asset
-	const MATERIAL_NEWS_URL       			= 'https://api.weixin.qq.com/cgi-bin/material/add_news';          // add permanent Rich Media Message Asset
-	const MATERIAL_FILE_URL       			= 'https://api.weixin.qq.com/cgi-bin/material/add_material';      // add permanent Asset
-	const MATERIAL_GET_URL        			= 'https://api.weixin.qq.com/cgi-bin/material/get_material';      // get permanent Asset
-	const MATERIAL_DEL_URL        			= 'https://api.weixin.qq.com/cgi-bin/material/del_material';      // remove permanent Asset
-	const MATERIAL_UPDATE_URL     			= 'https://api.weixin.qq.com/cgi-bin/material/update_news';       // update permanent Rich Media Message Asset
-	const MATERIAL_COUNT_URL      			= 'https://api.weixin.qq.com/cgi-bin/material/get_materialcount'; // Get permanent Assets Count
-	const MATERIAL_LIST_URL       			= 'https://api.weixin.qq.com/cgi-bin/material/batchget_material'; // Get permanent Assets List
+	const MEDIA_UPLOAD_URL    = 'https://api.weixin.qq.com/cgi-bin/media/upload';               // add temporary Asset
+	const MEDIA_GET_URL       = 'https://api.weixin.qq.com/cgi-bin/media/get';                  // get temporary Asset
+	const MATERIAL_NEWS_URL   = 'https://api.weixin.qq.com/cgi-bin/material/add_news';          // add permanent Rich Media Message Asset
+	const MATERIAL_FILE_URL   = 'https://api.weixin.qq.com/cgi-bin/material/add_material';      // add permanent Asset
+	const MATERIAL_GET_URL    = 'https://api.weixin.qq.com/cgi-bin/material/get_material';      // get permanent Asset
+	const MATERIAL_DEL_URL    = 'https://api.weixin.qq.com/cgi-bin/material/del_material';      // remove permanent Asset
+	const MATERIAL_UPDATE_URL = 'https://api.weixin.qq.com/cgi-bin/material/update_news';       // update permanent Rich Media Message Asset
+	const MATERIAL_COUNT_URL  = 'https://api.weixin.qq.com/cgi-bin/material/get_materialcount'; // Get permanent Assets Count
+	const MATERIAL_LIST_URL   = 'https://api.weixin.qq.com/cgi-bin/material/batchget_material'; // Get permanent Assets List
 
 	private $token;
 	private $appid;
@@ -110,22 +111,22 @@ class Wechat {
 	private $proxyHost;
 
 	public function __construct($options = array()) {
-		$this->token        		= isset($options['token']) ? $options['token'] : '';
-		$this->appid        		= isset($options['appid']) ? $options['appid'] : '';
-		$this->secret       		= isset($options['secret']) ? $options['secret'] : '';
-		$this->access_token 		= isset($options['access_token']) ? $options['access_token'] : '';
-		$this->access_token_expire 	= isset($options['access_token_expire']) ? $options['access_token_expire'] : '';
-		$this->debug        		= isset($options['debug']) ? $options['debug'] : false;
-		$this->encode       		= isset($options['encode']) && !empty($options['encode']) ? true : false;
-		$this->AESKey       		= isset($options['aeskey']) ? $options['aeskey'] : '';
-		$this->mch_appid        	= isset($options['mch_appid']) && !empty($options['mch_appid']) ? $options['mch_appid'] : $this->appid;
-		$this->mch_id       		= isset($options['mch_id']) ? $options['mch_id'] : '';
-		$this->payKey       		= isset($options['payKey']) ? $options['payKey'] : '';
-		$this->pem          		= isset($options['pem']) ? $options['pem'] : '';
-		$this->pemPath      		= isset($options['pemPath']) ? $options['pemPath'] : '';
-		$this->proxy 				= isset($options['proxy']) ? $options['proxy'] : false;
-		$this->proxyHost 			= isset($options['proxyHost']) ? $options['proxyHost'] : '';
-		$this->proxyPort 			= isset($options['proxyPort']) ? $options['proxyPort'] : '';
+		$this->token               = isset($options['token']) ? $options['token'] : '';
+		$this->appid               = isset($options['appid']) ? $options['appid'] : '';
+		$this->secret              = isset($options['secret']) ? $options['secret'] : '';
+		$this->access_token        = isset($options['access_token']) ? $options['access_token'] : '';
+		$this->access_token_expire = isset($options['access_token_expire']) ? $options['access_token_expire'] : '';
+		$this->debug               = isset($options['debug']) ? $options['debug'] : false;
+		$this->encode              = isset($options['encode']) && !empty($options['encode']) ? true : false;
+		$this->AESKey              = isset($options['aeskey']) ? $options['aeskey'] : '';
+		$this->mch_appid           = isset($options['mch_appid']) && !empty($options['mch_appid']) ? $options['mch_appid'] : $this->appid;
+		$this->mch_id              = isset($options['mch_id']) ? $options['mch_id'] : '';
+		$this->payKey              = isset($options['payKey']) ? $options['payKey'] : '';
+		$this->pem                 = isset($options['pem']) ? $options['pem'] : '';
+		$this->pemPath             = isset($options['pemPath']) ? $options['pemPath'] : '';
+		$this->proxy               = isset($options['proxy']) ? $options['proxy'] : false;
+		$this->proxyHost           = isset($options['proxyHost']) ? $options['proxyHost'] : '';
+		$this->proxyPort           = isset($options['proxyPort']) ? $options['proxyPort'] : '';
 
 		if ($this->encode && strlen($this->AESKey) != 43) {
 			$this->setError('AESKey Length Error');
@@ -143,7 +144,7 @@ class Wechat {
 	}
 
 	/**
-	 * Checks if accessing the app using the WeChat browser
+	 * Check if accessing the app using the WeChat browser
 	 * @param 	string $version Minimum required version - format: 3 numbers separated by "." - default empty string 
 	 * @return 	bool
 	 */
@@ -152,48 +153,48 @@ class Wechat {
 
 		if ($is_wechat_mobile && !empty($version)) {
 
-            $version_parts 	= explode('.', $version_browser);
+			$version_parts = explode('.', $version_browser);
 
-            if (count($version_parts) !== 3) {
-            	$this->setError('Invalid WeChat version format');
+			if (count($version_parts) !== 3) {
+				$this->setError('Invalid WeChat version format');
 
-            	$is_wechat_mobile = false;
-            } else {
+				$is_wechat_mobile = false;
+			} else {
 
 				foreach (explode(' ', $_SERVER['HTTP_USER_AGENT']) as $key => $value) {
 
-	                if (strpos($value, 'MicroMessenger') !== false) {
+					if (strpos($value, 'MicroMessenger') !== false) {
 
-	                    $version_browser 		= end(explode('/', $value));
-	                    $version_browser_parts 	= explode('.', $version_browser);
+						$version_browser       = end(explode('/', $value));
+						$version_browser_parts = explode('.', $version_browser);
 
-	                    $condition = (((int) $version_browser_parts[0]) >= ((int) $version_parts[0]));
+						$condition = (((int) $version_browser_parts[0]) >= ((int) $version_parts[0]));
 
-	                    if ($condition) {
-	                    	$condition = ((int) $version_browser_parts[1]) >= ((int) $version_parts[1]);
-	                    }
+						if ($condition) {
+							$condition = ((int) $version_browser_parts[1]) >= ((int) $version_parts[1]);
+						}
 
-	                    if ($condition) {
-	                    	$condition = ((int) $version_browser_parts[2]) >= ((int) $version_parts[2]);
-	                    }
+						if ($condition) {
+							$condition = ((int) $version_browser_parts[2]) >= ((int) $version_parts[2]);
+						}
 
-	                    if (!$condition) {
-	                    	$this->setError('Current WeChat version ('. $version_browser .') < required version (' . $version . ')');
+						if (!$condition) {
+							$this->setError('Current WeChat version ('. $version_browser .') < required version (' . $version . ')');
 
-	                    	$is_wechat_mobile = false;
-	                    } else {
-	                        $is_wechat_mobile = true;
-	                    }
-	                }
-	            }
-            }
+							$is_wechat_mobile = false;
+						} else {
+							$is_wechat_mobile = true;
+						}
+					}
+				}
+			}
 		}
 
 		return $is_wechat_mobile;
-    }
+	}
 
 	/**
-	 * Checks if the website is bound to the WeChat official account
+	 * Check if the website is bound to the WeChat official account
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function checkBind() {
@@ -214,13 +215,13 @@ class Wechat {
 	}
 
 	/**
-	 * Checks official account's signature
+	 * Check official account's signature
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function checkSignature() {
 
 		if ($this->debug) {
-		
+
 			return true;
 		}
 
@@ -249,7 +250,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets official account's access_token
+	 * Get official account's access_token
 	 * @param boolean $force Force retrieving the access token from the API if true, get the property otherwise.
 	 * @return string|boolean
 	 * @author, chen shushu <cjango@163.com>
@@ -273,7 +274,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sets official account's access_token
+	 * Set official account's access_token
 	 * @param string $access_token A valid official account's access_token
 	 * @author, chen shushu <cjango@163.com>
 	 */
@@ -282,7 +283,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets official account's access_token expiry time (timestamp)
+	 * Get official account's access_token expiry time (timestamp)
 	 * @return integer|boolean
 	 * @author, chen shushu <cjango@163.com>
 	 */
@@ -292,7 +293,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sets official account's access_token expiry time
+	 * Set official account's access_token expiry time
 	 * @param integer The official account's access_token expiry time (timestamp)
 	 * @author, chen shushu <cjango@163.com>
 	 */
@@ -301,7 +302,7 @@ class Wechat {
 	}
 
 	/**
-	 * Retrieves the official account's access_token from the WeChat remote interface
+	 * Retrieve the official account's access_token from the WeChat remote interface
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	private function requestAccessToken() {
@@ -316,8 +317,8 @@ class Wechat {
 			$jsonArr = $this->parseJson($jsonStr);
 
 			if ($jsonArr) {
-				$this->access_token 		= $jsonArr['access_token'];
-				$this->access_token_expire 	= time() + $jsonArr['expires_in'];
+				$this->access_token        = $jsonArr['access_token'];
+				$this->access_token_expire = time() + $jsonArr['expires_in'];
 
 				return $this->access_token;
 			} else {
@@ -331,22 +332,22 @@ class Wechat {
 	}
 
 	/**
-	 * Gets the official account's custom menu
+	 * Get the official account's custom menu
 	 * @return array | boolean
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function menus() {
-		$params 	= array(
+		$params  = array(
 			'access_token' => $this->getAccessToken(),
 		);
-		$jsonStr 	= $this->http(self::MENU_GET_URL, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http(self::MENU_GET_URL, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		return ($jsonArr) ? $jsonArr : false;
 	}
 
 	/**
-	 * Creates the official account's custom menu
+	 * Create the official account's custom menu
 	 * @param array $menus An array representing the custom menu
 	 * @param bool 	$conditional Whether the menu structure is conditional or general
 	 * @see http://open.wechat.com/cgi-bin/newreadtemplate?t=overseas_open/docs/oa/custom-menus/create	
@@ -391,18 +392,18 @@ class Wechat {
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function menu_delete($menu_id = NULL) {
-		$parasms = array();
+		$params = array();
 
 		if ($menu_id !== NULL) {
-			$params['menuid'] 	= ((string)$menu_id);
-			$url 				= self::MENU_DELETE_CONDITIONAL_URL . '?access_token=' . $this->getAccessToken();
+			$params['menuid'] = ((string)$menu_id);
+			$url              = self::MENU_DELETE_CONDITIONAL_URL . '?access_token=' . $this->getAccessToken();
 		} else {
 			$url = self::MENU_DELETE_URL . '?access_token=' . $this->getAccessToken();
 		}
 
-		$params 	= json_encode($params);
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = json_encode($params);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -414,13 +415,13 @@ class Wechat {
 	}
 
 	/**
-	 * Gets official account's followers groups
+	 * Get official account's followers groups
 	 * @return array|boolean
 	 */
 	public function groups() {
-		$url 		= self::GROUP_GET_URL . '?access_token='.$this->getAccessToken();
-		$jsonStr 	= $this->http($url);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$url     = self::GROUP_GET_URL . '?access_token='.$this->getAccessToken();
+		$jsonStr = $this->http($url);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -432,7 +433,7 @@ class Wechat {
 	}
 	
 	/**
-	 * Adds a followers group to the official account
+	 * Add a followers group to the official account
 	 * @param string $name Followers' group name
 	 * @return boolean
 	 */
@@ -449,10 +450,10 @@ class Wechat {
 				'name' => $name,
 			)
 		);
-		$params 	= $this->json_encode($params);
-		$url    	= self::GROUP_CREATE_URL . '?access_token=' . $this->getAccessToken();
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$url     = self::GROUP_CREATE_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -464,7 +465,7 @@ class Wechat {
 	}
 	
 	/**
-	 * Edits an official account's followers group
+	 * Edit an official account's followers group
 	 * @param integer $gid Followers group ID
 	 * @param string $name New followers group name
 	 * @return boolean
@@ -477,16 +478,16 @@ class Wechat {
 			return false;
 		}
 
-		$params 	= array(
+		$params  = array(
 			'group' => array(
 				'id'   => $gid,
 				'name' => $name,
 			)
 		);
-		$params 	= $this->json_encode($params);
-		$url    	= self::GROUP_UPDATE_URL . '?access_token=' . $this->getAccessToken();
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$url     = self::GROUP_UPDATE_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 		if ($jsonArr) {
 
 			return true;
@@ -495,9 +496,9 @@ class Wechat {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Gets the official account's followers list
+	 * Get a list of openIDs of the official account's followers
 	 * Max 10,000 openIDs can be loaded ; use the index 'next_openid' and call this method again to get more users
 	 * If success, the returned array has the following indexes:
 	 * - 'data' contains the users
@@ -515,7 +516,7 @@ class Wechat {
 		}
 
 		$params['access_token'] = $this->getAccessToken();
-		
+
 		$jsonStr = $this->http(self::USER_GET_URL, $params);
 		$jsonArr = $this->parseJson($jsonStr);
 
@@ -533,7 +534,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets the information of a follower of the official account
+	 * Get the information of a follower of the official account
 	 * @param  string $openid the follower's openID
 	 * @return array|boolean
 	 */
@@ -563,13 +564,13 @@ class Wechat {
 			if (empty($this->errorCode)) {
 				$this->setError('No Follower found');
 			}
-			
+
 			return false;
 		}
 	}
 
 	/**
-	 * Gets the information of a WeChat user
+	 * Get the information of a WeChat user
 	 * @param  string $openid the WeChat user openID
 	 * @return array|boolean
 	 */
@@ -588,12 +589,12 @@ class Wechat {
 		);
 		$jsonStr = $this->http(self::USER_INFO_URL, $params);
 		$jsonArr = $this->parseJson($jsonStr);
-		
+
 		return ($jsonArr);
 	}
 
 	/**
-	 * Checks if a follower belongs to a follower's group
+	 * Check if a follower belongs to a follower's group
 	 * If yes, get the group ID
 	 * @param  string $openid  Follower's openID
 	 * @return integer|boolean
@@ -606,13 +607,13 @@ class Wechat {
 			return false;
 		}
 
-		$params 	= array(
+		$params  = array(
 			'openid' => $openid,
 		);
-		$params 	= $this->json_encode($params);
-		$url    	= self::USER_IN_GROUP_URL . '?access_token=' . $this->getAccessToken();
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$url     = self::USER_IN_GROUP_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -624,7 +625,7 @@ class Wechat {
 	}
 
 	/**
-	 * Assigns a follower to a follower's group
+	 * Assign a follower to a follower's group
 	 * @param string  $openid Follower's openID
 	 * @param integer $gid Follower's group ID
 	 * @return boolean
@@ -637,14 +638,14 @@ class Wechat {
 			return false;
 		}
 
-		$params 	= array(
+		$params  = array(
 			'openid' => $openid,
 			'to_groupid' => $gid,
 		);
-		$params 	= $this->json_encode($params);
-		$url    	= self::GROUP_MEMBER_UPDATE_URL . '?access_token=' . $this->getAccessToken();
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$url     = self::GROUP_MEMBER_UPDATE_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -656,7 +657,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets data pushed by WeChat to the server
+	 * Get data pushed by WeChat to the server
 	 * @return array An array of data with keys all converted to lowercase
 	 */
 	public function request() {
@@ -677,7 +678,7 @@ class Wechat {
 	}
 
 	/**
-	 * Parses an XML string and converts it to an array with keys in lowercase
+	 * Parse an XML string and converts it to an array with keys in lowercase
 	 * @param  string $xml
 	 * @return array
 	 */
@@ -686,9 +687,9 @@ class Wechat {
 
 		return array_change_key_case($data, CASE_LOWER);
 	}
-	
+
 	/**
-	 * Replies to a WeChat message (auto-reply)
+	 * Reply to a WeChat message (auto-reply)
 	 * @param  string $to      Receiver's OpenID
 	 * @param  string $from    Developer's ID
 	 * @param  string $type    Message type - "text", "music", "news", "event" - default "text"
@@ -721,14 +722,14 @@ class Wechat {
 			$xmlStr['MsgSignature'] = self::getSHA1($xmlStr['Encrypt'], $nonce);
 			$xmlStr['TimeStamp']    = time();
 			$xmlStr['Nonce']        = $nonce;
-			$response 				= $this->_array2Xml($xmlStr);
+			$response               = $this->_array2Xml($xmlStr);
 		}
 
 		exit($response);
 	}
 
 	/**
-	 * Signs a mesage with SHA1
+	 * Sign a mesage with SHA1
 	 * @param 	string 	$encrypt_msg Message to sign
 	 * @param 	string 	$nonce Random characters string
 	 * @return 	string
@@ -742,16 +743,16 @@ class Wechat {
 	}
 
 	/**
-	 * Sets Text response content
+	 * Set Text response content
 	 * @param  string $content Text content
 	 */
 	private function event($content) {
-		$this->data['Event'] 	= 'VIEW';
+		$this->data['Event']    = 'VIEW';
 		$this->data['EventKey'] = $content;
 	}
 
 	/**
-	 * Sets Text response content
+	 * Set Text response content
 	 * @param  string $content Text content
 	 */
 	private function text($content) {
@@ -759,15 +760,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sets Music response content
-	 * @param  string $content Music content
-	 */
-	private function transfer_customer_service($content) {
-		$this->data['Content'] = $content;
-	}
-	
-	/**
-	 * Sets Music response content
+	 * Set Music response content
 	 * @param  string $content Music content
 	 */
 	private function music($music) {
@@ -781,7 +774,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sets image response content
+	 * Set image response content
 	 * @param  string $image image content
 	 */
 	private function image($image) {
@@ -790,20 +783,20 @@ class Wechat {
 		) = $image;
 		$this->data['Image'] = $image;
 	}
-	
+
 	/**
-	 * Sets Rich Media response content
+	 * Set Rich Media response content
 	 * @param  string $news Rich Media content
 	 */
 	private function news($news) {
 		$articles = array();
 
 		foreach ($news as $key => $value) {
-			$articles[$key] 				= array();
-			$articles[$key]['Title'] 		= $value['Title'];
-			$articles[$key]['Description'] 	= $value['Description'];
-			$articles[$key]['PicUrl'] 		= $value['PicUrl'];
-			$articles[$key]['Url'] 			= $value['Url'];
+			$articles[$key]                = array();
+			$articles[$key]['Title']       = $value['Title'];
+			$articles[$key]['Description'] = $value['Description'];
+			$articles[$key]['PicUrl']      = $value['PicUrl'];
+			$articles[$key]['Url']         = $value['Url'];
 
 			if ($key >= 9) {
 				break; 
@@ -811,11 +804,11 @@ class Wechat {
 		}
 
 		$this->data['ArticleCount'] = count($articles);
-		$this->data['Articles'] 	= $articles;
+		$this->data['Articles']     = $articles;
 	}
-	
+
 	/**
-	 * Converts an aray to XML string
+	 * Convert an aray to XML string
 	 * @param 	array $array Array to convert
 	 * @return 	string
 	 */
@@ -827,7 +820,7 @@ class Wechat {
 	}
 
 	/**
-	 * Converts data to XML string
+	 * Convert data to XML string
 	 * @param  object $xml  Receiving XML object
 	 * @param  mixed  $data Data
 	 * @param  string $item Default node name replacing numeric index in $data - default "item"
@@ -855,7 +848,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sends templated message
+	 * Send templated message
 	 * @param object $content The content of the templated message
 	 * @see http://admin.wechat.com/wiki/index.php?title=Templated_Messages
 	 * @return boolean
@@ -876,16 +869,16 @@ class Wechat {
 	}
 
 	/**
-	 * Sends customer service message
+	 * Send customer service message
 	 * @param 	string 	$openid 	Receiver's openID
 	 * @param 	array 	$content 	Message content - all values in the array must be of type string
 	 * @param 	string 	$type 		Message type - default "text"
 	 * @return 	boolean
 	 */
 	public function sendMsg($openid, $content, $type = 'text') {
-		$this->send ['touser'] 	= $openid;
+		$this->send ['touser']  = $openid;
 		$this->send ['msgtype'] = $type;
-		$sendtype 				= 'send' . $type;
+		$sendtype               = 'send' . $type;
 
 		if (!method_exists($this, $type)) {
 			$this->setError('Invalid WeChat customer service message type "' . $type . '"');
@@ -895,10 +888,10 @@ class Wechat {
 
 		$this->$sendtype($content);
 
-		$params 	= $this->json_encode($this->send);
-		$url    	= self::CUSTOM_SEND_URL . '?access_token=' . $this->getAccessToken();
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($this->send);
+		$url     = self::CUSTOM_SEND_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -910,7 +903,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sends a Text message
+	 * Send a Text message
 	 * @param string $content Text content
 	 */
 	private function sendtext($content) {
@@ -920,7 +913,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sends an Image message
+	 * Send an Image message
 	 * @param string $content 要发送的信息
 	 */
 	private function sendimage($content) {
@@ -930,7 +923,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sends a Video message
+	 * Send a Video message
 	 * @param  string $content Video content
 	 */
 	private function sendvideo($video) {
@@ -941,9 +934,9 @@ class Wechat {
 		) = $video;
 		$this->send ['video'] = $video;
 	}
-	
+
 	/**
-	 * Sends a Voice message
+	 * Send a Voice message
 	 * @param string $content Voice content
 	 */
 	private function sendvoice($content) {
@@ -951,9 +944,9 @@ class Wechat {
 			'media_id' => $content,
 		);
 	}
-	
+
 	/**
-	 * Sends a Music message
+	 * Send a Music message
 	 * @param string $content Music content
 	 */
 	private function sendmusic($music) {
@@ -966,31 +959,31 @@ class Wechat {
 		) = $music;
 		$this->send['music'] = $music;
 	}
-	
+
 	/**
-	 * Sends a Rich Media message
+	 * Send a Rich Media message
 	 * @param  string $news Rich Media content
 	 */
 	private function sendnews($news) {
 		$articles = array();
 
 		foreach ($news as $key => $value) {
-			$articles[$key] 				= array();
-			$articles[$key]['Title'] 		= $value['Title'];
-			$articles[$key]['Description'] 	= $value['Description'];
-			$articles[$key]['PicUrl'] 		= $value['PicUrl'];
-			$articles[$key]['Url'] 			= $value['Url'];
+			$articles[$key]                = array();
+			$articles[$key]['Title']       = $value['Title'];
+			$articles[$key]['Description'] = $value['Description'];
+			$articles[$key]['PicUrl']      = $value['PicUrl'];
+			$articles[$key]['Url']         = $value['Url'];
 
 			if ($key >= 9) {
-				break; 
+				break;
 			} // Maximum 10 news
 		}
 
 		$this->send['articles'] = $articles;
 	}
-	
+
 	/**
-	 * Gets authentication redirect URL for WeChat browser authentication
+	 * Get authentication redirect URL for WeChat browser authentication
 	 * @param 	string 	$callback 	Callback URL (including http(s)://)
 	 * @param 	sting 	$state 		Any state information (a-zA-Z0-9) to preserve across the OAuth process, for example a token to prevent CSRF attacks - default empty string
 	 * @param 	string 	$scope 		'snsapi_userinfo' will require user approval and get the user's full public profile ; 'snsapi_base' will get the user's openid - default "snsapi_base"
@@ -1002,7 +995,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets QR Code authentication redirect URL for web browser authentication
+	 * Get QR Code authentication redirect URL for web browser authentication
 	 * @param 	string 	$callback 	Callback URL (including http(s)://)
 	 * @param 	sting 	$state 		Any state information (a-zA-Z0-9) to preserve across the OAuth process, for example a token to prevent CSRF attacks - default empty string
 	 * @param 	string 	$scope 		'snsapi_userinfo' will require user approval and get the user's full public profile ; 'snsapi_base' will get the user's openid - default "snsapi_base"
@@ -1012,9 +1005,9 @@ class Wechat {
 
 		return self::QR_AUTHORIZATION_URL . '?appid='.$this->appid . '&redirect_uri=' . rawurlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
 	}
-	
+
 	/**
-	 * Gets user access_token information from OAuth code
+	 * Get user access_token information from OAuth code
 	 * @return array|boolean
 	 */
 	public function getOauthAccessToken() {
@@ -1025,14 +1018,14 @@ class Wechat {
 			return false;
 		}
 
-		$params 	= array(
-			'appid' 		=> $this->appid,
-			'secret'		=> $this->secret,
-			'code'  		=> $code,
-			'grant_type' 	=> 'authorization_code',
+		$params  = array(
+			'appid'      => $this->appid,
+			'secret'     => $this->secret,
+			'code'       => $code,
+			'grant_type' => 'authorization_code',
 		);
-		$jsonStr 	= $this->http(self::OAUTH_USER_TOKEN_URL, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http(self::OAUTH_USER_TOKEN_URL, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1044,18 +1037,18 @@ class Wechat {
 	}
 
 	/**
-	 * Gets user access_token information from refresh_token
+	 * Get user access_token information from refresh_token
 	 * @param string $refresh_token
 	 * @return array|boolean
 	 */
 	public function refreshOauthAccessToken($refresh_token) {
-		$params 	= array(
-			'appid' 			=> $this->appid,
-			'refresh_token'  	=> $refresh_token,
-			'grant_type' 		=> 'refresh_token',
+		$params   = array(
+			'appid'         => $this->appid,
+			'refresh_token' => $refresh_token,
+			'grant_type'    => 'refresh_token',
 		);
-		$jsonStr 	= $this->http(self::OAUTH_REFRESH_URL, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http(self::OAUTH_REFRESH_URL, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1067,19 +1060,19 @@ class Wechat {
 	}
 
 	/**
-	 * Gets authenticated user's public information
+	 * Get authenticated user's public information
 	 * @param  string $access_token  The get token obtained by the getOauthAccessToken method
 	 * @param  string $openid        User's OpenID
 	 * @return array
 	 */
 	public function getOauthUserInfo($access_token, $openid) {
-		$params 	= array(
-			'access_token'  => $access_token,
-			'openid'        => $openid,
-			'lang'          => 'zh_CN',
+		$params  = array(
+			'access_token' => $access_token,
+			'openid'       => $openid,
+			'lang'         => 'zh_CN',
 		);
-		$jsonStr 	= $this->http(self::GET_USER_INFO_URL, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http(self::GET_USER_INFO_URL, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1091,16 +1084,16 @@ class Wechat {
 	}
 
 	/**
-	 * Gets jsapi_ticket
+	 * Get jsapi_ticket
 	 * @return array|boolean
 	 */
 	public function getJsapiTicket() {
-		$params 	= array(
-			'access_token'  => $this->getAccessToken(),
-			'type'          => 'jsapi',
+		$params  = array(
+			'access_token' => $this->getAccessToken(),
+			'type'         => 'jsapi',
 		);
-		$jsonStr 	= $this->http(self::JSAPI_TICKET_URL, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http(self::JSAPI_TICKET_URL, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1110,9 +1103,9 @@ class Wechat {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Gets parametric QR code image URL
+	 * Get parametric QR code image URL
 	 * @param  integer $scene_id 	Scene value - temporary code: 32 bits (integer); permanent code: no more than 1,000 - default null
 	 * @param  boolean $limit    	true for temporary QR code, false for permanent - default true
 	 * @param  integer $expire   	QR code validity time - up to 1,800 seconds - default 1,800
@@ -1133,7 +1126,7 @@ class Wechat {
 	}
 
 	/**
-	 * Generates parametric QR code
+	 * Generate parametric QR code
 	 * @param  integer $scene_id 	Scene value - temporary code: 32 bits (integer); permanent code: no more than 1,000 - default null
 	 * @param  boolean $limit    	true for temporary QR code, false for permanent - default true
 	 * @param  integer $expire   	QR code validity time - up to 1,800 seconds - default 1,800
@@ -1158,17 +1151,17 @@ class Wechat {
 			$params['expire_seconds'] = $expire;
 		}
 
-		$sceneKey 				= ($scene_id) ? 'scene_id' : 'scene_str';
-		$sceneValue 			= ($scene_str) ? $scene_str : $scene_id;
-		$params['action_info'] 	= array(
+		$sceneKey              = ($scene_id) ? 'scene_id' : 'scene_str';
+		$sceneValue            = ($scene_str) ? $scene_str : $scene_id;
+		$params['action_info'] = array(
 			'scene' => array(
 				$sceneKey => $sceneValue,
 			)
 		);
-		$params 				= $this->json_encode($params);
-		$url 					= self::QRCODE_URL . '?access_token=' . $this->getAccessToken();
-		$jsonStr 				= $this->http($url, $params, 'POST');
-		$jsonArr 				= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$url     = self::QRCODE_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1178,36 +1171,36 @@ class Wechat {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * JSON encodes without escaping Chinese characters
+	 * JSON encode without escaping Chinese characters
 	 * @param  array $array Array to encode - default empty array
 	 * @return json
 	 */
-	private function json_encode($array = array()) {
+	public function json_encode($array = array()) {
 		$res = preg_replace_callback(
-		    "#\\\u([0-9a-f]+)#i",
-		    function($matches) {
-		    	
-		        foreach($matches as $match){
-		        	$current_encoding = mb_detect_encoding($match, 'auto');
+			"#\\\u([0-9a-f]+)#i",
+			function($matches) {
 
-		        	if ($current_encoding !== 'UTF-8') {
+				foreach($matches as $match){
+					$current_encoding = mb_detect_encoding($match, 'auto');
+
+					if ($current_encoding !== 'UTF-8') {
 
 						return iconv($current_encoding, 'UTF-8', $match);
-		        	} else {
-		        		return $match;
-		        	}
-		        }
-		    }, 
-		    str_replace("\\/", "/", json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE))
+					} else {
+						return $match;
+					}
+				}
+			},
+			str_replace("\\/", "/", json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE))
 		);
 
 		return $res;
 	}
 
 	/**
-	 * Parses JSON string received from wechat
+	 * Parse JSON string received from wechat
 	 * If failure, set an error message and return false.
 	 * @param 	string $json JSON string to parse
 	 * @return 	array
@@ -1236,7 +1229,7 @@ class Wechat {
 	}
 
 	/**
-	 * Converts base64-encoded AES encrypted message to XML string
+	 * Convert base64-encoded AES encrypted message to XML string
 	 * @param  string $encrypted Encrypted message
 	 * @return string|boolean
 	 */
@@ -1284,26 +1277,26 @@ class Wechat {
 	}
 
 	/**
-	 * Converts string to base64-encoded AES encrypted message
+	 * Convert string to base64-encoded AES encrypted message
 	 * @param  string $text Text to encrypt
 	 * @return boolean
 	 */
 	public function AESencode($text) {
-		$key    		= base64_decode($this->AESKey . "=");
-		$random 		= self::getNonceStr();
-		$text   		= $random . pack("N", strlen($text)) . $text . $this->appid;
-		$size   		= mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-		$module 		= mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-		$iv     		= substr($key, 0, 16);
-		$text_length 	= strlen($text);
-		$amount_to_pad 	= 32 - ($text_length % 32);
+		$key           = base64_decode($this->AESKey . "=");
+		$random        = self::getNonceStr();
+		$text          = $random . pack("N", strlen($text)) . $text . $this->appid;
+		$size          = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+		$module        = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+		$iv            = substr($key, 0, 16);
+		$text_length   = strlen($text);
+		$amount_to_pad = 32 - ($text_length % 32);
 
 		if ($amount_to_pad == 0) {
 			$amount_to_pad = 32;
 		}
 
-		$pad_chr 	= chr($amount_to_pad);
-		$tmp 		= '';
+		$pad_chr = chr($amount_to_pad);
+		$tmp     = '';
 
 		for ($index = 0; $index < $amount_to_pad; $index++) {
 			$tmp .= $pad_chr;
@@ -1322,7 +1315,7 @@ class Wechat {
 	}
 
 	/**
-	 * Generates a 20-digit order ID, optionally using a 1-bit prefix
+	 * Generate a 20-digit order ID, optionally using a 1-bit prefix
 	 * @param  string $prefix Order ID prefix used to differenciate business types - default empty string
 	 * @return string
 	 */
@@ -1365,13 +1358,13 @@ class Wechat {
 
 		switch(strtoupper($method)) {
 			case 'GET':
-				$getQuerys 			= !empty($params) ? '?' .  http_build_query($params) : '';
-				$opts[CURLOPT_URL] 	= $url . $getQuerys;
+				$getQuerys         = !empty($params) ? '?' .  http_build_query($params) : '';
+				$opts[CURLOPT_URL] = $url . $getQuerys;
 				break;
 			case 'POST':
-				$opts[CURLOPT_URL] 			= $url;
-				$opts[CURLOPT_POST] 		= 1;
-				$opts[CURLOPT_POSTFIELDS] 	= $params;
+				$opts[CURLOPT_URL]        = $url;
+				$opts[CURLOPT_POST]       = 1;
+				$opts[CURLOPT_POSTFIELDS] = $params;
 				break;
 		}
 
@@ -1398,8 +1391,8 @@ class Wechat {
 		}
 
 		if ($this->proxy && !empty($this->proxyHost) && !empty($this->proxyPort)) {
-			$opts[CURLOPT_PROXY]		= $this->proxy;	
-			$opts[CURLOPT_PROXYPORT] 	= $this->proxyPort;
+			$opts[CURLOPT_PROXY]     = $this->proxy;
+			$opts[CURLOPT_PROXYPORT] = $this->proxyPort;
 		}
 		$ch = curl_init();
 
@@ -1421,13 +1414,17 @@ class Wechat {
 		}
 	}
 
+	/**
+	 * Check if the provided paths to certificate files are valid.
+	 * @return bool
+	 */
 	public function cert_files_exist() {
 
 		return file_exists( $this->pemPath . $this->pem . '_cert.pem' ) && file_exists( $this->pemPath . $this->pem . '_key.pem' );
 	}
 
 	/**
-	 * Creates a temporary Asset (aka media)
+	 * Create a temporary Asset (aka media)
 	 * @param  string $file  Absolute path to a file
 	 * @param  string $type  Type of Asset - "image", "voice", "video", "thumb"
 	 * @param 	string 	$video_title 		Title of the video - required for video Asset type - default null
@@ -1448,22 +1445,21 @@ class Wechat {
 			return false;
 		}
 
-		$url    	= self::MEDIA_UPLOAD_URL . '?access_token=' . $this->getAccessToken() . '&type=' . $type;
-		$params 	= array(
+		$url    = self::MEDIA_UPLOAD_URL . '?access_token=' . $this->getAccessToken() . '&type=' . $type;
+		$params = array(
 			'media' => new CurlFile( $file, mime_content_type($file), basename($file) ),
 		);
 
-
 		if ($type === 'video') {
 			$video_description = array(
-				'title' 		=> $video_title,
-				'introduction' 	=> $video_introduction,
+				'title'        => $video_title,
+				'introduction' => $video_introduction,
 			);
 			$params['description'] = json_encode($video_description);
 		}
 
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1475,18 +1471,18 @@ class Wechat {
 	}
 
 	/**
-	 * Gets temporary Asset (aka media)
+	 * Get temporary Asset (aka media)
 	 * @param  string $media_id ID of the media
 	 * @return array
 	 */
 	public function get_media($media_id) {
-		$url 		= self::MEDIA_GET_URL;
-		$params 	= array(
+		$url     = self::MEDIA_GET_URL;
+		$params  = array(
 			'access_token' => $this->getAccessToken(),
 			'media_id'     => $media_id,
 		);
-		$jsonStr 	= $this->http($url, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http($url, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1498,7 +1494,7 @@ class Wechat {
 	}
 
 	/**
-	 * Adds permanent Rich Media Asset
+	 * Add permanent Rich Media Asset
 	 * @param 	array $articles An array of Rich Media Assets
 	 * @return 	array|bool
 	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
@@ -1520,7 +1516,7 @@ class Wechat {
 	}
 
 	/**
-	 * Adds permanent Asset (excluding Rich Media Asset)
+	 * Add permanent Asset (excluding Rich Media Asset)
 	 * @param 	string 	$file 				Absolute path to a file
 	 * @param 	string 	$type 				Type of Asset - "image", "voice", "video", "thumb"
 	 * @param 	string 	$video_title 		Title of the video - required for video Asset type - default null
@@ -1541,21 +1537,21 @@ class Wechat {
 			return false;
 		}
 
-		$url    	= self::MATERIAL_FILE_URL . '?access_token=' . $this->getAccessToken() . '&type=' . $type;
-		$params 	= array(
+		$url    = self::MATERIAL_FILE_URL . '?access_token=' . $this->getAccessToken() . '&type=' . $type;
+		$params = array(
 			'media' => '@' . $file . ';type=' . $type . ';filename=' . basename($file),
 		);
 
 		if ($type === 'video') {
 			$video_description = array(
-				'title' 		=> $video_title,
-				'introduction' 	=> $video_introduction,
+				'title'        => $video_title,
+				'introduction' => $video_introduction,
 			);
 			$params['description'] = json_encode($video_description);
 		}
 
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1567,18 +1563,18 @@ class Wechat {
 	}
 
 	/**
-	 * Gets permanent Asset
+	 * Get permanent Asset
 	 * @param  string $asset_id
 	 * @return array|bool
 	 */
 	public function get_asset($asset_id) {
-		$url    	= self::MATERIAL_GET_URL . '?access_token=' . $this->getAccessToken();
-		$params 	= array(
+		$url     = self::MATERIAL_GET_URL . '?access_token=' . $this->getAccessToken();
+		$params  = array(
 			'media_id' => $asset_id,
 		);
-		$params  	= $this->json_encode($params);
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1590,18 +1586,18 @@ class Wechat {
 	}
 
 	/**
-	 * Deletes permanent Asset
+	 * Delete permanent Asset
 	 * @param  string $asset_id Asset ID
 	 * @return boolean
 	 */
 	public function delete_asset($asset_id) {
-		$url    	= self::MATERIAL_DEL_URL . '?access_token=' . $this->getAccessToken();
-		$params 	= array(
+		$url     = self::MATERIAL_DEL_URL . '?access_token=' . $this->getAccessToken();
+		$params  = array(
 			'media_id' => $asset_id,
 		);
-		$params  	= $this->json_encode($params);
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$params  = $this->json_encode($params);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1613,15 +1609,15 @@ class Wechat {
 	}
 
 	/**
-	 * Gets permanent Assets quantity information
+	 * Get permanent Assets quantity information
 	 * @return array|bool
 	 */
 	public function count_asset() {
-		$params 	= array(
+		$params  = array(
 			'access_token' => $this->getAccessToken(),
 		);
-		$jsonStr 	= $this->http(self::MATERIAL_COUNT_URL, $params);
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$jsonStr = $this->http(self::MATERIAL_COUNT_URL, $params);
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1633,22 +1629,22 @@ class Wechat {
 	}
 
 	/**
-	 * Gets permanent Assets list
+	 * Get permanent Assets list
 	 * @param  string  $type    Asset type - "image", "video", "voice", "news"
 	 * @param  integer $offset  List starting position offset - default 0
 	 * @param  integer $count   Number of Assets - default 20
 	 * @return array|bool
 	 */
 	public function get_asset_list($type, $offset = 0, $count = 20) {
-		$params 	= array(
+		$params  = array(
 			'type'   => $type,
 			'offset' => $offset,
 			'count'  => $count,
 		);
-		$url     	= self::MATERIAL_LIST_URL . '?access_token=' . $this->getAccessToken();
-		$params  	= $this->json_encode($params);
-		$jsonStr 	= $this->http($url, $params, 'POST');
-		$jsonArr 	= $this->parseJson($jsonStr);
+		$url     = self::MATERIAL_LIST_URL . '?access_token=' . $this->getAccessToken();
+		$params  = $this->json_encode($params);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$jsonArr = $this->parseJson($jsonStr);
 
 		if ($jsonArr) {
 
@@ -1660,8 +1656,8 @@ class Wechat {
 	}
 
 	/**
-	 * Gets URL for a Unified order (use in web browser)
-	 * @param  integer 		$product_id 	Local product identifier
+	 * Get URL for a Unified order (use in web browser)
+	 * @param  string 		$product_id 	Local product identifier
 	 * @param  string 		$body       	Product Description - 126 bytes max
 	 * @param  string 		$orderId    	Local order ID
 	 * @param  float  		$money 			Amound in RMB
@@ -1676,12 +1672,13 @@ class Wechat {
 		}
 
 		$params = array(
+			'version'          => self::UNIFIED_ORDER_INTERFACE_VERSION,
 			'appid'            => $this->mch_appid,
 			'mch_id'           => $this->mch_id,
 			'nonce_str'        => self::getNonceStr(),
 			'body'             => $body,
 			'out_trade_no'     => $orderId,
-			'total_fee'        => $money * 100, // 转换成分
+			'total_fee'        => $money * 100,
 			'spbill_create_ip' => $this->_get_client_ip(),
 			'notify_url'       => $notify_url,
 			'product_id'       => $product_id,
@@ -1695,9 +1692,9 @@ class Wechat {
 		}
 
 		$params['sign'] = self::_getOrderMd5($params);
-		$data 			= $this->_array2Xml($params);
-		$data 			= $this->http(self::UNIFIED_ORDER_URL, $data, 'POST');
-		$data 			= $this->_extractXml($data);
+		$data           = $this->_array2Xml($params);
+		$data           = $this->http(self::UNIFIED_ORDER_URL, $data, 'POST');
+		$data           = $this->_extractXml($data);
 
 		if ($data) {
 
@@ -1725,7 +1722,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets JSON Unified order (use with JSAPI in WeChat browser)
+	 * Get JSON Unified order (use with JSAPI in WeChat browser)
 	 * @param  string 		$openid     	User OpenID
 	 * @param  string 		$body       	Product Description - 126 bytes max.
 	 * @param  string 		$orderId    	Local order ID
@@ -1741,6 +1738,7 @@ class Wechat {
 		}
 
 		$params = array(
+			'version'          => self::UNIFIED_ORDER_INTERFACE_VERSION,
 			'openid'           => $openid,
 			'appid'            => $this->mch_appid,
 			'mch_id'           => $this->mch_id,
@@ -1760,9 +1758,9 @@ class Wechat {
 		}
 
 		$params['sign'] = self::_getOrderMd5($params);
-		$data 			= $this->_array2Xml($params);
-		$data 			= $this->http(self::UNIFIED_ORDER_URL, $data, 'POST');
-		$data 			= $this->_extractXml($data);
+		$data           = $this->_array2Xml($params);
+		$data           = $this->http(self::UNIFIED_ORDER_URL, $data, 'POST');
+		$data           = $this->_extractXml($data);
 
 		if ($data) {
 
@@ -1771,8 +1769,8 @@ class Wechat {
 				if ($data['result_code'] === 'SUCCESS') {
 
 					return array(
-						'payment_params' 	=> $this->createPayParams($data['prepay_id']),
-						'prepay_id' 		=> $data['prepay_id'],
+						'payment_params' => $this->createPayParams($data['prepay_id']),
+						'prepay_id'      => $data['prepay_id'],
 					);
 				} else {
 					$this->setError($data['err_code_des'], $data['err_code']);
@@ -1792,7 +1790,7 @@ class Wechat {
 	}
 
 	/**
-	 * Generates payment parameters
+	 * Generate payment parameters
 	 * @param  string $prepay_id The prepay_id parameter generated by the WeChat payment interface
 	 * @return string
 	 */
@@ -1815,109 +1813,118 @@ class Wechat {
 	}
 
 	/**
-	 * Gets order info from the WeChat pay interface
+	 * Get order info from the WeChat pay interface
 	 * @param  string 	$orderId 	Order ID
-	 * @param  bool 	$local 		If set to true, order ID is a Local order ID ; WeChat payment interface transaction_id otherwise - default false
+	 * @param  bool 	$remote 	If set to true, order ID is a WeChat payment interface transaction_id ; Local order ID otherwise - default false
 	 * @return boolean|array
 	 */
-	public function getOrderInfo($orderId, $local = false) {
-		$params['appid']          = $this->mch_appid;
-		$params['mch_id']         = $this->mch_id;
+	public function getOrderInfo($orderId, $remote = false) {
+		$params['appid']  = $this->mch_appid;
+		$params['mch_id'] = $this->mch_id;
 
-		if ($local) {
+		if ($remote) {
 			$params['transaction_id'] = $orderId;
 		} else {
-			$params['out_trade_no']   = $orderId;
+			$params['out_trade_no'] = $orderId;
 		}
 
-		$params['nonce_str'] 	= self::getNonceStr();
-		$params['sign'] 		= self::_getOrderMd5($params);
-		$data 					= $this->_array2Xml($params);
-		$data 					= $this->http(self::ORDER_QUERY_URL, $data, 'POST');
+		$params['nonce_str'] = self::getNonceStr();
+		$params['sign']      = self::_getOrderMd5($params);
+		$data                = $this->_array2Xml($params);
+		$data                = $this->http(self::ORDER_QUERY_URL, $data, 'POST');
 
 		return self::parsePayRequest($data);
 	}
 
 	/**
-	 * Closes order
+	 * Close order
 	 * @param  string $orderId Local order ID
 	 * @return boolean|array
 	 */
 	public function closeOrder($orderId) {
-		$params['appid']          	= $this->mch_appid;
-		$params['mch_id']         	= $this->mch_id;
-		$params['out_trade_no']   	= $orderId;
-		$params['nonce_str']      	= self::getNonceStr();
-		$params['sign']           	= self::_getOrderMd5($params);
-		$data 						= $this->_array2Xml($params);
-		$data 						= $this->http(self::CLOSE_ORDER_URL, $data, 'POST');
+		$params['appid']        = $this->mch_appid;
+		$params['mch_id']       = $this->mch_id;
+		$params['out_trade_no'] = $orderId;
+		$params['nonce_str']    = self::getNonceStr();
+		$params['sign']         = self::_getOrderMd5($params);
+		$data                   = $this->_array2Xml($params);
+		$data                   = $this->http(self::CLOSE_ORDER_URL, $data, 'POST');
 
 		return self::parsePayRequest($data);
 	}
 
 	/**
-	 * Requests a refund (Requires an SSL certificate)
-	 * @param  string 	$orderId 		Local order ID
-	 * @param  string 	$refundId 		Merchant refund ID ([A-Za-z_- | * @])
-	 * @param  float 	$total_fee 		Total order fee in RMB
-	 * @param  float 	$refund_fee 	Refund fee in RMB - default 0
+	 * Request a refund (Requires an SSL certificate)
+	 * @param  string 		$orderId 		Local order ID
+	 * @param  string 		$refundId 		Merchant refund ID ([A-Za-z_- | * @])
+	 * @param  float 		$total_fee 		Total order fee in RMB
+	 * @param  float 		$refund_fee 	Refund fee in RMB - default 0
+	 * @param  array|string $extend  		Used to extend the parameters sent to the WeChat payment interface - if string, will be attributed to 'refund_desc' - default empty array
 	 * @return boolean|array
 	 */
-	public function refundOrder($orderId, $refundId, $total_fee, $refund_fee = 0) {
-		$params['appid']          	= $this->mch_appid;
-		$params['mch_id']         	= $this->mch_id;
-		$params['nonce_str']      	= self::getNonceStr();
-		$params['out_trade_no']   	= $orderId;
-		$params['out_refund_no']  	= $refundId;
-		$params['total_fee']      	= (int)($total_fee * 100);
-		$params['refund_fee']     	= (int)($refund_fee * 100);
-		$params['op_user_id']     	= $this->mch_id;
-		$params['sign']           	= self::_getOrderMd5($params);
-		$data 						= $this->_array2Xml($params);
-		$data 						= $this->http(self::PAY_REFUND_ORDER_URL, $data, 'POST', true);
+	public function refundOrder($orderId, $refundId, $total_fee, $refund_fee = 0, $extend = array()) {
+		$params = array();
+
+		if (is_string($extend)) {
+			$params['refund_desc']  = $extend;
+		} elseif (is_array($extend) && !empty($extend)) {
+			$params = array_merge($params, $extend);
+		}
+
+		$params['appid']         = $this->mch_appid;
+		$params['mch_id']        = $this->mch_id;
+		$params['nonce_str']     = self::getNonceStr();
+		$params['out_trade_no']  = $orderId;
+		$params['out_refund_no'] = $refundId;
+		$params['total_fee']     = (int)($total_fee * 100);
+		$params['refund_fee']    = (int)($refund_fee * 100);
+		$params['op_user_id']    = $this->mch_id;
+		$params['sign']          = self::_getOrderMd5($params);
+		$data                    = $this->_array2Xml($params);
+		$data                    = $this->http(self::PAY_REFUND_ORDER_URL, $data, 'POST', true);
 
 		return self::parsePayRequest($data);
 	}
 
 	/**
-	 * Gets Local order refund status from the WeChat payment interface 
+	 * Get Local order refund status from the WeChat payment interface 
 	 * @param  string $orderId Local order ID
 	 * @return boolean|array
 	 */
 	public function getRefundStatus($orderId) {
-		$params['appid']          	= $this->mch_appid;
-		$params['mch_id']         	= $this->mch_id;
-		$params['nonce_str']      	= self::getNonceStr();
-		$params['out_trade_no']   	= $orderId;
-		$params['sign']           	= self::_getOrderMd5($params);
-		$data 						= $this->_array2Xml($params);
-		$data 						= $this->http(self::REFUND_QUERY_URL, $data, 'POST');
+		$params['appid']        = $this->mch_appid;
+		$params['mch_id']       = $this->mch_id;
+		$params['nonce_str']    = self::getNonceStr();
+		$params['out_trade_no'] = $orderId;
+		$params['sign']         = self::_getOrderMd5($params);
+		$data                   = $this->_array2Xml($params);
+		$data                   = $this->http(self::REFUND_QUERY_URL, $data, 'POST');
 		
 		return self::parsePayRequest($data);
 	}
 
 	/**
-	 * Downloads billing statement for date
+	 * Download billing statement for date
 	 * @param  date  	$date day for which to get the billing statements - format Ymd - default today's date
 	 * @param  string 	$type TYpe of statement to return - ALL: return all ; SUCCESS: successful payments REFUND: refunded orders REVOKED: revoked orders - default "ALL"
 	 * @return boolean|array
 	 */
 	public function downloadBill($date = '', $type = 'ALL') {
-		$date  						= $date ?: date('Ymd');
-		$params['bill_date']      	= $date;
-		$params['bill_type']      	= $type;
-		$params['appid']          	= $this->mch_appid;
-		$params['mch_id']         	= $this->mch_id;
-		$params['nonce_str']      	= self::getNonceStr();
-		$params['sign']           	= self::_getOrderMd5($params);		
-		$data 						= $this->_array2Xml($params);
-		$data 						= $this->http(self::DOWNLOAD_BILL_URL, $data, 'POST');
+		$date                = $date ?: date('Ymd');
+		$params['bill_date'] = $date;
+		$params['bill_type'] = $type;
+		$params['appid']     = $this->mch_appid;
+		$params['mch_id']    = $this->mch_id;
+		$params['nonce_str'] = self::getNonceStr();
+		$params['sign']      = self::_getOrderMd5($params);		
+		$data                = $this->_array2Xml($params);
+		$data                = $this->http(self::DOWNLOAD_BILL_URL, $data, 'POST');
 		
 		return self::parsePayRequest($data, false);
 	}
 
 	/**
-	 * Creates 28-digits Merchant order ID
+	 * Create 28-digits Merchant order ID
 	 * @return integer
 	 */
 	private function createMchBillNo() {
@@ -1929,7 +1936,7 @@ class Wechat {
 	}
 
 	/**
-	 * Sends shared red envelope
+	 * Send shared red envelope
 	 * @param 	string 	$openid User OpenID
 	 * @param 	string 	$money 	Amount in RMB
 	 * @param 	integer $num 	Red envelop divisor - default 1
@@ -1950,14 +1957,14 @@ class Wechat {
 		$params['wxappid']      = $this->mch_appid;
 		$params['nonce_str']    = self::getNonceStr();
 		$params['sign']         = self::_getOrderMd5($params);
-		$data 					= $this->_array2Xml($params);
-		$data 					= $this->http(self::SEND_GROUP_RED_PACK_URL, $data, 'POST', true);
-		
+		$data                   = $this->_array2Xml($params);
+		$data                   = $this->http(self::SEND_GROUP_RED_PACK_URL, $data, 'POST', true);
+
 		return self::parsePayRequest($data, false);
 	}
 
 	/**
-	 * Sends red envelope
+	 * Send red envelope
 	 * @param  string $openid User OpenID
 	 * @param  string $money  Amount in RMB
 	 * @param  array  $data   Red envelope data
@@ -1980,32 +1987,32 @@ class Wechat {
 		$params['wxappid']      = $this->mch_appid;
 		$params['nonce_str']    = self::getNonceStr();
 		$params['sign']         = self::_getOrderMd5($params);
-		$data 					= $this->_array2Xml($params);
-		$data 					= $this->http(self::SEND_RED_PACK_URL, $data, 'POST', true);
-		
+		$data                   = $this->_array2Xml($params);
+		$data                   = $this->http(self::SEND_RED_PACK_URL, $data, 'POST', true);
+
 		return self::parsePayRequest($data, false);
 	}
 
 	/**
-	 * Gets red envelope information
+	 * Get red envelope information
 	 * @param  string $billNo Red envelope's Merchant order ID
 	 * @return array
 	 */
 	public function getRedPack($billNo) {
-		$params['mch_billno'] 	= $billNo;
-		$params['mch_id']     	= $this->mch_id;
-		$params['appid']      	= $this->mch_appid;
-		$params['bill_type']  	= 'MCHT';
-		$params['nonce_str']  	= self::getNonceStr();
-		$params['sign']       	= self::_getOrderMd5($params);
-		$data 					= $this->_array2Xml($params);
-		$data 					= $this->http(self::GET_RED_PACK_INFO_URL, $data, 'POST', true);
-		
+		$params['mch_billno'] = $billNo;
+		$params['mch_id']     = $this->mch_id;
+		$params['appid']      = $this->mch_appid;
+		$params['bill_type']  = 'MCHT';
+		$params['nonce_str']  = self::getNonceStr();
+		$params['sign']       = self::_getOrderMd5($params);
+		$data                 = $this->_array2Xml($params);
+		$data                 = $this->http(self::GET_RED_PACK_INFO_URL, $data, 'POST', true);
+
 		return self::parsePayRequest($data, false);
 	}
 
 	/**
-	 * Parses result of the WeChat payment interface
+	 * Parse result of the WeChat payment interface
 	 * @param  xmlstring $data      The data returned by the interface
 	 * @param  boolean   $checkSign Whether signature verification is required - default true
 	 * @return boolean|array
@@ -2046,7 +2053,7 @@ class Wechat {
 	}
 
 	/**
-	 * Gets WeChat payment interface notification
+	 * Get WeChat payment interface notification
 	 * @return array
 	 */
 	public function getNotify() {
@@ -2064,8 +2071,8 @@ class Wechat {
 
 		if (empty($return_msg)) {
 			$data = array(
-				'return_code' 	=> 'SUCCESS',
-				'return_msg' 	=> 'OK',
+				'return_code' => 'SUCCESS',
+				'return_msg'  => 'OK',
 			);
 		} else {
 			$data = array(
@@ -2078,7 +2085,7 @@ class Wechat {
 	}
 
 	/**
-	 * Checks payment data signature
+	 * Check payment data signature
 	 * @param  $data The data from WeChat interface
 	 * @return boolean
 	 */
@@ -2090,7 +2097,7 @@ class Wechat {
 		if (self::_getOrderMd5($data) !== $sign) {
 			$this->setError('Signature verification failed');
 
- 			return false;
+			return false;
 		} else {
 
 			return true;
@@ -2098,7 +2105,7 @@ class Wechat {
 	}
 
 	/**
-	 * Signs order data with MD5
+	 * Sign order data with MD5
 	 * @param  array $params data to sign
 	 * @return string
 	 */
@@ -2115,17 +2122,17 @@ class Wechat {
 	 * @return string
 	 */
 	private function _get_client_ip() {
-	    if (!empty($_SERVER['REMOTE_ADDR'])) {
-	        $ip = $_SERVER['REMOTE_ADDR'];
-	    } else {
-	        $ip = gethostbyname(gethostname());
-	    }
+		if (!empty($_SERVER['REMOTE_ADDR'])) {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		} else {
+			$ip = gethostbyname(gethostname());
+		}
 
-	    return filter_var($ip, FILTER_VALIDATE_IP) ?: '127.0.0.1';
+		return filter_var($ip, FILTER_VALIDATE_IP) ?: '127.0.0.1';
 	}
 
 	/**
-	 * Gets last error message and error code
+	 * Get last error message and error code
 	 * @return array
 	 */
 	public function getError() {
@@ -2134,18 +2141,18 @@ class Wechat {
 	}
 
 	/**
-	 * Sets error message and error code
+	 * Set error message and error code
 	 * @param 	string $message 	The error message - default empty string
 	 * @param 	string $errorCode 	The error code - default null
 	 * @return 	string
 	 */
 	public function setError($message = '', $errorCode = null) {
-		$this->error 		= $message;
-		$this->errorCode 	= $errorCode;
+		$this->error     = $message;
+		$this->errorCode = $errorCode;
 	}
 
 	/**
-	 * Gets an error message from an error code
+	 * Get an error message from an error code
 	 * @param integer $code Error code
 	 * @return string
 	 */
@@ -2249,7 +2256,7 @@ class Wechat {
 			default: 	return 'Unknown error';
 		}
 	}
-	
+
 }
 
 class WechatPayException extends Exception {}

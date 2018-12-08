@@ -23,18 +23,25 @@ class WP_Weixin_Wechat {
 			$error  = $this->wechat->getError();
 
 			if ( $error && absint( $error['code'] ) === 40001 ) {
-				error_log( __METHOD__ . ': Error - access token is most likely expired ; retry after renewing' ); // @codingStandardsIgnoreLine
+				$message = 'Error - access token is most likely expired ; will retry after renewing the token';
+
+				WP_Weixin::log( $message, get_class( $this->wechat ) . '::' . $method_name );
 				WP_Weixin_Wechat_Singleton::renew_access_token( $this->wechat );
 
-				$result = call_user_func_array( array( $this->wechat, $method_name ), $args );
-				error_log( __METHOD__ . ': End retry after renewing' ); // @codingStandardsIgnoreLine
+				$result  = call_user_func_array( array( $this->wechat, $method_name ), $args );
+				$message = 'Call retried after renewing the access token';
+
+				WP_Weixin::log( $message, get_class( $this->wechat ) . '::' . $method_name );
 			} elseif ( $error ) {
-				error_log( __METHOD__ . ': ' . print_r( $error, true ) ); // @codingStandardsIgnoreLine
+				WP_Weixin::log( $error, get_class( $this->wechat ) . '::' . $method_name );
 			}
 
 			return $result;
 		} else {
-			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . $method_name . '()', E_USER_ERROR ); // @codingStandardsIgnoreLine
+			trigger_error( // @codingStandardsIgnoreLine
+				'Call to undefined method ' . __CLASS__ . '::' . esc_html( $method_name ) . '()', // @codingStandardsIgnoreLine
+				E_USER_ERROR
+			);
 		}
 	}
 
@@ -47,11 +54,17 @@ class WP_Weixin_Wechat {
 			set_transient( 'wp_weixin_jsapi_ticket', $ticket, 7000 );
 		}
 
-		$protocol       = ( ! empty( $_SERVER['HTTPS'] ) && 'off' !== $_SERVER['HTTPS'] || 443 === absint( $_SERVER['SERVER_PORT'] ) ) ? 'https://' : 'http://';
+		if ( ! empty( $_SERVER['HTTPS'] ) && 'off' !== $_SERVER['HTTPS'] || 443 === absint( $_SERVER['SERVER_PORT'] ) ) {
+			$protocol = 'https://';
+		} else {
+			$protocol = 'http://';
+		}
+
 		$url            = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		$timestamp      = current_time( 'timestamp' );
 		$nonce_str      = $this->getNonceStr();
-		$string         = 'jsapi_ticket=' . $ticket . '&noncestr=' . $nonce_str . '&timestamp=' . $timestamp . '&url=' . $url;
+		$string         = 'jsapi_ticket=' . $ticket . '&noncestr=' . $nonce_str;
+		$string        .= '&timestamp=' . $timestamp . '&url=' . $url;
 		$signature      = sha1( $string );
 		$signed_package = array(
 			'appid'     => WP_Weixin_Settings::get_option( 'appid' ),
@@ -65,7 +78,4 @@ class WP_Weixin_Wechat {
 		return $signed_package;
 	}
 
-	/*******************************************************************
-	 * Private methods
-	 *******************************************************************/
 }

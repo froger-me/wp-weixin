@@ -2,16 +2,12 @@
 	exit; // Exit if accessed directly
 }
 
-$qr_src  = apply_filters( 'wp_weixin_subscribe_src', '' );
-$title   = apply_filters( 'wp_weixin_follower_notice_title', __( 'Follow Us!', 'wp-weixin' ) );
-$message = __( 'Please scan this QR Code to follow us before accessing this content.', 'wp-weixin' );
-$message = apply_filters( 'wp_weixin_follower_notice', $message );
-
 get_header() ?>
-	<div id="wxsubscribe">
+<div id="wp_weixin_oa_subscribe">
 	<h1><?php print esc_html( $title ); ?></h1>
 	<p><?php print esc_html( $message ); ?></p>
 	<img src="<?php print esc_attr( $qr_src ); ?>">
-	</div>
+	<p><input type="button" value="<?php esc_html_e( 'Refresh', 'wp-weixin' ); ?>"></p>
+</div>
 <?php
 get_footer();

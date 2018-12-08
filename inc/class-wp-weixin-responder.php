@@ -9,9 +9,6 @@ class WP_Weixin_Responder {
 	protected $wechat;
 
 	public function __construct( $wechat, $init_hooks = false ) {
-
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
 		$this->wechat = $wechat;
 
 		if ( $init_hooks ) {
@@ -32,7 +29,11 @@ class WP_Weixin_Responder {
 	 *******************************************************************/
 
 	public function add_endpoints() {
-		add_rewrite_rule( '^weixin-responder', 'index.php?__wp_weixin_api=1&action=responder', 'top' );
+		add_rewrite_rule(
+			'^weixin-responder',
+			'index.php?__wp_weixin_api=1&action=responder',
+			'top'
+		);
 	}
 
 	public function parse_request() {
@@ -51,26 +52,21 @@ class WP_Weixin_Responder {
 
 	public function send_subscribe_message( $request_data ) {
 
-		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'subscribe' === $request_data['event'] ) {
+		if (
+			isset( $request_data['event'], $request_data['fromusername'] ) &&
+			'subscribe' === $request_data['event']
+		) {
 			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
 
 			if ( $user ) {
-				$openid = get_user_meta( $user->ID, 'wp_weixin_openid', true );
-				$openid = $openid ? $openid : $_COOKIE['wx_openId'];
-				$openid = $openid ? $openid : '';
+				$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
+				$openid       = get_user_meta( $user->ID, 'wx_openid-' . $auth_blog_id, true );
 
 				$follower_info = $this->wechat->follower( $openid );
 				$error         = $this->wechat->getError();
 
-				if ( $error && 40001 === absint( $error['code'] ) ) {
-					WP_Weixin_Wechat_Singleton::renew_access_token( $this->wechat );
-
-					$follower_info = $this->wechat->follower( $openid );
-				} elseif ( $error ) {
-					error_log( __METHOD__ . ': ' . print_r( $error, true ) ); // @codingStandardsIgnoreLine
-				}
-
-				if ( ! $follower_info ) {
+				if ( ! $follower_info || $error ) {
+					WP_Weixin::log( __METHOD__, $error );
 
 					return;
 				}
@@ -109,7 +105,8 @@ class WP_Weixin_Responder {
 			';
 
 			header( $protocol . ' 401 Unauthorized' );
-			echo $output; // @codingStandardsIgnoreLine
+
+			echo $output; // WPCS: XSS ok
 
 			exit( -1 );
 		}
@@ -117,7 +114,7 @@ class WP_Weixin_Responder {
 		$request_data = $this->wechat->request();
 
 		if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
-			error_log( print_r( $request_data, true ) ); // @codingStandardsIgnoreLine
+			WP_Weixin::log( __METHOD__, $request_data );
 		}
 
 		do_action( 'wp_weixin_responder', $request_data, $this->wechat );
@@ -141,10 +138,10 @@ class WP_Weixin_Responder {
 		$name                = isset( $follower_info['nickname'] ) ? $follower_info['nickname'] : '';
 		$before_subscription = get_user_meta( $user->ID, 'wp_weixin_before_subscription', true );
 
-		/* translators: 1:wechat nickame */
+		/* translators: 1:WeChat Name */
 		$title           = sprintf( __( 'Welcome %1$s!', 'wp-weixin' ), $name );
 		$description     = __( 'Thank you for subscribing our official account!', 'wp-weixin' );
-		$url             = site_url();
+		$url             = home_url();
 		$default_pic_url = WP_Weixin_Settings::get_option( 'welcome_image_url' );
 		$default_pic_url = filter_var( $default_pic_url, FILTER_VALIDATE_URL );
 		$default_pic_url = ( ! $default_pic_url ) ? WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png' : $default_pic_url;
@@ -156,21 +153,19 @@ class WP_Weixin_Responder {
 
 			if ( is_numeric( $before_subscription ) ) {
 				$post = get_post( absint( $before_subscription ) );
-				$url  = get_permalink( $post );
 
 				/* translators: 1:title of the post */
 				$description .= sprintf( __( ' Open to go back to "%1$s".', 'wp-weixin' ), $post->post_title );
+				$url          = get_permalink( $post );
 			} else {
-				$url = $before_subscription;
-
 				$description .= __( ' You may now use our services. Open to go back.', 'wp-weixin' );
+				$url          = $before_subscription;
 			}
 		} else {
 
 			if ( function_exists( 'wc_get_endpoint_url' ) ) {
 				$description .= __( ' Open now to access your personal account.', 'wp-weixin' );
-
-				$url = site_url( wc_get_endpoint_url( 'my-account/' ) );
+				$url          = home_url( wc_get_endpoint_url( 'my-account/' ) );
 			} else {
 				$description .= __( ' Open now to access our services.', 'wp-weixin' );
 			}

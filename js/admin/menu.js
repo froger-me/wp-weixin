@@ -1,24 +1,24 @@
-/* global api, menus, ajaxurl */
-jQuery(document).ready(function($) {
-	$('.menu-item-depth-0 .is-submenu').hide();
-	$('#submit-wechatlinkdiv').on('click', function() {
-		var processMethod = function(menuMarkup) { 
+/* global menus, ajaxurl */
+jQuery( document ).ready( function( $ ) {
+	$( '.menu-item-depth-0 .is-submenu' ).hide();
+	$( '#submit-wechatlinkdiv' ).on( 'click', function() {
+		var processMethod = function( menuMarkup ) { 
 				var $menuMarkup = $( menuMarkup );
 
-				$menuMarkup.hideAdvancedMenuItemFields().appendTo($('#menu-to-edit'));
+				$menuMarkup.hideAdvancedMenuItemFields().appendTo( $( '#menu-to-edit' ) );
 				refreshKeyboardAccessibility();
 				refreshAdvancedAccessibility();
 				$( document ).trigger( 'menu-item-added', [ $menuMarkup ] );
 			},
 			refreshKeyboardAccessibility = function() {
-				$( 'a.item-edit' ).off( 'focus' ).on( 'focus', function(){
-					$(this).off( 'keydown' ).on( 'keydown', function(e){
+				$( 'a.item-edit' ).off( 'focus' ).on( 'focus', function() {
+					$( this ).off( 'keydown' ).on( 'keydown', function( e ) {
 
 						var arrows,
 							$this = $( this ),
 							thisItem = $this.parents( 'li.menu-item' ),
 							thisItemData = thisItem.getItemData(),
-							maybeArrow = parseInt(e.which, 10);
+							maybeArrow = parseInt( e.which, 10 );
 
 						// Bail if it's not an arrow key
 						if ( 37 !== maybeArrow && 38 !== maybeArrow && 39 !== maybeArrow && 40 !== maybeArrow ) {
@@ -27,39 +27,39 @@ jQuery(document).ready(function($) {
 						}
 
 						// Avoid multiple keydown events
-						$this.off('keydown');
+						$this.off( 'keydown' );
 
 						// Bail if there is only one menu item
-						if ( 1 === $('#menu-to-edit li').length ) {
+						if ( 1 === $( '#menu-to-edit li' ).length ) {
 
 							return;
 						}
 
 						// If RTL, swap left/right arrows
 						arrows = { '38': 'up', '40': 'down', '37': 'left', '39': 'right' };
-						if ( $('body').hasClass('rtl') ){
+						if ( $( 'body' ).hasClass( 'rtl' ) ) {
 							arrows = { '38' : 'up', '40' : 'down', '39' : 'left', '37' : 'right' };
 						}
 
 						switch ( arrows[e.which] ) {
 						case 'up':
-							api.moveMenuItem( $this, 'up' );
+							moveMenuItem( $this, 'up' );
 							break;
 						case 'down':
-							api.moveMenuItem( $this, 'down' );
+							moveMenuItem( $this, 'down' );
 							break;
 						case 'left':
-							api.moveMenuItem( $this, 'left' );
+							moveMenuItem( $this, 'left' );
 							break;
 						case 'right':
-							api.moveMenuItem( $this, 'right' );
+							moveMenuItem( $this, 'right' );
 							break;
 						}
 						// Put focus back on same menu item
 						$( '#edit-' + thisItemData['menu-item-db-id'] ).focus();
 						return false;
-					});
-				});
+					} );
+				} );
 			},
 			refreshAdvancedAccessibility = function() {
 				// Hide all the move buttons by default.
@@ -70,7 +70,7 @@ jQuery(document).ready(function($) {
 
 				// All open items have to be refreshed or they will show no links
 				$( '.menu-item-edit-active a.item-edit' ).each( function() {
-					api.refreshAdvancedAccessibilityOfItem( this );
+					refreshAdvancedAccessibilityOfItem( this );
 				} );
 			},
 			refreshAdvancedAccessibilityOfItem = function( itemToRefresh ) {
@@ -88,9 +88,9 @@ jQuery(document).ready(function($) {
 					itemName = $this.closest( '.menu-item-handle' ).find( '.menu-item-title' ).text(),
 					position = parseInt( menuItem.index(), 10 ),
 					prevItemDepth = ( isPrimaryMenuItem ) ? depth : parseInt( depth - 1, 10 ),
-					prevItemNameLeft = menuItem.prevAll('.menu-item-depth-' + prevItemDepth).first().find( '.menu-item-title' ).text(),
-					prevItemNameRight = menuItem.prevAll('.menu-item-depth-' + depth).first().find( '.menu-item-title' ).text(),
-					totalMenuItems = $('#menu-to-edit li').length,
+					prevItemNameLeft = menuItem.prevAll( '.menu-item-depth-' + prevItemDepth ).first().find( '.menu-item-title' ).text(),
+					prevItemNameRight = menuItem.prevAll( '.menu-item-depth-' + depth ).first().find( '.menu-item-title' ).text(),
+					totalMenuItems = $( '#menu-to-edit li' ).length,
 					hasSameDepthSibling = menuItem.nextAll( '.menu-item-depth-' + depth ).length;
 
 					menuItem.find( '.field-move' ).toggle( totalMenuItems > 1 );
@@ -142,7 +142,7 @@ jQuery(document).ready(function($) {
 					parentItemId = parentItem.find( '.menu-item-data-db-id' ).val(),
 					parentItemName = parentItem.find( '.menu-item-title' ).text(),
 					subItems = $( '.menu-item .menu-item-data-parent-id[value="' + parentItemId + '"]' ),
-					itemPosition = $( subItems.parents('.menu-item').get().reverse() ).index( menuItem ) + 1;
+					itemPosition = $( subItems.parents( '.menu-item' ).get().reverse() ).index( menuItem ) + 1;
 
 					// String together help text for sub menu items
 					title = menus.subMenuFocus.replace( '%1$s', itemName ).replace( '%2$d', itemPosition ).replace( '%3$s', parentItemName );
@@ -269,14 +269,14 @@ jQuery(document).ready(function($) {
 			},
 			callback = function() {
 				$( '.wechatlinkdiv .spinner' ).removeClass( 'is-active' );
-				$('#wechat-menu-item-name').val('').blur();
-				$('#wechat-menu-item-url').val('');
+				$( '#wechat-menu-item-name' ).val( '' ).blur();
+				$( '#wechat-menu-item-url' ).val( '' );
 			},
-			url 		= $('#wechat-menu-item-url').val(),
-			label 		= $('#wechat-menu-item-name').val(),
-			target 		= $('#wechat-menu-item-attr-title').val(),
-			menu 		= $('#menu').val(),
-			nonce 		= $('#menu-settings-column-nonce').val(),
+			url 		= $( '#wechat-menu-item-url' ).val(),
+			label 		= $( '#wechat-menu-item-name' ).val(),
+			target 		= $( '#wechat-menu-item-attr-title' ).val(),
+			menu 		= $( '#menu' ).val(),
+			nonce 		= $( '#menu-settings-column-nonce' ).val(),
 			menuItem 	= {
 				'-1': {
 					'menu-item-type': 'wechat',
@@ -293,19 +293,19 @@ jQuery(document).ready(function($) {
 			};
 
 		$( '.wechatlinkdiv .spinner' ).addClass( 'is-active' );
-		$.post(ajaxurl, params, function(menuMarkup) {
-			var ins = $('#menu-instructions');
+		$.post( ajaxurl, params, function( menuMarkup ) {
+			var ins = $( '#menu-instructions' );
 
 			menuMarkup = $.trim( menuMarkup );
-			processMethod(menuMarkup, params);
+			processMethod( menuMarkup, params );
 
-			$( 'li.pending' ).hide().fadeIn('slow');
+			$( 'li.pending' ).hide().fadeIn( 'slow' );
 			$( '.drag-instructions' ).show();
 			if( ! ins.hasClass( 'menu-instructions-inactive' ) && ins.siblings().length ) {
 				ins.addClass( 'menu-instructions-inactive' );
 			}
 
 			callback();
-		});
-	});
-});
+		} );
+	} );
+} );

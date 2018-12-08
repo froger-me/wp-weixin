@@ -10,7 +10,6 @@ class WP_Weixin_Menu {
 	protected $published;
 
 	public function __construct( $wechat, $init_hooks = false ) {
-
 		$this->wechat = $wechat;
 
 		if ( $init_hooks ) {
@@ -50,7 +49,13 @@ class WP_Weixin_Menu {
 				'debug'    => $debug,
 			);
 
-			wp_enqueue_script( 'wp-weixin-menu-script', WP_WEIXIN_PLUGIN_URL . 'js/admin/menu' . $js_ext, array( 'jquery' ), $version, true );
+			wp_enqueue_script(
+				'wp-weixin-menu-script',
+				WP_WEIXIN_PLUGIN_URL . 'js/admin/menu' . $js_ext,
+				array( 'jquery' ),
+				$version,
+				true
+			);
 			wp_localize_script( 'wp-weixin-menu-script', 'WpWeixin', $parameters );
 		}
 	}
@@ -61,10 +66,14 @@ class WP_Weixin_Menu {
 
 	public function alter_menu_walker( $walker_class_name, $menu_id ) {
 		$theme_locations = get_nav_menu_locations();
-		$weixin_oa_menu  = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
 
-		if ( absint( $menu_id ) === $weixin_oa_menu->term_id ) {
-			$walker_class_name = 'Walker_Nav_Menu_Wechat_Edit';
+		if ( isset( $theme_locations['weixin_oa_menu_location'] ) ) {
+
+			$weixin_oa_menu = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
+
+			if ( $weixin_oa_menu && absint( $menu_id ) === $weixin_oa_menu->term_id ) {
+				$walker_class_name = 'Walker_Nav_Menu_Wechat_Edit';
+			}
 		}
 
 		return $walker_class_name;
@@ -74,10 +83,16 @@ class WP_Weixin_Menu {
 		global $sitepress;
 
 		$theme_locations = get_nav_menu_locations();
-		$weixin_oa_menu  = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
-		$lang_rule       = false;
 
-		if ( $sitepress && WP_Weixin_Settings::get_option( 'lang_aware_menu' ) ) {
+		if ( ! isset( $theme_locations['weixin_oa_menu_location'] ) ) {
+
+			return;
+		}
+
+		$weixin_oa_menu = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
+		$lang_rule      = false;
+
+		if ( $weixin_oa_menu && $sitepress && WP_Weixin_Settings::get_option( 'lang_aware_menu' ) ) {
 			$menu_lang = apply_filters( 'wpml_element_language_code', null, array(
 				'element_id'   => (int) $weixin_oa_menu->term_id,
 				'element_type' => 'nav_menu',
@@ -88,8 +103,7 @@ class WP_Weixin_Menu {
 			}
 		}
 
-		if ( $weixin_oa_menu->term_id === $menu_id ) {
-
+		if ( $weixin_oa_menu && $weixin_oa_menu->term_id === $menu_id ) {
 			$items = wp_get_nav_menu_items( $menu_id );
 			$menus = array();
 
@@ -200,7 +214,7 @@ class WP_Weixin_Menu {
 				}
 
 				if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
-					error_log( __METHOD__ . ': ' . print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
+					WP_Weixin::log( $this->wechat->getError() );
 				}
 
 				if ( ! empty( $menus['button'] ) ) {
@@ -213,19 +227,29 @@ class WP_Weixin_Menu {
 				}
 
 				if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
-					error_log( __METHOD__ . ': ' . print_r( $this->wechat->getError(), true ) ); // @codingStandardsIgnoreLine
+					WP_Weixin::log( $this->wechat->getError() );
 				}
 			}
 		}
 	}
 
 	public function add_meta_box() {
-		$menu_id         = isset( $_GET['menu'] ) ? absint( $_GET['menu'] ) : false; // @codingStandardsIgnoreLine
+		$menu_id         = absint( filter_input( INPUT_GET, 'menu', FILTER_SANITIZE_NUMBER_INT ) );
 		$theme_locations = get_nav_menu_locations();
-		$weixin_oa_menu  = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
 
-		if ( $weixin_oa_menu->term_id === $menu_id ) {
-			add_meta_box( 'add-wechat-links', __( 'WeChat Menu Item', 'wp-weixin' ), array( $this, 'nav_menu_item_wechat_meta_box' ), 'nav-menus', 'side', 'default' );
+		if ( isset( $theme_locations['weixin_oa_menu_location'] ) ) {
+			$weixin_oa_menu = get_term( $theme_locations['weixin_oa_menu_location'], 'nav_menu' );
+
+			if ( $weixin_oa_menu && $weixin_oa_menu->term_id === $menu_id ) {
+				add_meta_box(
+					'add-wechat-links',
+					__( 'WeChat Menu Item', 'wp-weixin' ),
+					array( $this, 'nav_menu_item_wechat_meta_box' ),
+					'nav-menus',
+					'side',
+					'default'
+				);
+			}
 		}
 	}
 
@@ -238,7 +262,7 @@ class WP_Weixin_Menu {
 
 		require WP_WEIXIN_PLUGIN_PATH . 'inc/templates/admin/menu-item-meta-box.php';
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // WPCS: XSS ok
 	}
 
 	public function wp_ajax_add_menu_item() {
@@ -299,7 +323,10 @@ class WP_Weixin_Menu {
 
 	public function update_nav_menu_item( $menu_id, $menu_item_db_id, $args ) {
 
-		if ( 'wechat' === $args['menu-item-type'] && isset( $_POST['menu-item-url'], $_POST['menu-item-url'][ $menu_item_db_id ] ) ) { // @codingStandardsIgnoreLine
+		if (
+			'wechat' === $args['menu-item-type'] &&
+			isset( $_POST['menu-item-url'], $_POST['menu-item-url'][ $menu_item_db_id ] ) // @codingStandardsIgnoreLine
+		) {
 
 			$args['menu-item-url'] = $_POST['menu-item-url'][ $menu_item_db_id ]; // @codingStandardsIgnoreLine
 
@@ -320,7 +347,7 @@ class WP_Weixin_Menu {
 		if ( $is_wechat_menu && '_menu_item_url' === $meta_key ) {
 			$url_array = filter_input( INPUT_POST, 'menu-item-url', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 
-			if ( is_array( $url_array ) && in_array( $object_id, array_keys( $url_array ), true ) ) {
+			if ( is_array( $url_array ) && isset( $url_array[ $object_id ] ) ) {
 				$meta_value = filter_var( $url_array[ $object_id ], FILTER_SANITIZE_SPECIAL_CHARS );
 
 				remove_filter( 'update_post_metadata', array( $this, 'save_wechat_event_key' ), 10, 5 );
@@ -346,9 +373,10 @@ class WP_Weixin_Menu {
 
 			foreach ( (array) $menu_data as $_possible_db_id => $_item_object_data ) {
 
-				$is_custom = ( 'custom' === $_item_object_data['menu-item-type'] || 'wechat' === $_item_object_data['menu-item-type'] );
+				$is_custom = ( 'custom' === $_item_object_data['menu-item-type'] );
+				$is_custom = $is_custom || ( 'wechat' === $_item_object_data['menu-item-type'] );
 				$condition = ! isset( $_item_object_data['menu-item-type'] ) || 'wechat' === $_item_object_data['menu-item-type'];
-				$condition = $condition && in_array( $_item_object_data['menu-item-url'], array( 'http://', '' ) ); // @codingStandardsIgnoreLine
+				$condition = $condition && in_array( $_item_object_data['menu-item-url'], array( 'http://', '' ), true );
 				$condition = $condition || ! ( $is_custom && ! isset( $_item_object_data['menu-item-db-id'] ) );
 				$condition = $condition || ! empty( $_item_object_data['menu-item-db-id'] );
 
@@ -358,7 +386,7 @@ class WP_Weixin_Menu {
 				}
 
 				$condition = empty( $_item_object_data['menu-item-db-id'] ) || ( 0 > $_possible_db_id );
-				$condition = $condition || $_possible_db_id != $_item_object_data['menu-item-db-id']; // @codingStandardsIgnoreLine
+				$condition = $condition || absint( $_item_object_data['menu-item-db-id'] ) !== $_possible_db_id;
 
 				if ( $condition ) {
 					$_actual_db_id = 0;
