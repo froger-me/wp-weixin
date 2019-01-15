@@ -3,6 +3,7 @@
 * [General Description](#user-content-general-description)
 	* [Companion Plugins](#user-content-companion-plugins)
 	* [Important Notes](#user-content-important-notes)
+	* [Registering a domain in the Official Account's backend](#user-content-registering-a-domain-in-the-official-accounts-backend)
 	* [Overview](#user-content-overview)
 	* [Object Cache considerations](#user-content-object-cache-considerations)
 * [Settings](#user-content-settings)
@@ -37,7 +38,17 @@ Developers are encouraged to build plugins and themes integrated with WeChat wit
 ### Important Notes
 
 * Requires a [China Mainland WeChat Official Account](https://mp.weixin.qq.com) (Subscription or Service - Service is required if used with companion plugins dealing with payments).
+* A domain used by WordPress **must** be registered in an Official Account's backend
 * The plugin itself does not require programming knowledge, and provides really useful functionalities out of the box. Where it really shines though is when used by developers to extend its functionalities (mainly through the pre-initialised JS SDK, the WeChat Responder, and various provided [functions](#user-content-functions), [actions](#user-content-actions) and [filters](#user-content-filters)).
+
+### Registering a domain in the Official Account's backend
+
+To register a domain and authorize communication between it and the WeChat APIs (frontend JS and server side), the domain **must** be linked with an ICP license first. Then, on [https://mp.weixin.qq.com](https://mp.weixin.qq.com):
+
+* connect to the Official Account's backend
+* click the "Interface Privilege" menu item
+* in the list, search for "Web Page Authorization" and click the "Modify" link
+* add the domain in both "JS interface security domain name" and "Webpage authorization domain name" by clicking the "Set-up" link for both sections (without the protocol `http` or `https`) - making sure to include the `MP_verify_[some_code].txt` files to the root of the website corresponding to the domain registered as instructed, accessible publicly.
 
 ### Overview
 

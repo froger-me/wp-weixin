@@ -139,7 +139,7 @@ class WP_Weixin_Bind {
 
 			set_transient(
 				'wp_weixin_qr_' . $qr_id,
-				current_time( 'timestamp' ) + apply_filters( 'wp_weixin_qr_lifetime', WP_Weixin::MAX_QR_LIFETIME ),
+				time() + apply_filters( 'wp_weixin_qr_lifetime', WP_Weixin::MAX_QR_LIFETIME ),
 				apply_filters( 'wp_weixin_qr_lifetime', WP_Weixin::MAX_QR_LIFETIME )
 			);
 
@@ -376,7 +376,7 @@ class WP_Weixin_Bind {
 
 		if (
 			is_numeric( $recorded_qr_value ) &&
-			current_time( 'timestamp' ) > $recorded_qr_value
+			time() > $recorded_qr_value
 		) {
 			$error = __( 'The QR code is expired', 'wp-weixin' );
 		}

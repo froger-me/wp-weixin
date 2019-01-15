@@ -61,7 +61,7 @@ class WP_Weixin_Wechat {
 		}
 
 		$url            = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$timestamp      = current_time( 'timestamp' );
+		$timestamp      = time();
 		$nonce_str      = $this->getNonceStr();
 		$string         = 'jsapi_ticket=' . $ticket . '&noncestr=' . $nonce_str;
 		$string        .= '&timestamp=' . $timestamp . '&url=' . $url;

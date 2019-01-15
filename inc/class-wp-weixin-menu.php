@@ -561,7 +561,7 @@ class WP_Weixin_Menu {
 		}
 
 		if ( 0 === absint( $menu_id ) ) {
-			update_post_meta( $menu_item_db_id, '_menu_item_orphaned', (string) current_time( 'timestamp' ) );
+			update_post_meta( $menu_item_db_id, '_menu_item_orphaned', (string) time() );
 		} elseif ( get_post_meta( $menu_item_db_id, '_menu_item_orphaned' ) ) {
 			delete_post_meta( $menu_item_db_id, '_menu_item_orphaned' );
 		}

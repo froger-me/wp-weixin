@@ -269,7 +269,7 @@ class WP_Weixin_Auth {
 	public function oauth_cookie( $length, $user_id, $remember ) {
 
 		if ( $this->expire_length ) {
-			$length = current_time( 'timestamp' ) + (int) $this->expire_length;
+			$length = time() + (int) $this->expire_length;
 		}
 
 		return $length;
@@ -317,7 +317,7 @@ class WP_Weixin_Auth {
 				add_action( 'template_redirect', array( $this, 'subscribe_oa' ), 0, 0 );
 
 			} else {
-				setcookie( 'wx_follower', 1, current_time( 'timestamp' ) + 3600 );
+				setcookie( 'wx_follower', 1, time() + 3600 );
 				delete_transient( 'wp_weixin_recent_unsub_' . $user_id );
 			}
 		}
@@ -462,7 +462,7 @@ class WP_Weixin_Auth {
 
 			set_transient(
 				'wp_weixin_qr_' . $qr_id,
-				current_time( 'timestamp' ) + apply_filters( 'wp_weixin_qr_lifetime', WP_Weixin::MAX_QR_LIFETIME ),
+				time() + apply_filters( 'wp_weixin_qr_lifetime', WP_Weixin::MAX_QR_LIFETIME ),
 				apply_filters( 'wp_weixin_qr_lifetime', WP_Weixin::MAX_QR_LIFETIME )
 			);
 
@@ -527,19 +527,13 @@ class WP_Weixin_Auth {
 		wp_enqueue_style( 'wp-weixin-login-style', WP_WEIXIN_PLUGIN_URL . 'css/admin/login' . $css_ext, array(), $version );
 	}
 
-	// public function register_disabled_slugs( $slugs ) {
-	// 	$slugs[] = 'wechat-auth';
-
-	// 	return $slugs;
-	// }
-
 	public function logout() {
 		$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 
 		setcookie(
 			'wx_openId-' . $auth_blog_id,
 			'',
-			current_time( 'timestamp' ) - 3600,
+			time() - 3600,
 			'/',
 			COOKIE_DOMAIN
 		);
@@ -641,7 +635,7 @@ class WP_Weixin_Auth {
 			setcookie(
 				'wx_openId-' . $auth_blog_id,
 				$openid,
-				current_time( 'timestamp' ) + (int) $this->expire_length,
+				time() + (int) $this->expire_length,
 				'/',
 				COOKIE_DOMAIN
 			);
@@ -740,7 +734,7 @@ class WP_Weixin_Auth {
 
 		$user_info['access_token']   = $access_token;
 		$user_info['refresh_token']  = $refresh_token;
-		$user_info['refresh_expire'] = current_time( 'timestamp' ) + (int) $this->expire_length;
+		$user_info['refresh_expire'] = time() + (int) $this->expire_length;
 		$openid_login_suffix         = ( is_multisite() ) ? strtolower( $user_info['openid'] ) : $user_info['openid'];
 
 		$user_data = array(
@@ -780,7 +774,7 @@ class WP_Weixin_Auth {
 		$refresh_token  = isset( $user_info['refresh_token'] ) ? $user_info['refresh_token'] : false;
 		$refresh_expire = isset( $user_info['refresh_expire'] ) ? $user_info['refresh_expire'] : false;
 
-		if ( $refresh_expire > 0 && $refresh_expire < current_time( 'timestamp' ) + 30 ) {
+		if ( $refresh_expire > 0 && $refresh_expire < time() + 30 ) {
 			$refresh_info = $this->wechat->refreshOauthAccessToken( $refresh_token );
 			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 			$openid       = get_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, true );
@@ -795,7 +789,7 @@ class WP_Weixin_Auth {
 			setcookie(
 				'wx_openId-' . $auth_blog_id,
 				$openid,
-				current_time( 'timestamp' ) + (int) $this->expire_length,
+				time() + (int) $this->expire_length,
 				'/',
 				COOKIE_DOMAIN
 			);
@@ -837,7 +831,7 @@ class WP_Weixin_Auth {
 			$error = __( 'The QR code is invalid', 'wp-weixin' );
 		}
 
-		if ( is_numeric( $recorded_qr_value ) && current_time( 'timestamp' ) > $recorded_qr_value ) {
+		if ( is_numeric( $recorded_qr_value ) && time() > $recorded_qr_value ) {
 			$error = __( 'The QR code is expired', 'wp-weixin' );
 		}
 

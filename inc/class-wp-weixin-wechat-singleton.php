@@ -25,10 +25,11 @@ class WP_Weixin_Wechat_Singleton {
 				self::$wechat = new WP_Weixin_Wechat( $wechat_sdk );
 
 				if (
-					( current_time( 'timestamp' ) + 1800 ) >= absint( self::$wechat->getAccessTokenExpiry() ) ||
+					( time() + 1800 ) >= absint( self::$wechat->getAccessTokenExpiry() ) ||
 					! $access_info['token'] ||
 					! $access_info['expiry']
 				) {
+					WP_Weixin::log( 'renewing token !' );
 					self::renew_access_token();
 				}
 

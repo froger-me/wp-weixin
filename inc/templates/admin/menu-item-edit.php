@@ -152,7 +152,7 @@
 				$cancel_link = add_query_arg(
 					array(
 						'edit-menu-item' => $item_id,
-						'cancel'         => current_time( 'timestamp' ),
+						'cancel'         => time(),
 					),
 					admin_url( 'nav-menus.php' )
 				);

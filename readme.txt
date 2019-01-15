@@ -17,6 +17,7 @@ WP Weixin provides integration between WordPress and WeChat. Register or authent
 ### Important notes
 
 * Requires a [China Mainland WeChat Official Account](https://mp.weixin.qq.com) (Subscription or Service - Service is required if used with companion plugins dealing with payments).
+* A domain used by WordPress **must** be [registered in an Official Account's backend](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-registering-a-domain-in-the-official-accounts-backend).
 * The plugin itself does not require programming knowledge, and provides really useful functionalities out of the box. Where it really shines though is when used by developers to extend its functionalities (mainly through the pre-initialised JS SDK, the WeChat Responder, and various provided [functions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-functions), [actions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-actions) and [filters](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-filters)).
 * Make sure to read the "TROUBLESHOOT, FEATURE REQUESTS AND 3RD PARTY INTEGRATION" section below and [the full documentation](https://github.com/froger-me/wp-weixin/blob/master/README.md) before contacting the author.
 
@@ -101,6 +102,10 @@ This section describes how to install the plugin and get it working.
 16. The interface to setup the WeChat Official Account menu when the WeChat Responder is active.
 
 == Changelog ==
+
+= 1.3.1 =
+* Replace `current_time( 'timestamp' )` by `time()` as per [WordPress trac ticket](https://core.trac.wordpress.org/ticket/40657)
+* Update requirements
 
 = 1.3 =
 * Major overall code refactor

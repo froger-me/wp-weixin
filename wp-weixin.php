@@ -3,7 +3,7 @@
 Plugin Name: WP Weixin
 Plugin URI: https://github.com/froger-me/wp-weixin
 Description: WordPress WeChat integration
-Version: 1.3
+Version: 1.3.1
 Author: Alexandre Froger
 Author URI: https://froger.me
 Text Domain: wp-weixin
@@ -172,17 +172,17 @@ add_action( 'admin_init', function() {
  *                WP Update Migrate                *
  ***************************************************/
 
-require_once plugin_dir_path( WP_WEIXIN_PLUGIN_FILE ) . 'lib/wp-update-migrate/class-wp-update-migrate.php';
+// require_once plugin_dir_path( WP_WEIXIN_PLUGIN_FILE ) . 'lib/wp-update-migrate/class-wp-update-migrate.php';
 
-$hook = 'plugins_loaded';
+// $hook = 'plugins_loaded';
 
-add_action( $hook, function() {
-	$update_migrate = WP_Update_Migrate::get_instance( WP_WEIXIN_PLUGIN_FILE, 'wp_weixin' );
+// add_action( $hook, function() {
+// 	$update_migrate = WP_Update_Migrate::get_instance( WP_WEIXIN_PLUGIN_FILE, 'wp_weixin' );
 
-	if ( false === $update_migrate->get_result() && '1.3' !== get_option( 'wp_weixin_plugin_version' ) ) {
+// 	if ( false === $update_migrate->get_result() && '1.3' !== get_option( 'wp_weixin_plugin_version' ) ) {
 
-		if ( false !== has_action( 'plugins_loaded', 'wp_weixin_run' ) ) {
-			remove_action( 'plugins_loaded', 'wp_weixin_run', 6 );
-		}
-	}
-}, PHP_INT_MIN );
+// 		if ( false !== has_action( 'plugins_loaded', 'wp_weixin_run' ) ) {
+// 			remove_action( 'plugins_loaded', 'wp_weixin_run', 6 );
+// 		}
+// 	}
+// }, PHP_INT_MIN );

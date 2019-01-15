@@ -334,7 +334,7 @@ class WP_Weixin {
 
 		if ( ! wp_next_scheduled( $hook ) ) {
 			$frequency = apply_filters( 'wp_weixin_qr_cleanup_frequency', 'hourly' );
-			$timestamp = current_time( 'timestamp' );
+			$timestamp = time();
 
 			wp_schedule_event( $timestamp, $frequency, $hook );
 		}
@@ -351,7 +351,7 @@ class WP_Weixin {
 			AND option_value < %s;
 		";
 
-		$query         = $wpdb->prepare( $sql, $transient_prefix, current_time( 'timestamp', true ) ); // @codingStandardsIgnoreLine
+		$query         = $wpdb->prepare( $sql, $transient_prefix, time() ); // @codingStandardsIgnoreLine
 		$transients    = $wpdb->get_col( $query ); // @codingStandardsIgnoreLine
 		$options_names = array();
 
