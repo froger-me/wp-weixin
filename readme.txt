@@ -103,6 +103,9 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.3.2 =
+* Add server logs when user creation failed
+
 = 1.3.1 =
 * Replace `current_time( 'timestamp' )` by `time()` as per [WordPress trac ticket](https://core.trac.wordpress.org/ticket/40657)
 * Update requirements

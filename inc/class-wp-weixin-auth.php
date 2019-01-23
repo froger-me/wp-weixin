@@ -751,7 +751,14 @@ class WP_Weixin_Auth {
 			$title    = '<h2>' . __( 'System error.', 'wp-weixin' ) . '</h2>';
 			$message  = '<p>' . __( 'Failed to create user, please refresh the page. ', 'wp-weixin' );
 			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
-			$message .= ( $user_id ) ? '<p> => ' . implode( '<br/> => ', esc_html( $user_id->get_error_messages() ) ) . '</p>' : '';
+
+			if ( is_wp_error( $user_id ) ) {
+				$message .= '<p> => ' . implode( '<br/> => ', esc_html( $user_id->get_error_messages() ) ) . '</p>';
+
+				WP_Weixin::log( $user_id->get_error_messages(), 'User creation failed' );
+			} else {
+				WP_Weixin::log( $user_data, 'User creation failed' );
+			}
 
 			wp_die( $title . $message ); // WPCS: XSS ok
 		}
