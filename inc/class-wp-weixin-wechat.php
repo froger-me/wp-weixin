@@ -32,7 +32,12 @@ class WP_Weixin_Wechat {
 				$message = 'Call retried after renewing the access token';
 
 				WP_Weixin::log( $message, get_class( $this->wechat ) . '::' . $method_name );
-			} elseif ( $error ) {
+			} elseif (
+				$error &&
+				! empty( $error['message'] ) &&
+				! empty( $error['code'] ) &&
+				'ok' !== $error['code']
+			) {
 				WP_Weixin::log( $error, get_class( $this->wechat ) . '::' . $method_name );
 			}
 

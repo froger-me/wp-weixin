@@ -22,8 +22,6 @@ class WP_Weixin_Auth {
 		$this->wechat = $wechat;
 
 		if ( $init_hooks ) {
-			// Logout when unsubscribed
-			add_action( 'wp_weixin_responder', array( $this, 'force_logout' ), PHP_INT_MIN + 10, 1 );
 
 			if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
 				// Manage WeChat authentication
@@ -52,6 +50,8 @@ class WP_Weixin_Auth {
 				}
 			}
 
+			// Alter WooCommerce edit account form
+			add_action( 'woocommerce_edit_account_form', array( $this, 'edit_account_form' ), 10, 0 );
 			// Add the API endpoints
 			add_action( 'wp_weixin_endpoints', array( $this, 'add_endpoints' ), 0, 0 );
 		}
@@ -246,22 +246,6 @@ class WP_Weixin_Auth {
 			$user = wp_get_current_user();
 
 			$this->auth_refresh( $user->ID );
-
-			if ( is_multisite() ) {
-				$blog_id      = get_current_blog_id();
-				$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
-
-				if (
-					! is_user_member_of_blog( $user->ID, $blog_id ) &&
-					apply_filters( 'wp_weixin_ms_auto_add_to_blog', true, $blog_id, $user->ID ) &&
-					get_user_meta( $user->ID, 'wx_openid-' . $auth_blog_id, true )
-				) {
-					$role = get_option( 'default_role' );
-
-					add_user_to_blog( $blog_id, $user->ID, $role );
-				}
-			}
-
 			$this->maybe_force_follow( WP_Weixin_Settings::get_option( 'force_follower' ) );
 		}
 	}
@@ -277,16 +261,15 @@ class WP_Weixin_Auth {
 
 	public function maybe_force_follow( $force_follow = true ) {
 
-		if ( ! $force_follow || ! WP_Weixin::is_wechat_mobile() || $this->prevent_force_follow ) {
+		if ( is_ajax() || ! $force_follow || ! WP_Weixin::is_wechat_mobile() || $this->prevent_force_follow ) {
 
 			return;
 		}
 
-		$user_id               = get_current_user_id();
-		$recently_unsubscribed = get_transient( 'wp_weixin_recent_unsub_' . $user_id );
-		$follower_cookie       = $recently_unsubscribed ? false : filter_input( INPUT_COOKIE, 'wx_follower' );
+		$user_id       = get_current_user_id();
+		$follower_meta = get_user_meta( $user_id, 'wx_follower', true );
 
-		if ( ! $follower_cookie ) {
+		if ( ! $follower_meta || ! $follower_meta['follower'] || time() > $follower_meta['timestamp'] ) {
 			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 			$openid       = get_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, true );
 			$is_follower  = $this->wechat->follower( $openid );
@@ -317,22 +300,10 @@ class WP_Weixin_Auth {
 				add_action( 'template_redirect', array( $this, 'subscribe_oa' ), 0, 0 );
 
 			} else {
-				setcookie( 'wx_follower', 1, time() + 3600 );
-				delete_transient( 'wp_weixin_recent_unsub_' . $user_id );
-			}
-		}
-	}
-
-	public function force_logout( $request_data ) {
-
-		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'unsubscribe' === $request_data['event'] ) {
-			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
-
-			if ( $user ) {
-				$sessions = WP_Session_Tokens::get_instance( $user->ID );
-
-				$sessions->destroy_all();
-				set_transient( 'wp_weixin_recent_unsub_' . $user->ID, true, 3600 );
+				update_user_meta( $user_id, 'wx_follower', array(
+					'follower'  => true,
+					'timestamp' => time() + 3600,
+				) );
 			}
 		}
 	}
@@ -539,6 +510,15 @@ class WP_Weixin_Auth {
 		);
 
 		unset( $_COOKIE[ 'wx_openId-' . $auth_blog_id ] );
+	}
+
+	public function edit_account_form() {
+		ob_start();
+		WP_Weixin::locate_template( 'wp-weixin-account-form-password-notice.php', true );
+
+		$html = ob_get_clean();
+
+		echo $html; // WPCS: XSS ok
 	}
 
 	/*******************************************************************
@@ -774,6 +754,30 @@ class WP_Weixin_Auth {
 	}
 
 	protected function auth_refresh( $user_id ) {
+
+		if ( is_multisite() ) {
+
+			if ( $this->target_url && $this->target_blog_id ) {
+		
+				wp_redirect( $this->target_url );
+		
+				exit();
+			}
+
+			$blog_id      = get_current_blog_id();
+			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
+
+			if (
+				! is_user_member_of_blog( $user_id, $blog_id ) &&
+				apply_filters( 'wp_weixin_ms_auto_add_to_blog', true, $blog_id, $user_id ) &&
+				get_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, true )
+			) {
+				$role = get_option( 'default_role' );
+
+				add_user_to_blog( $blog_id, $user_id, $role );
+			}
+		}
+
 		wp_cache_delete( $user_id, 'user_meta' );
 
 		$json_user_info = get_user_meta( $user_id, 'wp_weixin_rawdata', true );

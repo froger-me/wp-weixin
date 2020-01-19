@@ -27,13 +27,17 @@ class Wechat_SDK {
 	const MENU_CREATE_CONDITIONAL_URL = 'https://api.weixin.qq.com/cgi-bin/menu/addconditional';
 	const MENU_DELETE_CONDITIONAL_URL = 'https://api.weixin.qq.com/cgi-bin/menu/delconditional';
 	/* User and user group URLs */
-	const USER_GET_URL            = 'https://api.weixin.qq.com/cgi-bin/user/get';
-	const USER_INFO_URL           = 'https://api.weixin.qq.com/cgi-bin/user/info';
-	const USER_IN_GROUP_URL       = 'https://api.weixin.qq.com/cgi-bin/groups/getid';
-	const GROUP_GET_URL           = 'https://api.weixin.qq.com/cgi-bin/groups/get';
-	const GROUP_CREATE_URL        = 'https://api.weixin.qq.com/cgi-bin/groups/create';
-	const GROUP_UPDATE_URL        = 'https://api.weixin.qq.com/cgi-bin/groups/update';
-	const GROUP_MEMBER_UPDATE_URL = 'https://api.weixin.qq.com/cgi-bin/groups/members/update';
+	const USER_GET_URL         = 'https://api.weixin.qq.com/cgi-bin/user/get';
+	const USER_INFO_URL        = 'https://api.weixin.qq.com/cgi-bin/user/info';
+	const USER_INFO_BATCH_URL  = 'https://api.weixin.qq.com/cgi-bin/user/info/batchget';
+	const TAG_ID_USER_URL      = 'https://api.weixin.qq.com/cgi-bin/tags/getidlist';
+	const TAG_BATCH_UNTAG_URL  = 'https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging';
+	const TAG_BATCH_TAG_URL    = 'https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging';
+	const TAGGED_USERS_GET_URL = 'https://api.weixin.qq.com/cgi-bin/user/tag/get';
+	const TAG_DELETE_URL       = 'https://api.weixin.qq.com/cgi-bin/tags/delete';
+	const TAG_UPDATE_URL       = 'https://api.weixin.qq.com/cgi-bin/tags/update';
+	const TAG_GET_URL          = 'https://api.weixin.qq.com/cgi-bin/tags/get';
+	const TAG_CREATE_URL       = 'https://api.weixin.qq.com/cgi-bin/tags/create';
 	/* Send customer service message URL */
 	const CUSTOM_SEND_URL = 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
 	/* Parametric QR code URLs */
@@ -75,15 +79,25 @@ class Wechat_SDK {
 	/* Red envelope inquiry URL */
 	const GET_RED_PACK_INFO_URL = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo';
 	/* Assets management URLs */
-	const MEDIA_UPLOAD_URL    = 'https://api.weixin.qq.com/cgi-bin/media/upload';               // add temporary Asset
-	const MEDIA_GET_URL       = 'https://api.weixin.qq.com/cgi-bin/media/get';                  // get temporary Asset
-	const MATERIAL_NEWS_URL   = 'https://api.weixin.qq.com/cgi-bin/material/add_news';          // add permanent Rich Media Message Asset
-	const MATERIAL_FILE_URL   = 'https://api.weixin.qq.com/cgi-bin/material/add_material';      // add permanent Asset
-	const MATERIAL_GET_URL    = 'https://api.weixin.qq.com/cgi-bin/material/get_material';      // get permanent Asset
-	const MATERIAL_DEL_URL    = 'https://api.weixin.qq.com/cgi-bin/material/del_material';      // remove permanent Asset
-	const MATERIAL_UPDATE_URL = 'https://api.weixin.qq.com/cgi-bin/material/update_news';       // update permanent Rich Media Message Asset
-	const MATERIAL_COUNT_URL  = 'https://api.weixin.qq.com/cgi-bin/material/get_materialcount'; // Get permanent Assets Count
-	const MATERIAL_LIST_URL   = 'https://api.weixin.qq.com/cgi-bin/material/batchget_material'; // Get permanent Assets List
+	const MEDIA_UPLOAD_URL           = 'https://api.weixin.qq.com/cgi-bin/media/upload';               // add temporary Asset
+	const MEDIA_GET_URL              = 'https://api.weixin.qq.com/cgi-bin/media/get';                  // get temporary Asset
+	const MEDIA_NEWS_URL             = 'https://api.weixin.qq.com/cgi-bin/media/uploadnews';           // add temporary Rich Media Message Assets
+	const MATERIAL_NEWS_URL          = 'https://api.weixin.qq.com/cgi-bin/material/add_news';          // add permanent Rich Media Message Assets
+	const MATERIAL_NEWS_IMAGE_URL    = 'https://api.weixin.qq.com/cgi-bin/media/uploadimg';            // add permanent Rich Media Message Image asset - images in news
+	const MATERIAL_FILE_URL          = 'https://api.weixin.qq.com/cgi-bin/material/add_material';      // add permanent Asset
+	const MATERIAL_GET_URL           = 'https://api.weixin.qq.com/cgi-bin/material/get_material';      // get permanent Asset
+	const MATERIAL_DEL_URL           = 'https://api.weixin.qq.com/cgi-bin/material/del_material';      // remove permanent Asset
+	const MATERIAL_UPDATE_URL        = 'https://api.weixin.qq.com/cgi-bin/material/update_news';       // update permanent Rich Media Message Asset
+	const MATERIAL_COUNT_URL         = 'https://api.weixin.qq.com/cgi-bin/material/get_materialcount'; // Get permanent Assets Count
+	const MATERIAL_LIST_URL          = 'https://api.weixin.qq.com/cgi-bin/material/batchget_material'; // Get permanent Assets List
+	/* Mass Broadcast URL */
+	const MASS_BY_TAG  = 'https://api.weixin.qq.com/cgi-bin/message/mass/sendall';
+	const MASS_BY_USER = 'https://api.weixin.qq.com/cgi-bin/message/mass/send';
+	const MASS_DELETE  = 'https://api.weixin.qq.com/cgi-bin/message/mass/delete';
+	const MASS_PREVIEW = 'https://api.weixin.qq.com/cgi-bin/message/mass/preview';
+	const MASS_GET     = 'http://api.weixin.qq.com/cgi-bin/message/mass/get';
+	/* Customer Service API */
+	const CS_SEND_MESSAGE = 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
 
 	private $token;
 	private $appid;
@@ -97,7 +111,7 @@ class Wechat_SDK {
 	private $error;
 	private $errorCode;
 	private $ticket;
-	private $result;
+	private $result = false;
 	private $encode;
 	private $AESKey;
 	private $mch_appid;
@@ -314,9 +328,10 @@ class Wechat_SDK {
 		$jsonStr = $this->http(self::AUTH_URL, $params);
 
 		if ($jsonStr) {
-			$jsonArr = $this->parseJson($jsonStr);
+			$this->parseJson($jsonStr);
 
-			if ($jsonArr) {
+			if (false === $this->getError()) {
+				$jsonArr                   = $this->result;
 				$this->access_token        = $jsonArr['access_token'];
 				$this->access_token_expire = time() + $jsonArr['expires_in'];
 
@@ -341,9 +356,9 @@ class Wechat_SDK {
 			'access_token' => $this->getAccessToken(),
 		);
 		$jsonStr = $this->http(self::MENU_GET_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		return ($jsonArr) ? $jsonArr : false;
+		return ($res) ? $this->result : false;
 	}
 
 	/**
@@ -372,9 +387,9 @@ class Wechat_SDK {
 		}
 
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -403,9 +418,9 @@ class Wechat_SDK {
 
 		$params  = json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -415,80 +430,106 @@ class Wechat_SDK {
 	}
 
 	/**
-	 * Get official account's followers groups
+	 * Get official account's followers tags
 	 * @return array|boolean
 	 */
-	public function groups() {
-		$url     = self::GROUP_GET_URL . '?access_token='.$this->getAccessToken();
+	public function tags() {
+		$url     = self::TAG_GET_URL . '?access_token='.$this->getAccessToken();
 		$jsonStr = $this->http($url);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr['groups'];
+			return $this->result['tags'];
 		} else {
 
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Add a followers group to the official account
-	 * @param string $name Followers' group name
+	 * Add a followers tag to the official account
+	 * @param string $name Followers' tag name
 	 * @return boolean
 	 */
-	public function group_add($name = '') {
+	public function tag_add($name = '') {
 
 		if (empty($name)) {
-			$this->setError('Followers group name required');
+			$this->setError('Followers tag name required');
 
 			return false;
 		}
 
 		$params = array(
-			'group' => array(
+			'tag' => array(
 				'name' => $name,
 			)
 		);
 		$params  = $this->json_encode($params);
-		$url     = self::GROUP_CREATE_URL . '?access_token=' . $this->getAccessToken();
+		$url     = self::TAG_CREATE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr['group'];
+			return $this->result['tag'];
 		} else {
 
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Edit an official account's followers group
-	 * @param integer $gid Followers group ID
-	 * @param string $name New followers group name
+	 * Update an official account's followers tag
+	 * @param integer $tag_id Followers tag ID
+	 * @param string $name New followers tag name
 	 * @return boolean
 	 */
-	public function group_edit($gid = '', $name = '') {
+	public function tag_update($tag_id = '', $name = '') {
 
-		if (empty($name) || empty($gid)) {
-			$this->setError('Followers group ID and new Followers group name required');
+		if (empty($name) || empty($tag_id)) {
+			$this->setError('Followers tag ID and new Followers tag name required');
 
 			return false;
 		}
 
 		$params  = array(
-			'group' => array(
-				'id'   => $gid,
+			'tag' => array(
+				'id'   => $tag_id,
 				'name' => $name,
 			)
 		);
 		$params  = $this->json_encode($params);
-		$url     = self::GROUP_UPDATE_URL . '?access_token=' . $this->getAccessToken();
+		$url     = self::TAG_UPDATE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
-		if ($jsonArr) {
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return true;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Delete an official account's followers tag
+	 * @param integer $tag_id Followers tag ID
+	 * @return boolean
+	 */
+	public function tag_delete($tag_id) {
+		$params  = array(
+			'tag' => array(
+				'id'   => $tag_id,
+			),
+		);
+		$params  = $this->json_encode($params);
+		$url     = self::TAG_DELETE_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -502,31 +543,38 @@ class Wechat_SDK {
 	 * Max 10,000 openIDs can be loaded ; use the index 'next_openid' and call this method again to get more users
 	 * If success, the returned array has the following indexes:
 	 * - 'data' contains the users
-	 * - 'total' is the number of total usrs in the account
+	 * - 'total' is the number of total users in the account (not present if $tag_id is used)
 	 * - 'count' is the number of users loaded
 	 * - 'next_openid' the openID from which to load the batch of users
 	 * @param  string $next_openid The openID from which to load the batch of users - default empty string
+	 * @param  int    $tag_id The tag ID to filter the users list by - default null
 	 * @return array|boolean
 	 */
-	public function users($next_openid = '') {
+	public function users($next_openid = '', $tag_id = null) {
 		$params = array();
 
 		if (!empty($next_openid)) {
 			$params['next_openid'] = $next_openid;
 		}
 
-		$params['access_token'] = $this->getAccessToken();
+		if (null !== $tag_id && is_numeric($tag_id)) {
+			$url = self::TAGGED_USERS_GET_URL . '?access_token=' . $this->getAccessToken();
+		} else {
+			$url                    = self::USER_GET_URL;
+			$params['access_token'] = $this->getAccessToken();
+		}
 
-		$jsonStr = $this->http(self::USER_GET_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$jsonStr = $this->http($url, $params);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
-			$data = $jsonArr['data']['openid'];
-			unset($jsonArr['data']);
+		if (false === $this->getError()) {
+			$data = $this->result['data']['openid'];
 
-			$jsonArr['data'] = $openId;
+			unset($this->result['data']);
 
-			return $jsonArr;
+			$this->result['data'] = $data;
+
+			return $this->result;
 		} else {
 
 			return false;
@@ -539,20 +587,7 @@ class Wechat_SDK {
 	 * @return array|boolean
 	 */
 	public function follower($openid = '') {
-
-		if (empty($openid)) {
-			$this->setError('Follower openID required');
-
-			return false;
-		}
-
-		$params = array(
-			'access_token' => $this->getAccessToken(),
-			'lang'         => 'zh_CN',
-			'openid'       => $openid,
-		);
-		$jsonStr = $this->http(self::USER_INFO_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$jsonArr = $this->user($openid);
 
 		if ($jsonArr['subscribe'] == 1) {
 
@@ -577,7 +612,7 @@ class Wechat_SDK {
 	public function user($openid = '') {
 
 		if (empty($openid)) {
-			$this->setError('User openId required');
+			$this->setError('User openID required');
 
 			return false;
 		}
@@ -588,18 +623,47 @@ class Wechat_SDK {
 			'openid'       => $openid,
 		);
 		$jsonStr = $this->http(self::USER_INFO_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		return ($jsonArr);
+		return ($res) ? $this->result : false;
 	}
 
 	/**
-	 * Check if a follower belongs to a follower's group
-	 * If yes, get the group ID
-	 * @param  string $openid  Follower's openID
-	 * @return integer|boolean
+	 * Get the information of a list of WeChat users
+	 * @param  array $users_info the list of WeChat user info - array count max to 100. Each item is an array with keys 'openid' (required) and 'lang' (optional)
+	 * @return array|boolean
 	 */
-	public function user_in_group($openid = '') {
+	public function user_batch($users_info = array()) {
+
+		if (empty($users_info)) {
+			$this->setError('User openIDs required');
+
+			return false;
+		}
+
+		$params  = array(
+			'user_list' => $users_info,
+		);
+		$url     = self::USER_INFO_BATCH_URL . '?access_token=' . $this->getAccessToken();
+		$params  = $this->json_encode($params);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result['user_info_list'];
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Get tags assigned to a follower
+	 * @param  string $openid  Follower's openID
+	 * @return array|boolean
+	 */
+	public function user_tags($openid = '') {
 
 		if (empty($openid)) {
 			$this->setError('Follower openID required');
@@ -611,13 +675,13 @@ class Wechat_SDK {
 			'openid' => $openid,
 		);
 		$params  = $this->json_encode($params);
-		$url     = self::USER_IN_GROUP_URL . '?access_token=' . $this->getAccessToken();
+		$url     = self::TAG_ID_USER_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr['groupid'];
+			return $this->result['tagid_list'];
 		} else {
 
 			return false;
@@ -625,29 +689,61 @@ class Wechat_SDK {
 	}
 
 	/**
-	 * Assign a follower to a follower's group
-	 * @param string  $openid Follower's openID
-	 * @param integer $gid Follower's group ID
+	 * Batch assign a follower's tag to followers
+	 * @param array   $openids Follower's openIDs
+	 * @param integer $tag_id Follower's tag ID
 	 * @return boolean
 	 */
-	public function user_to_group($openid = '', $gid = '') {
+	public function users_batch_assign_tag($openids = array(), $tag_id = '') {
 
-		if (empty($openid) || !is_numeric($gid)) {
-			$this->setError('Follower openID and numeric group ID required');
+		if (empty($openids) || !is_numeric($tag_id)) {
+			$this->setError('Follower openIDs and numeric tag ID required');
 
 			return false;
 		}
 
 		$params  = array(
-			'openid' => $openid,
-			'to_groupid' => $gid,
+			'openid_list' => $openids,
+			'tagid'       => $tag_id,
 		);
 		$params  = $this->json_encode($params);
-		$url     = self::GROUP_MEMBER_UPDATE_URL . '?access_token=' . $this->getAccessToken();
+		$url     = self::TAG_BATCH_TAG_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
+
+			return true;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Batch unassign a follower's tag from followers
+	 * @param array   $openids Follower's openIDs
+	 * @param integer $tag_id Follower's tag ID
+	 * @return boolean
+	 */
+	public function users_batch_unassign_tag($openids = array(), $tag_id = '') {
+
+		if (empty($openids) || !is_numeric($tag_id)) {
+			$this->setError('Follower openIDs and numeric tag ID required');
+
+			return false;
+		}
+
+		$params  = array(
+			'openid_list' => $openids,
+			'tagid'       => $tag_id,
+		);
+		$params  = $this->json_encode($params);
+		$url     = self::TAG_BATCH_UNTAG_URL . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -689,19 +785,19 @@ class Wechat_SDK {
 	}
 
 	/**
-	 * Reply to a WeChat message (auto-reply)
+	 * Reply to a WeChat message (auto-reply).
+	 * Uses the Customer Service API.
+	 * A call to "exit" is necessary after calling this method (of after error handling).
 	 * @param  string $to      Receiver's OpenID
 	 * @param  string $from    Developer's ID
-	 * @param  string $type    Message type - "text", "music", "news", "event" - default "text"
+	 * @param  string $type    Message type - "text", "music", "news", "voice", "video", "mpnews", "msgmenu" - default "text"
 	 * @param  array  $content Response information - all values in the array must be of type string
 	 * @return string|bool
 	 */
 	public function response($type = 'text', $content = '') {
 		$this->data = array(
-			'ToUserName'   => $this->data['fromusername'],
-			'FromUserName' => $this->data['tousername'],
-			'CreateTime'   => time(),
-			'MsgType'      => $type,
+			'touser'  => $this->data['fromusername'],
+			'msgtype' => $type,
 		);
 
 		if (!method_exists($this, $type)) {
@@ -711,21 +807,37 @@ class Wechat_SDK {
 		}
 
 		$this->$type($content);
-		// Deprecated - set to 1 to flag the message with a star in the official account's backend
-		$this->data['FuncFlag'] = 0;
 
-		$response = $this->_array2Xml($this->data);
+		$response = 'success';
 
-		if ($this->encode) {
-			$nonce                  = filter_input(INPUT_GET, 'nonce', FILTER_SANITIZE_STRING);
-			$xmlStr['Encrypt']      = $this->AESencode($response);
-			$xmlStr['MsgSignature'] = self::getSHA1($xmlStr['Encrypt'], $nonce);
-			$xmlStr['TimeStamp']    = time();
-			$xmlStr['Nonce']        = $nonce;
-			$response               = $this->_array2Xml($xmlStr);
+		ob_start();
+
+		$serverProtocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING);
+
+		echo 'success';
+
+		header($serverProtocol . ' 200 OK');
+		header('Content-type: plain/text');
+		header('Content-Encoding: none');
+		header('Connection: close');
+		header('Content-Length: ' . ob_get_length());
+
+		ob_end_flush();
+		ob_flush();
+		flush();
+
+		$params  = $this->json_encode($this->data);
+		$url     = self::CS_SEND_MESSAGE . '?access_token=' . $this->getAccessToken();
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return true;
+		} else {
+
+			return false;
 		}
-
-		exit($response);
 	}
 
 	/**
@@ -746,66 +858,133 @@ class Wechat_SDK {
 	 * Set Text response content
 	 * @param  string $content Text content
 	 */
-	private function event($content) {
-		$this->data['Event']    = 'VIEW';
-		$this->data['EventKey'] = $content;
-	}
-
-	/**
-	 * Set Text response content
-	 * @param  string $content Text content
-	 */
 	private function text($content) {
-		$this->data['Content'] = $content;
+		$this->data['text'] = array('content' => $content);
 	}
 
 	/**
 	 * Set Music response content
-	 * @param  string $content Music content
+	 * @param  array $content Music content
 	 */
 	private function music($music) {
-		list(
-			$music['Title'],
-			$music['Description'],
-			$music['MusicUrl'],
-			$music['HQMusicUrl']
-		) = $music;
-		$this->data['Music'] = $music;
+		$content = array();
+
+		$content['title']          = $music['title'];
+		$content['description']    = $music['description'];
+		$content['musicurl']       = $music['musicurl'];
+		$content['hqmusicurl']     = $music['hqmusicurl'];
+		$content['thumb_media_id'] = $music['thumb_media_id'];
+
+		$this->data['music'] = $content;
 	}
 
 	/**
 	 * Set image response content
-	 * @param  string $image image content
+	 * @param  array $image image content
 	 */
 	private function image($image) {
-		list(
-			$image['MediaId']
-		) = $image;
-		$this->data['Image'] = $image;
+		$content = array();
+
+		$content['media_id'] = $image['media_id'];
+
+		$this->data['image'] = $content;
 	}
 
 	/**
 	 * Set Rich Media response content
-	 * @param  string $news Rich Media content
+	 * @param  array $news Rich Media content
 	 */
 	private function news($news) {
 		$articles = array();
 
 		foreach ($news as $key => $value) {
 			$articles[$key]                = array();
-			$articles[$key]['Title']       = $value['Title'];
-			$articles[$key]['Description'] = $value['Description'];
-			$articles[$key]['PicUrl']      = $value['PicUrl'];
-			$articles[$key]['Url']         = $value['Url'];
+			$articles[$key]['title']       = $value['title'];
+			$articles[$key]['description'] = $value['description'];
+			$articles[$key]['picurl']      = $value['picurl'];
+			$articles[$key]['url']         = $value['url'];
 
-			if ($key >= 9) {
+			if ($key >= 1) {
 				break; 
-			} // Maximum 10 news
+			} // Maximum 1 news
 		}
 
-		$this->data['ArticleCount'] = count($articles);
-		$this->data['Articles']     = $articles;
+		$this->data['news'] = array('articles' => $articles);
 	}
+
+	/**
+	 * Set voice response content
+	 * @param  array $voice voice content
+	 */
+	private function voice($voice) {
+		$content = array();
+
+		$content['media_id'] = $voice['media_id'];
+
+		$this->data['voice'] = $content;
+	}
+
+	/**
+	 * Set video response content
+	 * @param  string $video video content
+	 */
+	private function video($video) {
+		$content = array();
+
+		$content['media_id']       = $video['media_id'];
+		$content['thumb_media_id'] = $video['thumb_media_id'];
+		$content['title']          = $video['title'];
+		$content['description']    = $video['description'];
+
+		$this->data['video'] = $content;
+	}
+
+	/**
+	 * Set mpnews response content
+	 * @param  array $mpnews mpnews content
+	 */
+	private function mpnews($mpnews) {
+		$content = array();
+
+		$content['media_id'] = $mpnews['media_id'];
+
+		$this->data['mpnews'] = $content;
+	}
+
+	/**
+	 * Set menu response content
+	 * @param  array $menu menu content
+	 */
+	private function msgmenu($menu) {
+		$content = array();
+
+		$content['head_content'] = $menu['head_content'];
+		$content['tail_content'] = $menu['tail_content'];
+		$content['list']         = array();
+
+		foreach ($menu['list'] as $key => $value) {
+			$item = array();
+
+			if ( is_array( $value ) ) {
+
+				if ( isset( $value['id'] ) ) {
+					$item['id'] = $value['id'];
+				} else {
+					$item['id'] = (string) $key;
+				}
+
+				$item['content'] = $value['content'];
+			} else {
+				$item['id']      = (string) $key;
+				$item['content'] = $value;
+			}
+
+			$content['list'][] = $item;
+		}
+
+		$this->data['msgmenu'] = $content;
+	}
+
 
 	/**
 	 * Convert an aray to XML string
@@ -857,9 +1036,9 @@ class Wechat_SDK {
 		$params = $this->json_encode($content);
 		$url    = self::TEMPLATE_SEND_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -891,9 +1070,9 @@ class Wechat_SDK {
 		$params  = $this->json_encode($this->send);
 		$url     = self::CUSTOM_SEND_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -1025,11 +1204,11 @@ class Wechat_SDK {
 			'grant_type' => 'authorization_code',
 		);
 		$jsonStr = $this->http(self::OAUTH_USER_TOKEN_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1048,11 +1227,11 @@ class Wechat_SDK {
 			'grant_type'    => 'refresh_token',
 		);
 		$jsonStr = $this->http(self::OAUTH_REFRESH_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1072,11 +1251,11 @@ class Wechat_SDK {
 			'lang'         => 'zh_CN',
 		);
 		$jsonStr = $this->http(self::GET_USER_INFO_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1093,9 +1272,9 @@ class Wechat_SDK {
 			'type'         => 'jsapi',
 		);
 		$jsonStr = $this->http(self::JSAPI_TICKET_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
 			return $this->result['ticket'];
 		} else {
@@ -1161,11 +1340,11 @@ class Wechat_SDK {
 		$params  = $this->json_encode($params);
 		$url     = self::QRCODE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $this->ticket = $jsonArr['ticket'];
+			return $this->ticket = $this->result['ticket'];
 		} else {
 
 			return false;
@@ -1208,10 +1387,17 @@ class Wechat_SDK {
 	private function parseJson($json) {
 		$jsonArr = json_decode($json, true);
 
-		if (isset($jsonArr['errcode'])) {
+		if (isset($jsonArr['errcode']) || !$jsonArr) {
 
-			if ($jsonArr['errcode'] == 0) {
+			if (!$jsonArr) {
+				$error_message = $this->getErrorMessage();
 
+				$this->setError($error_message);
+			} elseif (
+				empty($jsonArr['errcode']) ||
+				0 === $jsonArr['errcode'] ||
+				null === $jsonArr['errcode']
+			) {
 				$this->result = $jsonArr;
 
 				return true;
@@ -1223,8 +1409,11 @@ class Wechat_SDK {
 				return false;
 			}
 		} else {
+			$this->setError(null, null);
 
-			return $jsonArr;
+			$this->result = $jsonArr;
+
+			return true;
 		}
 	}
 
@@ -1234,17 +1423,17 @@ class Wechat_SDK {
 	 * @return string|boolean
 	 */
 	public function AESdecode($encrypted) {
-		$key            = base64_decode($this->AESKey . "=");
+		$key            = base64_decode($this->AESKey);
 		$ciphertext_dec = base64_decode($encrypted);
-		$module         = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 		$iv             = substr($key, 0, 16);
 
-		mcrypt_generic_init($module, $key, $iv);
-
-		$decrypted      = mdecrypt_generic($module, $ciphertext_dec);
-
-		mcrypt_generic_deinit($module);
-		mcrypt_module_close($module);
+		$decrypted = openssl_decrypt(
+			$ciphertext_dec,
+			'aes-256-cbc',
+			$key,
+			OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+			$iv
+		);
 
 		$pad = ord(substr($decrypted, -1));
 
@@ -1285,13 +1474,11 @@ class Wechat_SDK {
 		$key           = base64_decode($this->AESKey . "=");
 		$random        = self::getNonceStr();
 		$text          = $random . pack("N", strlen($text)) . $text . $this->appid;
-		$size          = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-		$module        = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 		$iv            = substr($key, 0, 16);
 		$text_length   = strlen($text);
 		$amount_to_pad = 32 - ($text_length % 32);
 
-		if ($amount_to_pad == 0) {
+		if ($amount_to_pad === 0) {
 			$amount_to_pad = 32;
 		}
 
@@ -1303,15 +1490,16 @@ class Wechat_SDK {
 		}
 
 		$text = $text . $tmp;
-
-		mcrypt_generic_init($module, $key, $iv);
-
-		$encrypted = mcrypt_generic($module, $text);
-
-		mcrypt_generic_deinit($module);
-		mcrypt_module_close($module);
-
-		return base64_encode($encrypted);
+        
+        $ciphertext = openssl_encrypt(
+            $text,
+            'aes-256-cbc',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+        
+        return base64_encode($iv . $ciphertext);
 	}
 
 	/**
@@ -1424,17 +1612,17 @@ class Wechat_SDK {
 	}
 
 	/**
-	 * Create a temporary Asset (aka media)
-	 * @param  string $file  Absolute path to a file
-	 * @param  string $type  Type of Asset - "image", "voice", "video", "thumb"
-	 * @param 	string 	$video_title 		Title of the video - required for video Asset type - default null
-	 * @param 	string 	$video_introduction Introduction of the video - required for video Asset type - default null
+	 * Create a temporary Asset (aka media - excluding Rich Media Asset)
+	 * @param string $file               Absolute path to a file
+	 * @param string $type               Type of Asset - "image", "voice", "video", "thumb"
+	 * @param string $video_title        Title of the video - required for video Asset type - default null
+	 * @param string $video_introduction Introduction of the video - required for video Asset type - default null
 	 * @return array
 	 */
 	public function upload_media($file, $type, $video_title = null, $video_introduction = null) {
 
 		if (!in_array($type, array('image', 'voice', 'video', 'thumb'))) {
-			$this->setError('Invalid permanent Asset type "' . $type . '"');
+			$this->setError('Invalid temporary Asset type "' . $type . '"');
 
 			return false;
 		}
@@ -1459,11 +1647,11 @@ class Wechat_SDK {
 		}
 
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1482,11 +1670,11 @@ class Wechat_SDK {
 			'media_id'     => $media_id,
 		);
 		$jsonStr = $this->http($url, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1494,21 +1682,20 @@ class Wechat_SDK {
 	}
 
 	/**
-	 * Add permanent Rich Media Asset
-	 * @param 	array $articles An array of Rich Media Assets
+	 * Add temporary Rich Media Assets
+	 * @param 	array $articles  An array of Rich Media Assets
 	 * @return 	array|bool
-	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
 	 */
-	public function add_rich_media_asset($articles) {
-		self::MATERIAL_NEWS_URL . '?access_token=' . $this->getAccessToken();
+	public function upload_rich_media($articles) {
+		$url = self::MEDIA_NEWS_URL . '?access_token=' . $this->getAccessToken();
 
 		$params  = $this->json_encode($articles);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1518,14 +1705,14 @@ class Wechat_SDK {
 	/**
 	 * Add permanent Asset (excluding Rich Media Asset)
 	 * @param 	string 	$file 				Absolute path to a file
-	 * @param 	string 	$type 				Type of Asset - "image", "voice", "video", "thumb"
+	 * @param 	string 	$type 				Type of Asset - "image", "voice", "video", "thumb", "news_image"
 	 * @param 	string 	$video_title 		Title of the video - required for video Asset type - default null
 	 * @param 	string 	$video_introduction Introduction of the video - required for video Asset type - default null
 	 * @return 	array|bool
 	 */
 	public function add_file_asset($file, $type, $video_title = null, $video_introduction = null) {
 
-		if (!in_array($type, array('image', 'voice', 'video', 'thumb'))) {
+		if (!in_array($type, array('image', 'voice', 'video', 'thumb', 'news_image'))) {
 			$this->setError('Invalid permanent Asset type "' . $type . '"');
 
 			return false;
@@ -1537,10 +1724,20 @@ class Wechat_SDK {
 			return false;
 		}
 
-		$url    = self::MATERIAL_FILE_URL . '?access_token=' . $this->getAccessToken() . '&type=' . $type;
+		if ('news_image' === $type) {
+			$api = self::MATERIAL_NEWS_IMAGE_URL;
+		} else {
+			$api = self::MATERIAL_FILE_URL;
+		}
+
+		$url    = $api . '?access_token=' . $this->getAccessToken();
 		$params = array(
-			'media' => '@' . $file . ';type=' . $type . ';filename=' . basename($file),
+			'media' => new CurlFile( $file, mime_content_type($file), basename($file) ),
 		);
+
+		if ('news_image' != $type) {
+			$url .= '&type=' . $type;
+		}
 
 		if ($type === 'video') {
 			$video_description = array(
@@ -1551,11 +1748,32 @@ class Wechat_SDK {
 		}
 
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Add permanent Rich Media Assets
+	 * @param 	array $articles  An array of Rich Media Assets
+	 * @return 	array|bool
+	 */
+	public function add_rich_media_asset($articles) {
+		$url = self::MATERIAL_NEWS_URL . '?access_token=' . $this->getAccessToken();
+
+		$params  = $this->json_encode($articles);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result;
 		} else {
 
 			return false;
@@ -1574,11 +1792,11 @@ class Wechat_SDK {
 		);
 		$params  = $this->json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1597,9 +1815,9 @@ class Wechat_SDK {
 		);
 		$params  = $this->json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
 			return true;
 		} else {
@@ -1612,16 +1830,16 @@ class Wechat_SDK {
 	 * Get permanent Assets quantity information
 	 * @return array|bool
 	 */
-	public function count_asset() {
+	public function count_assets() {
 		$params  = array(
 			'access_token' => $this->getAccessToken(),
 		);
 		$jsonStr = $this->http(self::MATERIAL_COUNT_URL, $params);
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
 		} else {
 
 			return false;
@@ -1635,7 +1853,7 @@ class Wechat_SDK {
 	 * @param  integer $count   Number of Assets - default 20
 	 * @return array|bool
 	 */
-	public function get_asset_list($type, $offset = 0, $count = 20) {
+	public function get_assets_list($type, $offset = 0, $count = 20) {
 		$params  = array(
 			'type'   => $type,
 			'offset' => $offset,
@@ -1644,11 +1862,229 @@ class Wechat_SDK {
 		$url     = self::MATERIAL_LIST_URL . '?access_token=' . $this->getAccessToken();
 		$params  = $this->json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$jsonArr = $this->parseJson($jsonStr);
+		$res     = $this->parseJson($jsonStr);
 
-		if ($jsonArr) {
+		if (false === $this->getError()) {
 
-			return $jsonArr;
+			return $this->result;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Send preview before broadcast
+	 * @param 	array  $message       An array representation of the message to send
+	 * @param   string $message_type  The type of message - one of "image", "video", "voice", "text", "news", "mpvideo", "mpnews", "wxcard" - "news" is an alias of "mpnews", "video" is an alias of "mpvideo"
+	 * @param 	string $id            The open ID or wechat ID of the recipient of the preview
+	 * @param 	string $id_type       The type of ID given - "openid" for Open ID, "wxname" for Wechat ID
+	 * @return 	array|bool
+	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
+	 */
+	public function mass_preview($message, $message_type, $id, $id_type) {
+		$url     = self::MASS_PREVIEW . '?access_token=' . $this->getAccessToken();
+		$payload = array();
+
+		if ('openid' === $id_type) {
+			$payload['touser'] = $id;
+		} elseif ('wxname' === $id_type) {
+			$payload['towxname'] = $id;
+		} else {
+			$this->setError('Invalid recipient type "' . $type . '" - must me "open_id" or "wxname"');
+
+			return false;
+		}
+
+		if (!in_array( $message_type, array('image', 'video', 'voice', 'text', 'news', 'mpvideo', 'mpnews', 'wxcard'))) {
+			$this->setError('Invalid message type "' . $type . '"');
+
+			return false;
+		}
+
+		if ('news' === $message_type || 'video' === $message_type) {
+			$message_type = 'mp' . $message_type;
+		}
+
+		$payload[$message_type] = $message;
+		$payload['msgtype']     = $message_type;
+
+		$params  = $this->json_encode($payload);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Send mass broadcast to a defined list of users by openIDs
+	 * @param 	array  $message             An array representation of the message to send
+	 * @param   string $message_type        The type of message - one of "image", "video", "voice", "text", "news", "mpvideo", "mpnews", "wxcard" - "news" is an alias of "mpnews", "video" is an alias of "mpvideo"
+	 * @param 	array  $openids             An array of openIDs of the recipients of the broadcast
+	 * @param 	bool   $send_ignore_reprint Whether or not to continue sending the image message if it has been determined to be a reprint - true to continue sending (reprinting), false to stop the batch send - default false.
+	 * @param 	string     $clientmsgid         ID to avoid sending the same message repeatedly. May be up to 64 characters in length, automatically truncated. If this field is not set, then the back end will automatically use the message scope and content preview as the clientmsgid - defaul false.
+	 * @return 	array|bool
+	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
+	 */
+	public function mass_to_users($message, $message_type, $openids, $send_ignore_reprint = false, $clientmsgid = false) {
+		$url     = self::MASS_BY_USER . '?access_token=' . $this->getAccessToken();
+		$payload = array();
+
+		if (!in_array( $message_type, array('image', 'video', 'voice', 'text', 'news', 'mpvideo', 'mpnews', 'wxcard'))) {
+			$this->setError('Invalid message type "' . $message_type . '"');
+
+			return false;
+		}
+
+		if (!is_array($openids)) {
+			$openids = array($openids);
+		}
+
+		$payload['touser']              = $openids;
+		$payload['send_ignore_reprint'] = (int) $send_ignore_reprint;
+
+		if (false !== $clientmsgid) {
+			$payload['clientmsgid'] = substr($clientmsgid, 0, 64);
+		}
+
+		if ('news' === $message_type || 'video' === $message_type) {
+			$message_type = 'mp' . $message_type;
+		}
+
+		$payload[$message_type] = $message;
+		$payload['msgtype']     = $message_type;
+
+		$params  = $this->json_encode($payload);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Send mass broadcast to a all followers, or filter recipients by assigned tag
+	 * @param 	array      $message             An array representation of the message to send
+	 * @param   string     $message_type        The type of message - one of "image", "video", "voice", "text", "news", "mpvideo", "mpnews", "wxcard" - "news" is an alias of "mpnews", "video" is an alias of "mpvideo"
+	 * @param 	string|int $tag_id              A valid tag_id used to filter recipients, or "all" - default "all"
+	 * @param 	bool       $send_ignore_reprint Whether or not to continue sending the image message if it has been determined to be a reprint - true to continue sending (reprinting), false to stop the batch send - default false.
+	 * @param 	string     $clientmsgid         ID to avoid sending the same message repeatedly. May be up to 64 characters in length, automatically truncated. If this field is not set, then the back end will automatically use the message scope and content preview as the clientmsgid - defaul false.
+	 * @return 	array|bool
+	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
+	 */
+	public function mass_to_all_or_tag($message, $message_type, $tag_id = 'all', $send_ignore_reprint = false, $clientmsgid = false) {
+		$url     = self::MASS_BY_TAG . '?access_token=' . $this->getAccessToken();
+		$payload = array();
+
+		if (!is_numeric($tag_id) && 'all' !== $tag_id) {
+			$this->setError('Invalid tag_id - need a valid tag ID');
+
+			return false;
+		}
+
+		if (!in_array( $message_type, array('image', 'video', 'voice', 'text', 'news', 'mpvideo', 'mpnews', 'wxcard'))) {
+			$this->setError('Invalid message type "' . $message_type . '"');
+
+			return false;
+		}
+
+		$payload[$message_type]         = $message;
+		$payload['msgtype']             = $message_type;
+		$payload['send_ignore_reprint'] = (int) $send_ignore_reprint;
+		$payload['filter']              = array();
+
+		if (false !== $clientmsgid) {
+			$payload['clientmsgid'] = substr($clientmsgid, 0, 64);
+		}
+
+		if ('news' === $message_type || 'video' === $message_type) {
+			$message_type = 'mp' . $message_type;
+		}
+
+		if ('all' !== $tag_id) {
+			$payload['filter'] = array(
+				'is_to_all' => false,
+				'tag_id'    => $tag_id,
+			);
+		} else {
+			$payload['filter'] = array( 'is_to_all' => true );
+		}
+
+		$params  = $this->json_encode($payload);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Delete an article from a previous mass message
+	 * @param 	string $msg_id             The ID of the previously broadcasted message
+	 * @param   int    $article_idx        The positive index of the article to delete in the message (starts with 1), or 0 to delete all the articles - optional - default 0
+	 * @return 	array|bool
+	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
+	 */
+	public function mass_delete( $msg_id, $article_idx = 0 ) {
+
+		if (!is_numeric($article_idx) || $article_idx < 0 || $article_idx > 8) {
+			$this->setError('Invalid article_idx - need an integer between 0 (included) and 8 (included)');
+
+			return false;
+		}
+
+		$url     = self::MASS_DELETE . '?access_token=' . $this->getAccessToken();
+		$payload = array(
+			'msg_id'      => $msg_id,
+			'article_idx' => $article_idx,
+		);
+		$params  = $this->json_encode($payload);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result;
+		} else {
+
+			return false;
+		}
+	}
+
+	/**
+	 * Check the status of a previous mass message
+	 * @param 	string $msg_id             The ID of the previously broadcasted message
+	 * @return 	array|bool
+	 * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729 (Chinese)
+	 */
+	public function mass_check_status( $msg_id ) {
+		$url     = self::MASS_GET . '?access_token=' . $this->getAccessToken();
+		$payload = array(
+			'msg_id'      => $msg_id,
+		);
+		$params  = $this->json_encode($payload);
+		$jsonStr = $this->http($url, $params, 'POST');
+		$res     = $this->parseJson($jsonStr);
+
+		if (false === $this->getError()) {
+
+			return $this->result;
 		} else {
 
 			return false;
@@ -1703,6 +2139,72 @@ class Wechat_SDK {
 				if ($data['result_code'] === 'SUCCESS') {
 
 					return $data['code_url'];
+				} else {
+					$this->setError($data['err_code_des'], $data['err_code']);
+
+					return false;
+				}
+			} else {
+				$this->setError($data['return_msg'], $data['return_code']);
+
+				return false;
+			}
+		} else {
+			$this->setError('Invalid XML data - failed to create web Unified Order');
+
+			return false;
+		}
+
+	}
+
+	/**
+	 * Get URL for a Unified order (use in mobile web browser)
+	 * @param  string 		$product_id 	Local product identifier
+	 * @param  string 		$body       	Product Description - 126 bytes max
+	 * @param  string 		$orderId    	Local order ID
+	 * @param  float  		$money 			Amound in RMB
+	 * @param  string 		$notify_url 	Callback URL - default empty string
+	 * @param  array|string $extend  		Used to extend the parameters sent to the WeChat payment interface - if string, will be attributed to 'attach' - default empty array
+	 * @return string|bool
+	 */
+	public function mobileUnifiedOrder($product_id, $body, $orderId, $money, $notify_url = '', $extend = array()) {
+
+		if (strlen($body) > 127) {
+			$body = substr($body, 0, 127);
+		}
+
+		$params = array(
+			'version'          => self::UNIFIED_ORDER_INTERFACE_VERSION,
+			'appid'            => $this->mch_appid,
+			'mch_id'           => $this->mch_id,
+			'nonce_str'        => self::getNonceStr(),
+			'body'             => $body,
+			'out_trade_no'     => $orderId,
+			'total_fee'        => $money * 100,
+			'spbill_create_ip' => $this->_get_client_ip(),
+			'notify_url'       => $notify_url,
+			'product_id'       => $product_id,
+			'trade_type'       => 'MWEB',
+		);
+
+		if (is_string($extend)) {
+			$params['attach']  = $extend;
+		} elseif (is_array($extend) && !empty($extend)) {
+			$params = array_merge($params, $extend);
+		}
+
+		$params['sign'] = self::_getOrderMd5($params);
+		$data           = $this->_array2Xml($params);
+		$data           = $this->http(self::UNIFIED_ORDER_URL, $data, 'POST');
+		$data           = $this->_extractXml($data);
+
+		if ($data) {
+
+			if ($data['return_code'] === 'SUCCESS') {
+
+				if ($data['result_code'] === 'SUCCESS') {
+
+					return $data['mweb_url'];
 				} else {
 					$this->setError($data['err_code_des'], $data['err_code']);
 
@@ -1881,7 +2383,12 @@ class Wechat_SDK {
 		$params['op_user_id']    = $this->mch_id;
 		$params['sign']          = self::_getOrderMd5($params);
 		$data                    = $this->_array2Xml($params);
+		
+		WP_Weixin::log($data);
+		
 		$data                    = $this->http(self::PAY_REFUND_ORDER_URL, $data, 'POST', true);
+		
+		WP_Weixin::log($data);
 
 		return self::parsePayRequest($data);
 	}
@@ -2018,7 +2525,6 @@ class Wechat_SDK {
 	 * @return boolean|array
 	 */
 	private function parsePayRequest($data, $checkSign = true) {
-		$data = $this->_extractXml($data);
 
 		if (empty($data)) {
 			$this->setError('Payment interface returned invalid XML data');
@@ -2026,6 +2532,7 @@ class Wechat_SDK {
 			return false;
 		}
 
+		$data = $this->_extractXml($data);
 
 		if ($data['return_code'] === 'SUCCESS') {
 
@@ -2137,16 +2644,24 @@ class Wechat_SDK {
 	 */
 	public function getError() {
 
-		return (empty($this->error)) ? false : array('code' => $this->errorCode, 'message' => $this->error);
+		if ( empty($this->errorCode)) {
+
+			return false;
+		} elseif ('local' === $this->errorCode) {
+
+			return array('code' => null, 'message' => $this->error);
+		}
+
+		return array('code' => $this->errorCode, 'message' => $this->error);
 	}
 
 	/**
 	 * Set error message and error code
 	 * @param 	string $message 	The error message - default empty string
-	 * @param 	string $errorCode 	The error code - default null
+	 * @param 	string $errorCode 	The error code - default 'local'
 	 * @return 	string
 	 */
-	public function setError($message = '', $errorCode = null) {
+	public function setError($message = '', $errorCode = 'local') {
 		$this->error     = $message;
 		$this->errorCode = $errorCode;
 	}
@@ -2156,104 +2671,583 @@ class Wechat_SDK {
 	 * @param integer $code Error code
 	 * @return string
 	 */
-	private function getErrorMessage($code) {
+	private function getErrorMessage($code = null) {
 
 		switch ($code) {
-			case -1: 	return 'WeChat API:	System busy';
-			case 0: 	return 'WeChat API:	Request succeeded';
-			case 40001: return 'WeChat API:	Verification failed';
-			case 40002: return 'WeChat API:	Invalid certificate type';
-			case 40003: return 'WeChat API:	Invalid Open ID';
-			case 40004: return 'WeChat API:	Invalid media file type';
-			case 40005: return 'WeChat API:	Invalid file type';
-			case 40006: return 'WeChat API:	Invalid file size';
-			case 40007: return 'WeChat API:	Invalid media file ID';
-			case 40008: return 'WeChat API:	Invalid message type';
-			case 40009: return 'WeChat API:	Invalid image file size';
-			case 40010: return 'WeChat API:	Invalid audio file size';
-			case 40011: return 'WeChat API:	Invalid video file size';
-			case 40012: return 'WeChat API:	Invalid thumbnail file size';
-			case 40013: return 'WeChat API:	Invalid App ID';
-			case 40014: return 'WeChat API:	Invalid access token';
-			case 40015: return 'WeChat API:	Invalid menu type';
-			case 40016: return 'WeChat API:	Invalid button quantity';
-			case 40017: return 'WeChat API:	Invalid button quantity';
-			case 40018: return 'WeChat API:	Invalid button name length';
-			case 40019: return 'WeChat API:	Invalid button KEY length';
-			case 40020: return 'WeChat API:	Invalid button URL length';
-			case 40021: return 'WeChat API:	Invalid menu version';
-			case 40022: return 'WeChat API:	Invalid sub-menu levels';
-			case 40023: return 'WeChat API:	Invalid sub-menu button quantity';
-			case 40024: return 'WeChat API:	Invalid sub-menu button type';
-			case 40025: return 'WeChat API:	Invalid sub-menu button name length';
-			case 40026: return 'WeChat API:	Invalid sub-menu button KEY length';
-			case 40027: return 'WeChat API:	Invalid sub-menu button URL length';
-			case 40028: return 'WeChat API:	Invalid custom menu user';
-			case 40029: return 'WeChat API:	Invalid oauth code';
-			case 40030: return 'WeChat API:	Invalid refresh token';
-			case 40031: return 'WeChat API:	Invalid openid list';
-			case 40032: return 'WeChat API:	Invalid openid list length';
-			case 40033: return 'WeChat API:	Invalid request characters: The character "\uxxxx" cannot be included.';
-			case 40035: return 'WeChat API:	Invalid parameters';
-			case 40038: return 'WeChat API:	Invalid request format';
-			case 40039: return 'WeChat API:	Invalid URL length';
-			case 40050: return 'WeChat API:	Invalid group ID';
-			case 40051: return 'WeChat API:	Invalid group name';
-			case 41001: return 'WeChat API:	Parameter missing: access token';
-			case 41002: return 'WeChat API:	Parameter missing: appid';
-			case 41003: return 'WeChat API:	Parameter missing: refresh token';
-			case 41004: return 'WeChat API:	Parameter missing: secret';
-			case 41005: return 'WeChat API:	Multimedia file data missing';
-			case 41006: return 'WeChat API:	Parameter missing: media id';
-			case 41007: return 'WeChat API:	Sub-menu data missing';
-			case 41008: return 'WeChat API:	Parameter missing: oauth code';
-			case 41009: return 'WeChat API:	Parameter missing: openid';
-			case 42001: return 'WeChat API:	access token timed out';
-			case 42002: return 'WeChat API:	refresh token timed out';
-			case 42003: return 'WeChat API:	oauth code timed out';
-			case 43001: return 'WeChat API:	GET request required';
-			case 43002: return 'WeChat API:	POST request required';
-			case 43003: return 'WeChat API:	HTTPS request required';
-			case 43004: return 'WeChat API:	The other user is not yet a follower';
-			case 43005: return 'WeChat API:	The other user is not yet a follower';
-			case 44001: return 'WeChat API:	Multimedia file is empty';
-			case 44002: return 'WeChat API:	POST package is empty';
-			case 44003: return 'WeChat API:	Rich media message is empty';
-			case 44004: return 'WeChat API:	Text message is empty';
-			case 45001: return 'WeChat API:	Error source: multimedia file size';
-			case 45002: return 'WeChat API:	Message contents too long';
-			case 45003: return 'WeChat API:	Title too long';
-			case 45004: return 'WeChat API:	Description too long';
-			case 45005: return 'WeChat API:	URL too long';
-			case 45006: return 'WeChat API:	Image URL too long';
-			case 45007: return 'WeChat API:	Audio play time over limit';
-			case 45008: return 'WeChat API:	Rich media messages over limit';
-			case 45009: return 'WeChat API:	Error source: interface call';
-			case 45010: return 'WeChat API:	Message quantity over limit';
-			case 45015: return 'WeChat API:	Response too late';
-			case 45016: return 'WeChat API:	System group cannot be changed.';
-			case 45017: return 'WeChat API:	System name too long';
-			case 45018: return 'WeChat API:	Too many groups';
-			case 46001: return 'WeChat API:	Media data missing';
-			case 46002: return 'WeChat API:	This menu version does not exist.';
-			case 46003: return 'WeChat API:	This menu data does not exist.';
-			case 46004: return 'WeChat API:	This user does not exist.';
-			case 47001: return 'WeChat API:	Error while extracting JSON/XML contents';
-			case 48001: return 'WeChat API:	Unauthorized API function';
-			case 50001: return 'WeChat API:	The user is not authorized for this API';
-			case 61450: return 'WeChat API:	System error (system error)';
-			case 61451: return 'WeChat API:	Invalid parameter (invalid parameter)';
-			case 61452: return 'WeChat API:	Invalid customer service account (invalid kf_account)';
-			case 61453: return 'WeChat API:	Existing customer service account (kf_account existed)';
-			case 61454: return 'WeChat API:	Length of customer service account name over limit (ten English characters at a maximum, excluding @ and the part after it) (invalid kf_acount length)';
-			case 61455: return 'WeChat API:	Invalid characters in a customer service account name (English letters and numbers supported only) (illegal character in kf_account)';
-			case 61456: return 'WeChat API:	Maximum number of customer service accounts reached(ten customer service accounts at a maximum) (kf_account count exceeded)';
-			case 61457: return 'WeChat API:	Invalid image file type (invalid file type)';
-			case 61500: return 'WeChat API:	Date format error';
-			case 61501: return 'WeChat API:	Date range error';
-			case 50001: return 'WeChat API: The user has not authorized the api';
-			case 65303: return 'WeChat API: There is no menu. To create a conditonal menu or delete menus, create a default menu first';
-			default: 	return 'Unknown error';
+			case -1:
+				return 'WeChat API: System busy. Please try again later.';
+			case 0:
+				return 'WeChat API: Successful request';
+			case 40001:
+				return 'WeChat API: AppSecret error or invalid Access Token. Verify the AppSecret is correct and confirm you are using the correct callback parameters for this Official Account.';
+			case 40002:
+				return 'WeChat API: Invalid certificate type or grant_type';
+			case 40003:
+				return 'WeChat API: Invalid OpenID. Confirm that the user has followed the account, or check that the OpenID does not belong to another Official Account.';
+			case 40004:
+				return 'WeChat API: Invalid media file type';
+			case 40005:
+				return 'WeChat API: Invalid file type';
+			case 40006:
+				return 'WeChat API: Invalid file size';
+			case 40007:
+				return 'WeChat API: Invalid media ID';
+			case 40008:
+				return 'WeChat API: Invalid message type';
+			case 40009:
+				return 'WeChat API: Invalid image file size';
+			case 40010:
+				return 'WeChat API: Invalid audio file size';
+			case 40011:
+				return 'WeChat API: Invalid video file size';
+			case 40012:
+				return 'WeChat API: Invalid thumbnail image file size';
+			case 40013:
+				return 'WeChat API: Invalid AppID. Verify the AppID is correct and has no invalid characters (AppIDs are case-sensitive)';
+			case 40014:
+				return 'WeChat API: Invalid Access Token. Confirm the Access Token has not expired and that you are using the correct callback parameters for this Official Account.';
+			case 40015:
+				return 'WeChat API: Invalid menu type';
+			case 40016:
+				return 'WeChat API: Invalid number of menu buttons';
+			case 40017:
+				return 'WeChat API: Invalid number of menu buttons or menu button type';
+			case 40018:
+				return 'WeChat API: Invalid menu button name length';
+			case 40019:
+				return 'WeChat API: Invalid menu button key length';
+			case 40020:
+				return 'WeChat API: Invalid URL length';
+			case 40021:
+				return 'WeChat API: Invalid menu version';
+			case 40022:
+				return 'WeChat API: Invalid sub-menu';
+			case 40023:
+				return 'WeChat API: Invalid number of sub-menu buttons';
+			case 40024:
+				return 'WeChat API: Invalid sub-menu type';
+			case 40025:
+				return 'WeChat API: Invalid sub-menu button name length';
+			case 40026:
+				return 'WeChat API: Invalid sub-menu button key length';
+			case 40027:
+				return 'WeChat API: Invalid sub-menu button URL length';
+			case 40028:
+				return 'WeChat API: Invalid menu user';
+			case 40029:
+				return 'WeChat API: Invalid or expired oauth_code';
+			case 40030:
+				return 'WeChat API: Invalid refresh_token';
+			case 40031:
+				return 'WeChat API: Invalid OpenID list';
+			case 40032:
+				return 'WeChat API: Invalid OpenID list length';
+			case 40033:
+				return 'WeChat API: Invalid character in your request. The character “\uxxxx” cannot be included.';
+			case 40035:
+				return 'WeChat API: Invalid parameter';
+			case 40036:
+				return 'WeChat API: Invalid template_id length';
+			case 40037:
+				return 'WeChat API: Invalid template_id';
+			case 40038:
+				return 'WeChat API: Invalid request format';
+			case 40039:
+				return 'WeChat API: Invalid URL length';
+			case 40048:
+				return 'WeChat API: Invalid URL domain';
+			case 40050:
+				return 'WeChat API: Invalid Group ID';
+			case 40051:
+				return 'WeChat API: Invalid Group ID name';
+			case 40053:
+				return 'WeChat API: Invalid “actioninfo” parameter';
+			case 40054:
+				return 'WeChat API: Invalid sub-menu button URL domain';
+			case 40055:
+				return 'WeChat API: Invalid menu button URL domain';
+			case 40056:
+				return 'WeChat API: Invalid code';
+			case 40066:
+				return 'WeChat API: Invalid URL';
+			case 40071:
+				return 'WeChat API: Invalid coupon type';
+			case 40072:
+				return 'WeChat API: Invalid coding method';
+			case 40073:
+				return 'WeChat API: Invalid cardid';
+			case 40078:
+				return 'WeChat API: Invalid coupon status';
+			case 40079:
+				return 'WeChat API: Invalid time';
+			case 40080:
+				return 'WeChat API: Invalid CardExt';
+			case 40099:
+				return 'WeChat API: Coupon already redeemed';
+			case 40100:
+				return 'WeChat API: Invalid time interval';
+			case 40116:
+				return 'WeChat API: Invalid code';
+			case 40117:
+				return 'WeChat API: Invalid Group ID name';
+			case 40118:
+				return 'WeChat API: Invalid media_id size';
+			case 40119:
+				return 'WeChat API: Button type error';
+			case 40120:
+				return 'WeChat API: Button type error';
+			case 40121:
+				return 'WeChat API: Invalid media_id type';
+			case 40122:
+				return 'WeChat API: Invalid in-stock quantity';
+			case 40124:
+				return 'WeChat API: Membership card settings reached the limit of custom_field';
+			case 40127:
+				return 'WeChat API: Coupon has been deleted by user or is in the process of being transferred';
+			case 40130:
+				return 'WeChat API: Invalid openIDs list size, at least two openIDs required';
+			case 40132:
+				return 'WeChat API: Invalid WeChat ID';
+			case 40137:
+				return 'WeChat API: Unsupported image file type';
+			case 40155:
+				return 'WeChat API: Please do not add links to other Official Account pages';
+			case 40164:
+				return 'WeChat API: This account is using an IP white list. Only IP addresses listed on the WeChat backend can get this account’s WeChat access token.';
+			case 41001:
+				return 'WeChat API: Missing access_token';
+			case 41002:
+				return 'WeChat API: Missing appid';
+			case 41003:
+				return 'WeChat API: Missing refresh_token parameter';
+			case 41004:
+				return 'WeChat API: Missing secret parameter';
+			case 41005:
+				return 'WeChat API: Missing multimedia file data';
+			case 41006:
+				return 'WeChat API: Missing media_id parameter';
+			case 41007:
+				return 'WeChat API: Missing menu data';
+			case 41008:
+				return 'WeChat API: Missing oauth code';
+			case 41009:
+				return 'WeChat API: Missing openID';
+			case 41010:
+				return 'WeChat API: Missing URL';
+			case 41011:
+				return 'WeChat API: Missing required field';
+			case 41012:
+				return 'WeChat API: Missing cardid parameter';
+			case 42001:
+				return 'WeChat API: The access_token has expired. Check Access Token expiry time or review detailed documentation on creating an access token';
+			case 42002:
+				return 'WeChat API: The refresh_token has expired';
+			case 42003:
+				return 'WeChat API: The oauth_code expired';
+			case 42007:
+				return 'WeChat API: User has changed the WeChat password, the Access Token and Refresh Token failed, developer needs to get permissions again';
+			case 43001:
+				return 'WeChat API: GET request is required';
+			case 43002:
+				return 'WeChat API: POST request is required';
+			case 43003:
+				return 'WeChat API: HTTPS is required';
+			case 43004:
+				return 'WeChat API: The user must follow the account';
+			case 43005:
+				return 'WeChat API: You must be friends with the user';
+			case 43009:
+				return 'WeChat API: Custom SN permission, please enable on the WeChat backend.';
+			case 43010:
+				return 'WeChat API: No stored value permission, please enable on the WeChat backend.';
+			case 43019:
+				return 'WeChat API: You will need to remove user(s) from your blacklist in order to receive messages.';
+			case 44001:
+				return 'WeChat API: Multimedia file is empty';
+			case 44002:
+				return 'WeChat API: POST data packet is empty';
+			case 44003:
+				return 'WeChat API: Article content is empty';
+			case 44004:
+				return 'WeChat API: Text message is empty';
+			case 44005:
+				return 'WeChat API: List is empty';
+			case 45001:
+				return 'WeChat API: Multimedia file exceeds maximum file size';
+			case 45002:
+				return 'WeChat API: Message contents too long';
+			case 45003:
+				return 'WeChat API: Article title too long';
+			case 45004:
+				return 'WeChat API: Article short description too long';
+			case 45005:
+				return 'WeChat API: URL too long';
+			case 45006:
+				return 'WeChat API: Image URL too long';
+			case 45007:
+				return 'WeChat API: Audio playback time too long. Maximum voice message is sixty seconds.';
+			case 45008:
+				return 'WeChat API: Too many articles in this message.';
+			case 45009:
+				return 'WeChat API: API usage frequency limit reached.';
+			case 45010:
+				return 'WeChat API: Create menu limit reached.';
+			case 45011:
+				return 'WeChat API: API usage frequency limit reached, please try again later';
+			case 45012:
+				return 'WeChat API: Template size exceeds limit';
+			case 45015:
+				return 'WeChat API: Response time too long';
+			case 45016:
+				return 'WeChat API: This is a default system group, you are not allowed to modify it';
+			case 45017:
+				return 'WeChat API: Group ID name is too long';
+			case 45018:
+				return 'WeChat API: You have created the maximum number of groups allowed.';
+			case 45021:
+				return 'WeChat API: Field length exceeded, please refer to the field explanation in the relevant API documentation.';
+			case 45030:
+				return 'WeChat API: This CardID does not have permission to use this interface.';
+			case 45031:
+				return 'WeChat API: Current stock is zero.';
+			case 45033:
+				return 'WeChat API: The number of user receive events has exceeded the get_limit';
+			case 45047:
+				return 'WeChat API: Customer Service message volume limit reached.';
+			case 45065:
+				return 'WeChat API: The group has already been sent during the last 24 hours (clientmsgid exists).';
+			case 45066:
+				return 'Sending group message retry speed is too fast (limit is 1 minute interval)';
+			case 45067:
+				return 'Value of clientmsgid length exceeds limit';
+			case 46001:
+				return 'WeChat API: Media data does not exist';
+			case 46002:
+				return 'WeChat API: Menu version does not exist';
+			case 46003:
+				return 'WeChat API: Menu data does not exist';
+			case 46004:
+				return 'WeChat API: User does not exist';
+			case 47001:
+				return 'WeChat API: Error extracting JSON/XML content';
+			case 48001:
+				return 'WeChat API: You do not have permission to use this API. Check the Developer page on the WeChat Official Account backend for restrictions.';
+			case 48002:
+				return 'WeChat API: User cannot receive messages. The user has disabled the “Receive Messages”option on the account profile page.';
+			case 48003:
+				return 'WeChat API: Invalid suitetoken';
+			case 48004:
+				return 'WeChat API: API interface closed. Refer to the WeChat backend for more details.';
+			case 48005:
+				return 'WeChat API: This content cannot be deleted as it is being used in auto-replies or menus.';
+			case 48006:
+				return 'WeChat API: API reset limit reached';
+			case 50001:
+				return 'WeChat API: The user does not have permission to use this API.';
+			case 50002:
+				return 'WeChat API: This user is restricted and after violation may be banned from using this interface';
+			case 61300:
+				return 'WeChat API: Invalid base_info';
+			case 61301:
+				return 'WeChat API: Invalid detail_info';
+			case 61302:
+				return 'WeChat API: Invalid product promotion section information (action_info)';
+			case 61303:
+				return 'WeChat API: Product information does not exist';
+			case 61304:
+				return 'WeChat API: Invalid product in the promoted services section (action_info)';
+			case 61305:
+				return 'WeChat API: Invalid keystand or keystr. Using ean13 standards, the encoded content must match the merchant number.';
+			case 61306:
+				return 'WeChat API: Invalid appid in the promoted services section (action_info)';
+			case 61307:
+				return 'WeChat API: Invalid cardid in the promoted services section (action_info)';
+			case 61308:
+				return 'WeChat API: The base_info parameter does not exist';
+			case 61309:
+				return 'WeChat API: The detail_info parameter does not exist';
+			case 61310:
+				return 'WeChat API: The promoted services section (action_info) does not exist';
+			case 61311:
+				return 'WeChat API: Invalid media in the promoted services section (action_info)';
+			case 61312:
+				return 'WeChat API: Image size too large';
+			case 61313:
+				return 'WeChat API: Image content invalid or has not been encoded to Base64';
+			case 61314:
+				return 'WeChat API: Invalid ExtInfo';
+			case 61316:
+				return 'WeChat API: Barcode conflict: this barcode is already currently in use';
+			case 61317:
+				return 'WeChat API: Invalid ticket';
+			case 61319:
+				return 'WeChat API: Invalid merchant category ID';
+			case 61320:
+				return 'WeChat API: Merchant global information does not exist';
+			case 61322:
+				return 'WeChat API: Merchant does not have permission to use this product category';
+			case 61323:
+				return 'WeChat API: Merchant does not have permission to use this barcode';
+			case 61324:
+				return 'WeChat API: Exceeded the maximum number of service columns in the promoted services section';
+			case 61334:
+				return 'WeChat API: Product information does not exist';
+			case 61337:
+				return 'WeChat API: Product information already exists';
+			case 61341:
+				return 'WeChat API: Exceeded the maximum number of people on the white list';
+			case 61342:
+				return 'WeChat API: Keystandard and creation time do not match';
+			case 61343:
+				return 'WeChat API: Invalid Keystandard';
+			case 61345:
+				return 'WeChat API: Invalid code in the promoted services section (action_info)';
+			case 61346:
+				return 'WeChat API: Invalid store in the promoted services section (action_info)';
+			case 61347:
+				return 'WeChat API: Invalid media in the promoted services section (action_info)';
+			case 61348:
+				return 'WeChat API: Invalid text in the promoted services section (action_info)';
+			case 61450:
+				return 'WeChat API: System error';
+			case 61451:
+				return 'WeChat API: Invalid parameter';
+			case 61452:
+				return 'WeChat API: Invalid customer service agent account';
+			case 61453:
+				return 'WeChat API: Customer service agent account already exists.';
+			case 61454:
+				return 'WeChat API: Customer service agent account name is too long. Maximum length 10 Roman characters, not including the “@[WeChat ID]”)';
+			case 61455:
+				return 'WeChat API: Customer service agent account name contains an invalid character (only Roman characters and numbers are supported)';
+			case 61456:
+				return 'WeChat API: The maximum number of customer service agents have been created. (Accounts are limited to 100 agents)';
+			case 61457:
+				return 'WeChat API: Invalid customer service agent avatar image file type';
+			case 61500:
+				return 'WeChat API: Invalid date format';
+			case 61501:
+				return 'WeChat API: Date range error';
+			case 63154:
+				return 'WeChat API: Invalid product status';
+			case 63155:
+				return 'WeChat API: Invalid home page color';
+			case 63156:
+				return 'WeChat API: Invalid brand tag';
+			case 63157:
+				return 'WeChat API: Invalid recommended product setting, any recommended products must come from the same account, and product status must be available for purchase.';
+			case 63158:
+				return 'WeChat API: Exceeded the maximum number of products (100,000)';
+			case 63159:
+				return 'WeChat API: The suggested retail price for this product is empty. When you have not set a purchasing channel (including WeChat Shop or eCommerce link), the suggested retail price is required.';
+			case 63160:
+				return 'WeChat API: Invalid price. The retail_price and sale_price parameters only accept numerical values.';
+			case 63161:
+				return 'WeChat API: Exceeded the maxium number of modules in module_info section; the same module can only be set once';
+			case 63162:
+				return 'WeChat API: Invalid native_show setting in the security module';
+			case 63163:
+				return 'WeChat API: The anti_fake_url in the security module does not exist';
+			case 63164:
+				return 'WeChat API: Invalid module type in the module_info section';
+			case 63166:
+				return 'WeChat API: Products cannot be updated, withdrawn from sale, or deleted while under review';
+			case 63167:
+				return 'WeChat API: Products which have not been released for sale cannot be withdrawn from sale';
+			case 63168:
+				return 'WeChat API: Products that have not been approved cannot be withdrawn from sale';
+			case 63169:
+				return 'WeChat API: Product has already been released for sale, it cannot be re-released again.';
+			case 63170:
+				return 'WeChat API: Cannot set banner and media type at the same time in the promoted services section (action_info)';
+			case 63171:
+				return 'WeChat API: Only one card type is allowed in the promoted services section (action_info)';
+			case 63172:
+				return 'WeChat API: Only one user type is allowed in the promoted services section (action_info)';
+			case 63173:
+				return 'WeChat API: Only one text type in the promoted services section (action_info)';
+			case 63174:
+				return 'WeChat API: For the three types – link, card, user – in total you can only set three in the promoted services section (action_info)';
+			case 63175:
+				return 'WeChat API: The product details page must have at least one image detail and one product detail';
+			case 65301:
+				return 'WeChat API: The personalized menu corresponding to this Menu ID does not exist';
+			case 65302:
+				return 'WeChat API: No corresponding users';
+			case 65303:
+				return 'WeChat API: A default menu configuration is required before creating personalized menus.';
+			case 65304:
+				return 'WeChat API: MatchRule parameters are empty';
+			case 65305:
+				return 'WeChat API: Personalized menu count limitation reached.';
+			case 65306:
+				return 'WeChat API: This account does not support personalized menus';
+			case 65307:
+				return 'WeChat API: Personalized menu information empty';
+			case 65308:
+				return 'WeChat API: One or more buttons do not have an action associated with them.';
+			case 65309:
+				return 'WeChat API: Personalized menus have been turned off for this account.';
+			case 65310:
+				return 'WeChat API: If segmenting by province or city, the country parameter cannot be empty';
+			case 65311:
+				return 'WeChat API: If segmenting by city, the province parameter cannot be empty';
+			case 65312:
+				return 'WeChat API: Invalid country parameter';
+			case 65313:
+				return 'WeChat API: Invalid province parameter';
+			case 65314:
+				return 'WeChat API: Invalid city parameter';
+			case 65316:
+				return 'WeChat API: This account does not support direct links to this domain. The account can setup a maximum of 3 domains.';
+			case 65317:
+				return 'WeChat API: Invalid URL';
+			case 9001001:
+				return 'WeChat API: Invalid POST data parameter';
+			case 9001002:
+				return 'WeChat API: Remote service cannot be used';
+			case 9001003:
+				return 'WeChat API: Invalid Ticket';
+			case 9001004:
+				return 'WeChat API: Failed getting nearby user information';
+			case 9001005:
+				return 'WeChat API: Failed getting merchant information';
+			case 9001006:
+				return 'WeChat API: Failed getting user OpenID';
+			case 9001007:
+				return 'WeChat API: Upload file failed';
+			case 9001008:
+				return 'WeChat API: Invalid upload file type';
+			case 9001009:
+				return 'WeChat API: Invalid upload file size';
+			case 9001010:
+				return 'WeChat API: Upload failed';
+			case 9001020:
+				return 'WeChat API: Invalid account';
+			case 9001021:
+				return 'WeChat API: Less than 50% of your devices are currently active, you cannot add new devices at this time.';
+			case 9001022:
+				return 'WeChat API: Invalid number of device requests; the number must be greater than zero.';
+			case 9001023:
+				return 'WeChat API: This device ID is already under review';
+			case 9001024:
+				return 'WeChat API: Maximum number of device ID requests is fifty.';
+			case 9001025:
+				return 'WeChat API: Invalid device ID';
+			case 9001026:
+				return 'WeChat API: Invalid page ID';
+			case 9001027:
+				return 'WeChat API: Invalid page parameter';
+			case 9001028:
+				return 'WeChat API: You cannot delete more than ten Page IDs at a time';
+			case 9001029:
+				return 'WeChat API: This page is linked to a device, first de-link the device from the page before deleting the page.';
+			case 9001030:
+				return 'WeChat API: Maximum number of page ID requests is fifty.';
+			case 9001031:
+				return 'WeChat API: Invalid time period';
+			case 9001032:
+				return 'WeChat API: Error saving the parameter linking the device and page.';
+			case 9001033:
+				return 'WeChat API: Invalid Venue ID';
+			case 9001034:
+				return 'WeChat API: Device remarks information is too long';
+			case 9001035:
+				return 'WeChat API: Invalid device application parameter';
+			case 9001036:
+				return 'WeChat API: Invalid “begin” query start value';
+			case 9001037:
+				return 'WeChat API: A single device can be linked to a maximum thirty pages.';
+			case 9001038:
+				return 'WeChat API: Device limit exceeded';
+			case 9001039:
+				return 'WeChat API: Invalid contact name';
+			case 9001040:
+				return 'WeChat API: Invalid phone number';
+			case 9001041:
+				return 'WeChat API: Invalid email address';
+			case 9001042:
+				return 'WeChat API: Invalid Industry ID';
+			case 9001043:
+				return 'WeChat API: File URL does not have a valid certificate; files must be uploaded through the content management interface';
+			case 9001044:
+				return 'WeChat API: file is missing a valid certificate; files must be uploaded through the content management interface';
+			case 9001045:
+				return 'WeChat API: Application cannot exceed 500 characters.';
+			case 9001046:
+				return 'WeChat API: This Official Account is not verified.';
+			case 9001047:
+				return 'WeChat API: Invalid device application batch ID';
+			case 9001048:
+				return 'WeChat API: While the application is under review or has already been approved, you cannot resubmit a review request.';
+			case 9001049:
+				return 'WeChat API: Failed to get group metadata';
+			case 9001050:
+				return 'WeChat API: Group limit exceeded. Official Accounts can have maximum 100 groups.';
+			case 9001051:
+				return 'WeChat API: Device limit reached. The maximum number of devices belonging to a group is 10,000.';
+			case 9001052:
+				return 'WeChat API: You can only add a maximum of 1,000 devices at a time to a group.';
+			case 9001053:
+				return 'WeChat API: You can only delete a maximum of 1,000 devices at a time from a group.';
+			case 9001054:
+				return 'WeChat API: The group to be deleted still exists on a device.';
+			case 9001055:
+				return 'WeChat API: Group name is too long. Maxiumum 100 characters.';
+			case 9001056:
+				return 'WeChat API: The device list to be added or removed from this group contains one or more device IDs that do not belong to this group';
+			case 9001057:
+				return 'WeChat API: Group-related information operation failed.';
+			case 9001058:
+				return 'WeChat API: Group ID does not exist';
+			case 9001059:
+				return 'WeChat API: The logo_url on the page cannot be blank';
+			case 9001060:
+				return 'WeChat API: Failed to create red packet lottery';
+			case 9001061:
+				return 'WeChat API: Failed to get red packet lottery_id';
+			case 9001062:
+				return 'WeChat API: Failed to create template page';
+			case 9001063:
+				return 'WeChat API: The merchant Official Account ID providing the red packet is different than that of the merchant associated with the red packet';
+			case 9001064:
+				return 'WeChat API: Failed to get authorization for this red packet';
+			case 9001065:
+				return 'WeChat API: Authorization for this red packet is under review';
+			case 9001066:
+				return 'WeChat API: Authorization for this red packet was canceled';
+			case 9001067:
+				return 'WeChat API: No authorization for this red packet';
+			case 9001068:
+				return 'WeChat API: The red packet lottery time period is not within the red packet’s authorized time period';
+			case 9001069:
+				return 'WeChat API: Failed to start/stop red packet lottery';
+			case 9001070:
+				return 'WeChat API: Failed to get red packet lottery information';
+			case 9001071:
+				return 'WeChat API: Red packet ticket query failed';
+			case 9001072:
+				return 'WeChat API: Maximum number of red packet tickets reached.';
+			case 9001073:
+				return 'WeChat API: The sponsor_appid and the pre-order wxappid are inconsistent';
+			case 9001074:
+				return 'WeChat API: Failed to get red packet send ID';
+			case 9001075:
+				return 'WeChat API: The total number of red packets entered is greater than the number of red packets set when this promotion was created';
+			case 9001076:
+				return 'WeChat API: Failed to add red packet send ID';
+			case 9001077:
+				return 'WeChat API: Failed to decode red packet send ID';
+			case 9001078:
+				return 'WeChat API: Failed to get Official Account uin';
+			case 9001079:
+				return 'WeChat API: The appid calling the interface and the appid used to create the red packet are inconsistent';
+			case 9001090:
+				return 'WeChat API: All of the entered tickets are invalid. It could be that the tickets have already been used, are expired, or the ticket amount is not between 1-1000RMB.';
+			case 9001091:
+				return 'WeChat API: Promotion period has already expired.';
+			default:
+				return 'WeChat API: Unknown error';
 		}
 	}
 

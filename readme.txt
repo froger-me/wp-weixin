@@ -2,7 +2,7 @@
 Contributors: frogerme
 Tags: wechat, wechat share, 微信, 微信分享, 微信公众号
 Requires at least: 4.9.5
-Tested up to: 5.0
+Tested up to: 5.3.2
 Stable tag: trunk
 Requires PHP: 7.0
 License: GPLv3
@@ -44,6 +44,7 @@ Compatible with [WooCommerce](https://wordpress.org/plugins/woocommerce/), [WooC
 
 * [Woo WeChatPay](https://wordpress.org/plugins/woo-wechatpay): a payment gateway for WooCommerce.
 * [WP Weixin Pay](https://wordpress.org/plugins/wp-weixin-pay): an extension to enable money transfers to an Official Account.
+* [WP Weixin Broadcast](https://wordpress.org/plugins/wp-weixin-broadcast/): broadcast WordPress posts to WeChat followers, directly from WordPress
 
 Developers are encouraged to build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available [functions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-functions), [actions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-actions) and [filters](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-filters), or directly [make use of the provided SDK](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-wechat-sdk).  
 
@@ -69,10 +70,11 @@ To add the author on WeChat, click [here](https://froger.me/wp-content/uploads/2
 
 == Upgrade Notice ==
 
-* Make sure to backup your database if you plan to go back to v1.2 of WP Weixin.
+* Make sure to deactivate all the companion plugins before updating.
+* Make sure to backup your database if you plan to go back to v1.2 or v1.3 of WP Weixin.
 * Make sure to update all the companion plugins to their latest version after WP Weixin has been updated.
-* Make sure to flush the permalinks by visiting Settings > Permalinks (`wp-admin/options-permalink.php`) after WP Weixin and its companion plugins have been update (if Multisite, on all the blogs where the plugin is active).
-* Make sure to flush all the cache if an Object Cache plugin is used (Redis, W3 Total Cache, APC Object Cache, ...) after WP Weixin and its companion plugins have been update.
+* Make sure to flush the permalinks by visiting Settings > Permalinks (`wp-admin/options-permalink.php`) after WP Weixin and its companion plugins have been updated (if Multisite, on all the blogs where the plugin is active).
+* Make sure to flush all the cache if an Object Cache plugin is used (Redis, W3 Total Cache, APC Object Cache, ...) after WP Weixin and its companion plugins have been updated.
 
 == Installation ==
 
@@ -102,6 +104,29 @@ This section describes how to install the plugin and get it working.
 16. The interface to setup the WeChat Official Account menu when the WeChat Responder is active.
 
 == Changelog ==
+
+= 1.3.5 =
+* WeChat SDK: Update error codes and descriptions
+* WeChat SDK: Add Broadcast methods (`mass_preview` `mass_to_users`, `mass_to_all_or_tag`, `mass_delete`, `mass_check_status`)
+* WeChat SDK: Add mobile browser H5 unified order method (`mobileUnifiedOrder`)
+* WeChat SDK: refactor asset management methods
+* WeChat SDK: refactor WeChat response parsing
+* WeChat SDK: convert encryption calls with mcrypt to open_ssl
+* WeChat SDK: response to erquests coming from WeChat handled using Customer Service interface instead of passive response
+* WeChat SDK: removed "event" ; added "voice", "mpnews", "video" and "menu" message types
+* Settings: decrease coupling with companion plugins
+* Add plugin version headers for companion plugins to check compatibility
+* Add `wp_weixin_ajax_safe()` function to allow WP Weixin to run during specific ajax requests
+* Add filter hook `wp_weixin_ecommerce_description` to allow extensions to customise the WeChat Pay Settings description.
+* Add check to output logs only when WordPress debug is activated
+* Add a notice on WooCommerce account edit page: WeChat registered users have an auto-generated password and it should be changed using the "Lost your password?" link in a web browser. 
+* Added a metabox to override the title and description of WeChat links when sharing a post on WeChat.
+* Use user meta to save follower status and react to events using the responder instead of relying on transient and cookies.
+* Display the featured image of the post in previously visited if exists instead of default image when following with force follow
+* Attempt to solve Multisite authentication issues
+* Minor bugfixes
+* Version 1.3.3 and 1.3.4 skipped
+* Update documentation
 
 = 1.3.2 =
 * Add server logs when user creation failed
@@ -137,9 +162,9 @@ Special thanks:
 * Fixed bug redirecting to posts list after first authentication
 * Do authentication in `wp_loaded` instead of `template_redirect`
 * WeChat Pay Settings: add PEM certificates fields
-* SDK: add `public function cert_files_exist()`
-* SDK: fix refund method
-* SDK: fix payment request parsing method
+* WeChat SDK: add `public function cert_files_exist()`
+* WeChat SDK: fix refund method
+* WeChat SDK: fix payment request parsing method
 * Update documentation
 
 = 1.2.1 =

@@ -4,6 +4,11 @@
 	margin-bottom: 20px;
 }
 
+.toplevel_page_wp-weixin h2:before {
+    margin-right: 5px;
+    vertical-align: bottom;
+}
+
 .toplevel_page_wp-weixin form h2.dashicons-before:before {
 	margin: 0 5px 0 0;
 	vertical-align: bottom;

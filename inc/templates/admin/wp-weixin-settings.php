@@ -73,7 +73,7 @@ $base_qr_url = home_url( 'wp-weixin/get-qrcode/hash/' );
 					</tbody>
 				</table>
 				<p class="submit">
-					<button data-img="custom_qr" class="qr-button button button-primary">
+					<button data-img="custom_qr" class="qr-custom-button button button-primary">
 						<?php esc_html_e( 'Get QR code', 'wp-weixin' ); ?>
 					</button>
 				</p>

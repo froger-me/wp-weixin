@@ -33,6 +33,6 @@ foreach ( $blog_ids as $blog_id ) {
 	}
 }
 
-$sql = "DELETE FROM $wpdb->usermeta WHERE `meta_key` LIKE 'wx_openid%' OR `meta_key` IN ( 'wx_unionid', 'wp_weixin_rawdata' )";
+$sql = "DELETE FROM $wpdb->usermeta WHERE `meta_key` LIKE 'wx_openid%' OR `meta_key` IN ( 'wx_unionid', 'wp_weixin_rawdata', 'wx_follower' )";
 
 $wpdb->query( $sql ); // @codingStandardsIgnoreLine

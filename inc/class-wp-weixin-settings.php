@@ -197,7 +197,7 @@ class WP_Weixin_Settings {
 			'publish_posts',
 			'wp-weixin',
 			array( $this, 'wp_weixin_options_page' ),
-			WP_WEIXIN_PLUGIN_URL . '/images/wechat.png'
+			WP_WEIXIN_PLUGIN_URL . 'images/wechat.png'
 		);
 	}
 
@@ -488,6 +488,8 @@ class WP_Weixin_Settings {
 		$ecommerce_description .= '<ul>';
 		$ecommerce_description .= '<li>' . $notify . '</li>';
 		$ecommerce_description .= '</ul>';
+
+		$ecommerce_description = apply_filters( 'wp_weixin_ecommerce_description', $ecommerce_description );
 
 		$this->settings_fields = array(
 			'main'      => array(

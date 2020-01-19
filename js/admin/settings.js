@@ -1,41 +1,4 @@
 /* global WpWeixin */
-( function( $ ) {
-	$.fn.currencyFormat = function() {
-		this.each( function() {
-			var val = this.value;
-			
-			if ( '' === val || '.' === val ) {
-				this.value = '';
-
-				return;
-			}
-
-			var split = val.split( '.' );
-
-			if ( '' === split[0] ) {
-				split[0]   = 0;
-				this.value = split.join( '.' );
-			}
-
-			if ( split[0].startsWith( 0 ) ) {
-				if ( split[0] !== '0' || split[1] ) {
-					split[0]   = parseInt( split[0] );
-					this.value = split.join( '.' );
-				}
-				
-			}
-
-			if ( split[1] && split[1].length > 2 ) {
-				split[1]   = split[1].substring( 0, 2 );
-				this.value = split.join( '.' );
-			}
-
-		} );
-
-		return this;
-	};
-} )( jQuery );
-
 jQuery( document ).ready( function( $ ) {
 	$( '.toplevel_page_wp-weixin .stuffbox form h2' ).each( function( idx, value ) {
 		var h2      = $( value ),
@@ -55,7 +18,7 @@ jQuery( document ).ready( function( $ ) {
 			}, 
 			auth: {
 				handle: $( '.wp_weixin-enable_auth-field input' ),
-				content: $( '.wp_weixin-force_wechat-field, .wp_weixin-force_follower-field, .wp_weixin-ecommerce_force_follower-field, .wp_weixin-show_bind_link-field, .wp_weixin-show_auth_link-field' )
+				content: $( '.requires-auth' )
 			}
 		},
 		forceResponderHandles = [
@@ -123,31 +86,15 @@ jQuery( document ).ready( function( $ ) {
 		$( this ).attr( 'type', 'password' );
 	} );
 
-	$( '#wp_weixin_qr_amount' ).on( 'keyup', function( e ) {
-		e.preventDefault();
-		$( this ).currencyFormat();
-	} );
-
-	$( '.qr-button' ).on( 'click', function( e ) {
+	$( '.qr-custom-button' ).on( 'click', function( e ) {
 		e.preventDefault();
 
-		var button 	    = $( this ),
-			img 	    = $( '#' + button.data( 'img' ) ),
-			url 	    = $( '#qr_url' ).val(),
-			data;
-
-		if ( button.hasClass( 'qr-payment-button' ) ) {
-			data = {
-				amount 	    : $( '#wp_weixin_qr_amount' ).val(),
-				fixed	    : $( '#wp_weixin_qr_amount_fixed' ).prop( 'checked' ),
-				productName : $( '#wp_weixin_qr_product_name' ).val(),
-				url 	    : img.data( 'default_url' )
-			};
-		} else {
-			data = {
+		var button = $( this ),
+			img    = $( '#' + button.data( 'img' ) ),
+			url    = $( '#qr_url' ).val(),
+			data   = {
 				url : url
 			};
-		}
 
 		data.action = 'wp_weixin_get_settings_qr';
 

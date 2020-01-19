@@ -6,10 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Weixin {
 
-	const MAX_QR_LIFETIME = 600;
+	const MAX_QR_LIFETIME         = 600;
+	const VERSION_REQUIRED_HEADER = 'WP Weixin minimum required version';
+	const VERSION_TESTED_HEADER   = 'WP Weixin tested up to';
 
-	public static $scripts = array();
-	public static $styles  = array();
+	public static $scripts   = array();
+	public static $styles    = array();
+	public static $ajax_safe = false;
 
 	protected $wechat;
 	protected $meta_keys;
@@ -51,6 +54,9 @@ class WP_Weixin {
 			add_filter( 'update_user_metadata', array( $this, 'filter_wechat_update_user_meta' ), 1, 5 );
 			// Add main query vars
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), PHP_INT_MIN + 5, 1 );
+			// Add WP Weixin plugin compatibility header
+			add_filter( 'extra_plugin_headers', array( $this, 'plugin_headers' ), 10, 1 );
+
 
 			if ( WP_Weixin_Settings::get_option( 'alter_userscreen' ) ) {
 				// Filter avatar - use the WeChat headimg if exists
@@ -404,13 +410,24 @@ class WP_Weixin {
 				$queried_object = get_queried_object();
 
 				if ( $queried_object instanceof WP_Post ) {
-					$title           = $queried_object->post_title;
-					$description     = $queried_object->post_excerpt;
+
+					$title = WP_Weixin_Metabox::get_meta( 'wechat_link_title', $queried_object );
+
+					if ( ! trim( $title ) ) {
+						$title = $queried_object->post_title . ' - ' . get_bloginfo( 'name' );
+					}
+
+					$description = WP_Weixin_Metabox::get_meta( 'wechat_link_description', $queried_object );
+
+					if ( ! trim( $description ) ) {
+						$description = strip_tags( $queried_object->post_excerpt );
+					}
+
 					$img_url         = get_the_post_thumbnail_url( $queried_object->ID );
 					$img_url         = ( $img_url ) ? $img_url : WP_Weixin_Settings::get_option( 'logo_url' );
 					$params['share'] = array(
-						'title'  => $title . ' - ' . get_bloginfo( 'name' ),
-						'desc'   => strip_tags( $description ),
+						'title'  => $title,
+						'desc'   => $description,
 						'link'   => get_permalink( $queried_object->ID ),
 						'imgUrl' => $img_url,
 					);
@@ -453,6 +470,13 @@ class WP_Weixin {
 		$vars[] = 'hash';
 
 		return $vars;
+	}
+
+	public function plugin_headers( $headers ) {
+		$headers[] = self::VERSION_REQUIRED_HEADER;
+		$headers[] = self::VERSION_TESTED_HEADER;
+
+		return $headers;
 	}
 
 	public function avatar( $avatar, $id_or_email, $size, $default, $alt ) {

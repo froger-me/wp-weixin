@@ -29,7 +29,10 @@ class WP_Weixin_Wechat_Singleton {
 					! $access_info['token'] ||
 					! $access_info['expiry']
 				) {
-					WP_Weixin::log( 'renewing token !' );
+					if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
+						WP_Weixin::log( 'renewing token !' );
+					}
+
 					self::renew_access_token();
 				}
 
@@ -43,7 +46,7 @@ class WP_Weixin_Wechat_Singleton {
 	public static function renew_access_token() {
 		$requesting_token = get_transient( 'wp_weixin_requesting_token' );
 
-		if ( ! $requesting_token && ! is_ajax() ) {
+		if ( ! $requesting_token && ( ! is_ajax() || WP_Weixin::$ajax_safe ) ) {
 			set_transient( 'wp_weixin_requesting_token', true, 60 );
 
 			$access_token = self::$wechat->getAccessToken( true );

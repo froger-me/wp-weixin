@@ -12,6 +12,16 @@ if ( ! function_exists( 'wp_weixin_is_wechat' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_weixin_ajax_safe' ) ) {
+
+	function wp_weixin_ajax_safe() {
+
+		WP_Weixin::$ajax_safe = true;
+	}
+}
+
+
+
 if ( ! function_exists( 'wp_weixin_get_user_by_openid' ) ) {
 
 	function wp_weixin_get_user_by_openid( $openid ) {

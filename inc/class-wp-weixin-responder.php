@@ -21,6 +21,11 @@ class WP_Weixin_Responder {
 				// Send templated message on subscription to the official account
 				add_action( 'wp_weixin_responder', array( $this, 'send_subscribe_message' ), 10, 1 );
 			}
+
+			// Default actions when subscribing to the Official Account
+			add_action( 'wp_weixin_responder', array( $this, 'oa_subscribe_event' ), PHP_INT_MIN + 10, 1 );
+			// Default actions when unsubscribing the Official Account
+			add_action( 'wp_weixin_responder', array( $this, 'oa_unsubscribe_event' ), PHP_INT_MIN + 10, 1 );
 		}
 	}
 
@@ -54,7 +59,7 @@ class WP_Weixin_Responder {
 
 		if (
 			isset( $request_data['event'], $request_data['fromusername'] ) &&
-			'subscribe' === $request_data['event']
+			('subscribe' === $request_data['event'] || 'CLICK' === $request_data['event'])
 		) {
 			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
 
@@ -66,7 +71,7 @@ class WP_Weixin_Responder {
 				$error         = $this->wechat->getError();
 
 				if ( ! $follower_info || $error ) {
-					WP_Weixin::log( __METHOD__, $error );
+					WP_Weixin::log( $error );
 
 					return;
 				}
@@ -74,6 +79,45 @@ class WP_Weixin_Responder {
 				$message = $this->get_follower_welcome_message( $follower_info, $user );
 
 				$this->wechat->response( 'news', $message );
+
+				$error = $this->wechat->getError();
+
+				if ( $error ) {
+					WP_Weixin::log( $error );
+				}
+
+				exit();
+			}
+		}
+	}
+
+	public function oa_unsubscribe_event( $request_data ) {
+
+		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'unsubscribe' === $request_data['event'] ) {
+			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
+
+			if ( $user ) {
+				$sessions = WP_Session_Tokens::get_instance( $user->ID );
+
+				$sessions->destroy_all();
+				update_user_meta( $user->ID, 'wx_follower', array(
+					'follower'  => false,
+					'timestamp' => time(),
+				) );
+			}
+		}
+	}
+
+	public function oa_subscribe_event( $request_data ) {
+
+		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'subscribe' === $request_data['event'] ) {
+			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
+
+			if ( $user ) {
+				update_user_meta( $user->ID, 'wx_follower', array(
+					'follower'  => true,
+					'timestamp' => time() + 3600,
+				) );
 			}
 		}
 	}
@@ -114,7 +158,7 @@ class WP_Weixin_Responder {
 		$request_data = $this->wechat->request();
 
 		if ( apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) ) ) {
-			WP_Weixin::log( __METHOD__, $request_data );
+			WP_Weixin::log( $request_data );
 		}
 
 		do_action( 'wp_weixin_responder', $request_data, $this->wechat );
@@ -145,7 +189,6 @@ class WP_Weixin_Responder {
 		$default_pic_url = WP_Weixin_Settings::get_option( 'welcome_image_url' );
 		$default_pic_url = filter_var( $default_pic_url, FILTER_VALIDATE_URL );
 		$default_pic_url = ( ! $default_pic_url ) ? WP_WEIXIN_PLUGIN_URL . 'images/default-welcome.png' : $default_pic_url;
-		$default_pic_url = apply_filters( 'wp_weixin_follower_default_welcome_pic_url', $default_pic_url, $before_subscription );
 
 		delete_user_meta( $user->ID, 'wp_weixin_before_subscription' );
 
@@ -154,9 +197,13 @@ class WP_Weixin_Responder {
 			if ( is_numeric( $before_subscription ) ) {
 				$post = get_post( absint( $before_subscription ) );
 
-				/* translators: 1:title of the post */
-				$description .= sprintf( __( ' Open to go back to "%1$s".', 'wp-weixin' ), $post->post_title );
-				$url          = get_permalink( $post );
+				if ( $post instanceof WP_Post ) {
+					/* translators: 1:title of the post */
+					$description    .= sprintf( __( ' Open to go back to "%1$s".', 'wp-weixin' ), $post->post_title );
+					$url             = get_permalink( $post );
+					$img_url         = get_the_post_thumbnail_url( $post->ID );
+					$default_pic_url = ( $img_url ) ? $img_url : $default_pic_url;
+				}
 			} else {
 				$description .= __( ' You may now use our services. Open to go back.', 'wp-weixin' );
 				$url          = $before_subscription;
@@ -171,14 +218,15 @@ class WP_Weixin_Responder {
 			}
 		}
 
-		$title       = apply_filters( 'wp_weixin_follower_welcome_title', $title, $before_subscription );
-		$description = apply_filters( 'wp_weixin_follower_welcome_description', $description, $before_subscription );
-		$url         = apply_filters( 'wp_weixin_follower_welcome_url', $url, $before_subscription );
-		$news        = array(
-			'Title'       => $title,
-			'Description' => $description,
-			'PicUrl'      => $default_pic_url,
-			'Url'         => $url,
+		$title           = apply_filters( 'wp_weixin_follower_welcome_title', $title, $before_subscription );
+		$description     = apply_filters( 'wp_weixin_follower_welcome_description', $description, $before_subscription );
+		$url             = apply_filters( 'wp_weixin_follower_welcome_url', $url, $before_subscription );
+		$default_pic_url = apply_filters( 'wp_weixin_follower_default_welcome_pic_url', $default_pic_url, $before_subscription );
+		$news            = array(
+			'title'       => $title,
+			'description' => $description,
+			'picurl'      => $default_pic_url,
+			'url'         => $url,
 		);
 
 		return array( $news );

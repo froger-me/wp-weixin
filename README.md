@@ -223,6 +223,7 @@ The functions listed below are made publicly available by the plugin for theme a
 
 Functions index:
 * [wp_weixin_is_wechat](#user-content-wp_weixin_is_wechat)
+* [wp_weixin_ajax_safe](#user-content-wp_weixin_ajax_safe)
 * [wp_weixin_get_user_by_openid](#user-content-wp_weixin_get_user_by_openid)
 * [wp_weixin_get_user_by_unionid](#user-content-wp_weixin_get_user_by_unionid)
 * [wp_weixin_get_wechat](#user-content-wp_weixin_get_wechat)
@@ -249,6 +250,16 @@ Wether the visitor is using the WeChat browser.
 
 **Return value**  
 > (bool) Wether the vistor is using the WeChat browser.  
+___
+
+#### wp_weixin_ajax_safe
+
+```php
+wp_weixin_ajax_safe();
+```
+
+**Description**  
+Call this function in a WordPress ajax action. Allow interactions with WeChat API during an ajax request.  
 ___
 
 #### wp_weixin_get_user_by_openid
@@ -955,6 +966,7 @@ Filters index:
 * [wp_weixin_locate_template_paths](#user-content-wp_weixin_locate_template_paths)
 * [wp_weixin_get_user_by_openid](#user-content-wp_weixin_get_user_by_openid)
 * [wp_weixin_pay_notify_results](#user-content-wp_weixin_pay_notify_results)
+* [wp_weixin_ecommerce_description](#user-content-wp_weixin_ecommerce_description)
 
 ___
 
@@ -1443,6 +1455,20 @@ array(
 ```
 ___
 
+#### wp_weixin_ecommerce_description
+
+```php
+apply_filters( 'wp_weixin_ecommerce_description', $ecommerce_description );
+```
+
+**Description**  
+Filter the description of the WeChat Pay Settings.
+
+**Parameters**  
+$ecommerce_description
+> (string) The description of the WeChat Pay Settings (HTML).
+___
+
 ## Templates
 
 The following template files are selected using the `locate_template()` and included with `load_template()` functions provided by WordPress. This means they can be overloaded in the active WordPress theme. Developers may place their custom template files in the following directories under the theme's folder (in order of selection priority):
@@ -1465,6 +1491,7 @@ Templates index:
 * [wp-weixin-bind-page](#user-content-wp-weixin-bind-page)
 * [wp-weixin-mobile-bind-check](#user-content-wp-weixin-mobile-bind-check)
 * [wp-weixin-public-info](#user-content-wp-weixin-public-info)
+* [wp-weixin-account-form-password-notice](#user-content-wp-weixin-account-form-password-notice)
 ___
 
 #### wp-weixin-subscribe
@@ -1607,6 +1634,15 @@ The template to output the WeChat public information - notably used when calling
 **Variables**  
 $wechat_info
 > (array) The WeChat public information. Value are all of type (string), with keys: `nickname`, `headimgurl`, `sex`, `language`, `city`, `province`, `country`, `unionid`.  
+___
+
+#### wp-weixin-account-form-password-notice
+
+```
+wp-weixin-account-form-password-notice.php
+```
+**Description**  
+The template of the notice to show under the form to change the user account password.  
 ___
 
 ## JavaScript
