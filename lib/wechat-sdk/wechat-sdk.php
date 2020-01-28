@@ -2382,13 +2382,8 @@ class Wechat_SDK {
 		$params['refund_fee']    = (int)($refund_fee * 100);
 		$params['op_user_id']    = $this->mch_id;
 		$params['sign']          = self::_getOrderMd5($params);
-		$data                    = $this->_array2Xml($params);
-		
-		WP_Weixin::log($data);
-		
+		$data                    = $this->_array2Xml($params);		
 		$data                    = $this->http(self::PAY_REFUND_ORDER_URL, $data, 'POST', true);
-		
-		WP_Weixin::log($data);
 
 		return self::parsePayRequest($data);
 	}
@@ -2802,6 +2797,8 @@ class Wechat_SDK {
 				return 'WeChat API: Invalid in-stock quantity';
 			case 40124:
 				return 'WeChat API: Membership card settings reached the limit of custom_field';
+			case 40125:
+				return 'WeChat API: Invalid appsecret';
 			case 40127:
 				return 'WeChat API: Coupon has been deleted by user or is in the process of being transferred';
 			case 40130:

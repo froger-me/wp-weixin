@@ -105,6 +105,10 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.3.6 =
+* WeChat SDK: Update error codes and descriptions
+* WC tested up to: 3.9.0
+
 = 1.3.5 =
 * WeChat SDK: Update error codes and descriptions
 * WeChat SDK: Add Broadcast methods (`mass_preview` `mass_to_users`, `mass_to_all_or_tag`, `mass_delete`, `mass_check_status`)
@@ -115,11 +119,12 @@ This section describes how to install the plugin and get it working.
 * WeChat SDK: response to erquests coming from WeChat handled using Customer Service interface instead of passive response
 * WeChat SDK: removed "event" ; added "voice", "mpnews", "video" and "menu" message types
 * Settings: decrease coupling with companion plugins
-* Add plugin version headers for companion plugins to check compatibility
-* Add `wp_weixin_ajax_safe()` function to allow WP Weixin to run during specific ajax requests
-* Add filter hook `wp_weixin_ecommerce_description` to allow extensions to customise the WeChat Pay Settings description.
-* Add check to output logs only when WordPress debug is activated
-* Add a notice on WooCommerce account edit page: WeChat registered users have an auto-generated password and it should be changed using the "Lost your password?" link in a web browser. 
+* Added plugin version headers for companion plugins to check compatibility
+* Added `wp_weixin_ajax_safe()` function to allow WP Weixin to run during specific ajax requests
+* Added filter hook `wp_weixin_ecommerce_description` to allow extensions to customise the WeChat Pay Settings description.
+* Added check to output logs only when WordPress debug is activated
+* Added a notice on WooCommerce account edit page: WeChat registered users have an auto-generated password and it should be changed using the "Lost your password?" link in a web browser.
+* Added a template to tell users how to change their password when their account has been created automatically after they visited the site with WeChat browser.
 * Added a metabox to override the title and description of WeChat links when sharing a post on WeChat.
 * Use user meta to save follower status and react to events using the responder instead of relying on transient and cookies.
 * Display the featured image of the post in previously visited if exists instead of default image when following with force follow
