@@ -149,7 +149,7 @@ class WP_Weixin_Wechat_Singleton {
 			update_option( 'wp_weixin_settings', $settings );
 		}
 
-		$configuration_fail = ! $appid || ! $secret || ( $encode && ! $aeskey ) || ( $responder && ! $token );
+		$configuration_fail = ! $appid || ! $secret || ( $responder && $encode && ! $aeskey ) || ( $responder && ! $token );
 		$configuration_fail = $configuration_fail || ( $ecommerce && ( ! $mch_id || ! $mch_key ) );
 
 		if ( $configuration_fail ) {

@@ -105,6 +105,9 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.3.7 =
+* Minor bugfix: WeChat Responder settings validation
+
 = 1.3.6 =
 * WeChat SDK: Update error codes and descriptions
 * WC tested up to: 3.9.0
