@@ -48,9 +48,10 @@ class WP_Weixin_Settings {
 
 			if ( $init_hooks ) {
 				// Handle multisite options
-				add_action( 'pre_update_option_wp_weixin_settings', array( $this, 'save_multisite_option' ), 10, 3 );
-				// Handle multisite options
 				add_action( 'option_wp_weixin_settings', array( $this, 'add_multisite_option' ), 10, 3 );
+
+				// Handle multisite options
+				add_filter( 'pre_update_option_wp_weixin_settings', array( $this, 'save_multisite_option' ), 10, 3 );
 			}
 		}
 

@@ -95,7 +95,7 @@ class Wechat_SDK {
 	const MASS_BY_USER = 'https://api.weixin.qq.com/cgi-bin/message/mass/send';
 	const MASS_DELETE  = 'https://api.weixin.qq.com/cgi-bin/message/mass/delete';
 	const MASS_PREVIEW = 'https://api.weixin.qq.com/cgi-bin/message/mass/preview';
-	const MASS_GET     = 'http://api.weixin.qq.com/cgi-bin/message/mass/get';
+	const MASS_GET     = 'https://api.weixin.qq.com/cgi-bin/message/mass/get';
 	/* Customer Service API */
 	const CS_SEND_MESSAGE = 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
 

@@ -59,7 +59,7 @@ class WP_Weixin_Responder {
 
 		if (
 			isset( $request_data['event'], $request_data['fromusername'] ) &&
-			('subscribe' === $request_data['event'] || 'CLICK' === $request_data['event'])
+			'subscribe' === $request_data['event']
 		) {
 			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
 

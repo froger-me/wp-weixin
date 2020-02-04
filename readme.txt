@@ -105,6 +105,11 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.3.8 =
+* Minor bugfix: WeChat Responder should not be responding to button click event
+* Minor bugfix: Change a call to `add_action` to `add_filter`
+* WeChat SDK: Update MASS_GET const - call https
+
 = 1.3.7 =
 * Minor bugfix: WeChat Responder settings validation
 
