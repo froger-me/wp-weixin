@@ -11,7 +11,7 @@
 	* [Multisite Settings](#user-content-multisite-settings)
 	* [WeChat Responder Settings](#user-content-wechat-responder-settings)
 	* [WeChat Pay Settings](#user-content-wechat-pay-settings)
-	* [Proxy Settings (beta)](#user-content-proxy-settings-beta)
+	* [Proxy Settings](#user-content-proxy-settings)
 	* [Miscellaneous Settings](#user-content-miscellaneous-settings)
 * [Multisite](#user-content-multisite)
 * [WeChat SDK](#user-content-wechat-sdk)
@@ -136,7 +136,7 @@ PEM certificate files path          | text      | The absolute path to the conta
 
 In addition to these settings, the plugin provides onscreen help for what values to input for the different URLs in the merchant account's API configuration screen.
 
-### Proxy Settings (beta)
+### Proxy Settings
 
 Name        | Type     | Description                              
 ----------- |:--------:| -----------------------------------------

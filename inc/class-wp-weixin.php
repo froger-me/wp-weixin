@@ -279,10 +279,17 @@ class WP_Weixin {
 		if ( empty( $template ) ) {
 			$constant_name = strtoupper( str_replace( '-', '_', $plugin_name ) . '_PLUGIN_PATH' );
 			$template      = ( defined( $constant_name ) ) ? constant( $constant_name ) . 'inc/templates/' . $template_name : '';
+		}
 
-			if ( $load && '' !== $template ) {
-				load_template( $template, $require_once );
-			}
+		$template = apply_filters(
+			'wp_weixin_locate_template',
+			$template,
+			$template_name,
+			str_replace( $template_name, '', $template )
+		);
+
+		if ( $load && '' !== $template ) {
+			load_template( $template, $require_once );
 		}
 
 		return $template;

@@ -105,6 +105,14 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.3.10 =
+* WC tested up to: 3.9.2
+* Fix a critical issue when enabling proxy (special thanks to @zhoufann9188 on GitHub)
+* Enhance template selection method
+
+= 1.3.9 =
+* WC tested up to: 3.9.1
+
 = 1.3.8 =
 * Minor bugfix: WeChat Responder should not be responding to button click event
 * Minor bugfix: Change a call to `add_action` to `add_filter`

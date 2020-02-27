@@ -1579,7 +1579,7 @@ class Wechat_SDK {
 		}
 
 		if ($this->proxy && !empty($this->proxyHost) && !empty($this->proxyPort)) {
-			$opts[CURLOPT_PROXY]     = $this->proxy;
+			$opts[CURLOPT_PROXY]     = $this->proxyHost;
 			$opts[CURLOPT_PROXYPORT] = $this->proxyPort;
 		}
 		$ch = curl_init();
