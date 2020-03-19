@@ -105,6 +105,12 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.3.11 =
+* Update interface strings - payment callback labels
+* WC tested up to: 4.0.0
+* Translation updates
+
+
 = 1.3.10 =
 * WC tested up to: 3.9.2
 * Fix a critical issue when enabling proxy (special thanks to @zhoufann9188 on GitHub)

@@ -484,8 +484,7 @@ class WP_Weixin_Settings {
 		}
 
 		$ecommerce_description .= '<br/>';
-		// translators: CN is 扫码回调链接
-		$ecommerce_description .= '<strong>' . __( 'QR Payment callback URL: ', 'wp-weixin' ) . '</strong>';
+		$ecommerce_description .= '<strong>' . __( 'Native Payment Callback URL: ', 'wp-weixin' ) . '</strong>';
 		$ecommerce_description .= '<ul>';
 		$ecommerce_description .= '<li>' . $notify . '</li>';
 		$ecommerce_description .= '</ul>';
