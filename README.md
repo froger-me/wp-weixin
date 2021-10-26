@@ -967,6 +967,7 @@ Filters index:
 * [wp_weixin_get_user_by_openid](#user-content-wp_weixin_get_user_by_openid)
 * [wp_weixin_pay_notify_results](#user-content-wp_weixin_pay_notify_results)
 * [wp_weixin_ecommerce_description](#user-content-wp_weixin_ecommerce_description)
+* [wp_weixin_wechat_share_params](#user-content-wp_weixin_wechat_share_params)
 
 ___
 
@@ -1467,6 +1468,30 @@ Filter the description of the WeChat Pay Settings.
 **Parameters**  
 $ecommerce_description
 > (string) The description of the WeChat Pay Settings (HTML).
+___
+
+#### wp_weixin_wechat_share_params
+
+```php
+apply_filters( 'wp_weixin_wechat_share_params', (array) $params, (mixed) $queried_object );
+```
+**Description**  
+Filter the parameters used to share a page.  
+
+**Parameters**  
+$params  
+> (array) An array of parameters used to share a page. Structure of the parameters:  
+
+```php
+array(
+	'title'  => $title,       // title of the page to show on the sharing widget when shared in chats and moments timeline
+	'desc'   => $description, // description of the page to show on the sharing widget when shared in chats
+	'link'   => $url,         // the destination URL
+	'imgUrl' => $img_url,     // the thumbnail of the the sharing widget
+);
+```  
+$queried_object
+> (mixed) the WordPress object queried when loading the page.
 ___
 
 ## Templates
