@@ -343,7 +343,7 @@ class WP_Weixin_Settings {
 	public function get_qr_hash() {
 		$amount           = filter_input( INPUT_POST, 'amount', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
 		$fixed            = filter_input( INPUT_POST, 'fixed', FILTER_VALIDATE_BOOLEAN );
-		$product_name     = filter_input( INPUT_POST, 'productName', FILTER_SANITIZE_STRING );
+		$product_name     = filter_input( INPUT_POST, 'productName', FILTER_UNSAFE_RAW );
 		$url              = filter_input( INPUT_POST, 'url', FILTER_VALIDATE_URL );
 		$base_payment_url = home_url( 'wp-weixin-pay/transfer/' );
 		$hash             = false;
@@ -833,7 +833,7 @@ class WP_Weixin_Settings {
 
 			if ( ! $show_auth_blog_id ) {
 				$this->settings_fields['multisite'][0]['type']  = 'raw_text';
-				$this->settings_fields['multisite'][0]['value'] = __( '<em>This option is not editable because it has been set using the following filter: </em>', 'wp-weixin' ) . '<code>wp_weixin_ms_auth_blog_id</code>';
+				$this->settings_fields['multisite'][0]['value'] = '<em>' . __( 'This option is not editable because it has been set using the following filter: ', 'wp-weixin' ) . '</em><code>wp_weixin_ms_auth_blog_id</code>';
 			}
 
 			if ( ! $show_pay_blog_id ) {
@@ -842,7 +842,7 @@ class WP_Weixin_Settings {
 					unset( $this->settings_fields['multisite'][1] );
 				} else {
 					$this->settings_fields['multisite'][1]['type']  = 'raw_text';
-					$this->settings_fields['multisite'][1]['value'] = __( '<em>This option is not editable because it has been set using the following filter: </em>', 'wp-weixin' ) . '<code>wp_weixin_ms_pay_blog_id</code>';
+					$this->settings_fields['multisite'][1]['value'] = '<em>' . __( 'This option is not editable because it has been set using the following filter: ', 'wp-weixin' ) . '</em><code>wp_weixin_ms_pay_blog_id</code>';
 				}
 			}
 		}
@@ -994,7 +994,7 @@ class WP_Weixin_Settings {
 
 		if ( ! empty( $url ) ) {
 			ob_start();
-			QRCode::png( $url, null, $quality, $size, $margin );
+			QRcode::png( $url, null, $quality, $size, $margin );
 
 			$qr = ob_get_contents();
 

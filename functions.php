@@ -20,8 +20,6 @@ if ( ! function_exists( 'wp_weixin_ajax_safe' ) ) {
 	}
 }
 
-
-
 if ( ! function_exists( 'wp_weixin_get_user_by_openid' ) ) {
 
 	function wp_weixin_get_user_by_openid( $openid ) {
@@ -123,7 +121,7 @@ if ( ! function_exists( 'wp_weixin_get_user_wechat_openid' ) ) {
 
 if ( ! function_exists( 'wp_weixin_get_auth_link' ) ) {
 
-	function wp_weixin_get_auth_link( $output = false, $target = '' ) {
+	function wp_weixin_get_auth_link( $output = false, $target = '', $class = '' ) {
 		$link = '';
 
 		if (
@@ -190,7 +188,7 @@ if ( ! function_exists( 'wp_weixin_unbind' ) ) {
 	}
 }
 
-if ( ! function_exists( 'wp_weixin_unbind' ) ) {
+if ( ! function_exists( 'wp_weixin_bind' ) ) {
 
 	function wp_weixin_bind( $user_id, $openid ) {
 		$bound = false;
@@ -203,5 +201,14 @@ if ( ! function_exists( 'wp_weixin_unbind' ) ) {
 		}
 
 		return $bound;
+	}
+}
+
+if ( ! function_exists( 'wp_weixin_is_follower' ) ) {
+
+	function wp_weixin_is_follower( $user_id ) {
+		$follower_meta = get_user_meta( $user_id, 'wx_follower', true );
+
+		return (bool) $follower_meta;
 	}
 }

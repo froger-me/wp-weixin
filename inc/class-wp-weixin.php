@@ -56,7 +56,8 @@ class WP_Weixin {
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), PHP_INT_MIN + 5, 1 );
 			// Add WP Weixin plugin compatibility header
 			add_filter( 'extra_plugin_headers', array( $this, 'plugin_headers' ), 10, 1 );
-
+			// Set wp_doing_ajax when using the API
+			add_filter( 'wp_doing_ajax', array( $this, 'wp_doing_ajax' ), 10, 1 );
 
 			if ( WP_Weixin_Settings::get_option( 'alter_userscreen' ) ) {
 				// Filter avatar - use the WeChat headimg if exists
@@ -96,14 +97,12 @@ class WP_Weixin {
 		set_transient( 'wp_weixin_flush', 1, 60 );
 		wp_cache_flush();
 
-		if ( ! get_option( 'wp_weixin_plugin_version' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-			$plugin_data = get_plugin_data( WP_WEIXIN_PLUGIN_FILE );
-			$version     = $plugin_data['Version'];
+		$plugin_data = get_plugin_data( WP_WEIXIN_PLUGIN_FILE );
+		$version     = $plugin_data['Version'];
 
-			update_option( 'wp_weixin_plugin_version', $version );
-		}
+		update_option( 'wp_weixin_plugin_version', $version );
 	}
 
 	public static function deactivate() {
@@ -122,7 +121,15 @@ class WP_Weixin {
 	public static function is_wechat_mobile() {
 		$is_wechat_mobile = false;
 
-		if ( false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger' ) ) {
+		if (
+			isset( $_SERVER['HTTP_USER_AGENT'] ) &&
+			false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger' ) &&
+			(
+				WP_WEIXIN_ALLOW_DESKTOP ||
+				false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'iPhone' ) ||
+				false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'Android' )
+			)
+		) {
 
 			foreach ( explode( ' ', $_SERVER['HTTP_USER_AGENT'] ) as $key => $value ) {
 
@@ -295,7 +302,7 @@ class WP_Weixin {
 		return $template;
 	}
 
-	public static function log( $expression, $extend_context = '') {
+	public static function log( $expression, $extend_context = '' ) {
 
 		if ( ! is_string( $expression ) ) {
 			$alternatives = array(
@@ -430,8 +437,13 @@ class WP_Weixin {
 						$description = strip_tags( $queried_object->post_excerpt );
 					}
 
-					$img_url         = get_the_post_thumbnail_url( $queried_object->ID );
-					$img_url         = ( $img_url ) ? $img_url : WP_Weixin_Settings::get_option( 'logo_url' );
+					$img_url = WP_Weixin_Metabox::get_meta( 'wechat_link_thumb_url', $queried_object );
+
+					if ( ! filter_var( $img_url, FILTER_VALIDATE_URL ) ) {
+						$img_url = get_the_post_thumbnail_url( $queried_object->ID );
+						$img_url = ( $img_url ) ? $img_url : WP_Weixin_Settings::get_option( 'logo_url' );
+					}
+
 					$params['share'] = array(
 						'title'  => $title,
 						'desc'   => $description,
@@ -440,9 +452,11 @@ class WP_Weixin {
 					);
 
 					$params['share'] = apply_filters( 'wp_weixin_wechat_share_params', $params['share'], $queried_object );
+				} else {
+					$params['share'] = apply_filters( 'wp_weixin_wechat_share_params', $params['share'], null );
 				}
 
-				wp_enqueue_script( 'wechat-api-script', '//res.wx.qq.com/open/js/jweixin-1.0.0.js', false, false );
+				wp_enqueue_script( 'wechat-api-script', '//res.wx.qq.com/open/js/jweixin-1.6.0.js', false, false );
 				wp_enqueue_script(
 					'wp-weixin-main-script',
 					WP_WEIXIN_PLUGIN_URL . 'js/main' . $js_ext,
@@ -486,6 +500,16 @@ class WP_Weixin {
 		return $headers;
 	}
 
+	public function wp_doing_ajax( $doing_ajax ) {
+		global $wp;
+
+		if ( isset( $wp->query_vars['__wp_weixin_api'] ) ) {
+			$doing_ajax = true;
+		}
+
+		return $doing_ajax;
+	}
+
 	public function avatar( $avatar, $id_or_email, $size, $default, $alt ) {
 		$user = false;
 
@@ -495,7 +519,7 @@ class WP_Weixin {
 		} elseif ( is_object( $id_or_email ) && $id_or_email instanceof WP_User ) {
 
 			if ( ! empty( $id_or_email->user_id ) ) {
-				$id   = absint( $id_or_email )->user_id;
+				$id   = $id_or_email->user_id;
 				$user = get_user_by( 'id', $id );
 			}
 		} elseif ( is_string( $id_or_email ) ) {
@@ -625,7 +649,7 @@ class WP_Weixin {
 			}
 		}
 
-		if ( ! $data['openid'] ) {
+		if ( ! is_array( $data ) || ! $data['openid'] ) {
 			$data = false;
 		}
 
@@ -638,7 +662,7 @@ class WP_Weixin {
 			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 
 			if ( ! WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
-				$meta = filter_input( INPUT_COOKIE, 'wx_openId-' . $auth_blog_id, FILTER_SANITIZE_STRING );
+				$meta = filter_input( INPUT_COOKIE, 'wx_openId-' . $auth_blog_id, FILTER_UNSAFE_RAW );
 			} else {
 				remove_filter( 'get_user_metadata', array( $this, 'filter_wechat_get_user_meta' ), 1 );
 
@@ -655,7 +679,10 @@ class WP_Weixin {
 			if ( $meta_key === $key ) {
 				$raw_data = json_decode( get_user_meta( $object_id, 'wp_weixin_rawdata', true ), true );
 				$raw_key  = str_replace( 'wp_weixin_', '', $key );
-				$check    = ( $single ) ? $raw_data[ $raw_key ] : array( $raw_data[ $raw_key ] );
+
+				if ( isset( $raw_data[ $raw_key ] ) ) {
+					$check = ( $single ) ? $raw_data[ $raw_key ] : array( $raw_data[ $raw_key ] );
+				}
 
 				break;
 			}
@@ -674,7 +701,7 @@ class WP_Weixin {
 			} else {
 				remove_filter( 'update_user_metadata', array( $this, 'filter_wechat_update_user_meta' ), 1 );
 
-				$result = update_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, $meta_value );
+				$result = update_user_meta( $object_id, 'wx_openid-' . $auth_blog_id, $meta_value );
 
 				add_filter( 'update_user_metadata', array( $this, 'filter_wechat_update_user_meta' ), 1, 5 );
 			}
@@ -736,7 +763,6 @@ class WP_Weixin {
 	public function handle_pay_notify() {
 		$error       = true;
 		$refund      = true;
-		$success     = false;
 		$pay_results = apply_filters( 'wp_weixin_pay_notify_results', array() );
 		$result      = false;
 

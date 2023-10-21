@@ -3,12 +3,12 @@
 Plugin Name: WP Weixin
 Plugin URI: https://github.com/froger-me/wp-weixin
 Description: WordPress WeChat integration
-Version: 1.3.11
+Version: 1.3.15
 Author: Alexandre Froger
 Author URI: https://froger.me
 Text Domain: wp-weixin
 Domain Path: /languages
-WC tested up to: 4.0.0
+WC tested up to: 8.2.1
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,6 +25,14 @@ if ( ! defined( 'WP_WEIXIN_PLUGIN_PATH' ) ) {
 
 if ( ! defined( 'WP_WEIXIN_PLUGIN_URL' ) ) {
 	define( 'WP_WEIXIN_PLUGIN_URL', plugin_dir_url( WP_WEIXIN_PLUGIN_FILE ) );
+}
+
+if ( ! defined( 'WP_WEIXIN_API_DISABLED' ) ) {
+	define( 'WP_WEIXIN_API_DISABLED', false );
+}
+
+if ( ! defined( 'WP_WEIXIN_ALLOW_DESKTOP' ) ) {
+	define( 'WP_WEIXIN_ALLOW_DESKTOP', false );
 }
 
 require_once WP_WEIXIN_PLUGIN_PATH . 'inc/class-wp-weixin.php';

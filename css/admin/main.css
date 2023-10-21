@@ -1,3 +1,9 @@
 .wp-wx-wp-account-edit svg {
     vertical-align: top;
 }
+
+#wechat_link_title,
+#wechat_link_description,
+#wechat_link_thumb_url {
+	width: 100%;
+}

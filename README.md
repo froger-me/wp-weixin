@@ -237,6 +237,7 @@ Functions index:
 * [wp_weixin_get_bind_link](#user-content-wp_weixin_get_bind_link)
 * [wp_weixin_unbind](#user-content-wp_weixin_unbind)
 * [wp_weixin_bind](#user-content-wp_weixin_bind)
+* [wp_weixin_is_follower](#user-content-wp_weixin_is_follower)
 ___
 
 #### wp_weixin_is_wechat
@@ -410,7 +411,7 @@ ___
 #### wp_weixin_get_auth_link
 
 ```php
-wp_weixin_get_auth_link( bool $output = false, string $target = '' );
+wp_weixin_get_auth_link( bool $output = false, string $target = '', $class = '' );
 ```
 **Description**  
 Get a link to the WeChat authentication page.  
@@ -422,6 +423,9 @@ $output
 
 $target
 > (string) The target of the link.
+
+$target
+> (string) The CSS class of the link.
 
 **Return value**  
 > (mixed) If `$output` is set to `true`, the link's markup - `false` otherwise. 
@@ -489,6 +493,22 @@ $open_id
 
 **Return value**  
 > (bool) Wether the account was bound.  
+___
+
+#### wp_weixin_is_follower
+
+```php
+wp_weixin_is_follower( int $user_id );
+```
+**Description**  
+Check whether the user with ID `$user_id` is a follower of the WeChat Official Account.
+
+**Parameters**  
+$user_id
+> (int) The ID of the user.
+
+**Return value**  
+> (bool) Wether the user follows the WeChat Official Account.
 ___
 
 ## Hooks - actions & filters
@@ -967,6 +987,7 @@ Filters index:
 * [wp_weixin_get_user_by_openid](#user-content-wp_weixin_get_user_by_openid)
 * [wp_weixin_pay_notify_results](#user-content-wp_weixin_pay_notify_results)
 * [wp_weixin_ecommerce_description](#user-content-wp_weixin_ecommerce_description)
+* [wp_weixin_subscribe_qr_url](#user-content-wp_weixin_subscribe_qr_url)
 
 ___
 
@@ -1467,6 +1488,20 @@ Filter the description of the WeChat Pay Settings.
 **Parameters**  
 $ecommerce_description
 > (string) The description of the WeChat Pay Settings (HTML).
+___
+
+#### wp_weixin_subscribe_qr_url
+
+```php
+apply_filters( 'wp_weixin_subscribe_qr_url', $wp_weixin_subscribe_qr_url );
+```
+
+**Description**  
+Filter the url for the WeChat Official Account subscription QR code.
+
+**Parameters**  
+$wp_weixin_subscribe_qr_url
+> (string) The url for the WeChat Official Account subscription QR code.
 ___
 
 ## Templates

@@ -16,16 +16,10 @@ class WP_Weixin_Responder {
 			add_action( 'parse_request', array( $this, 'parse_request' ), 0, 0 );
 			// Add responder endpoint
 			add_action( 'wp_weixin_endpoints', array( $this, 'add_endpoints' ), 0, 0 );
-
-			if ( WP_Weixin_Settings::get_option( 'follow_welcome' ) ) {
-				// Send templated message on subscription to the official account
-				add_action( 'wp_weixin_responder', array( $this, 'send_subscribe_message' ), 10, 1 );
-			}
-
 			// Default actions when subscribing to the Official Account
-			add_action( 'wp_weixin_responder', array( $this, 'oa_subscribe_event' ), PHP_INT_MIN + 10, 1 );
+			add_action( 'wp_weixin_responder', array( $this, 'oa_subscribe_event' ), PHP_INT_MIN + 100, 1 );
 			// Default actions when unsubscribing the Official Account
-			add_action( 'wp_weixin_responder', array( $this, 'oa_unsubscribe_event' ), PHP_INT_MIN + 10, 1 );
+			add_action( 'wp_weixin_responder', array( $this, 'oa_unsubscribe_event' ), PHP_INT_MIN + 100, 1 );
 		}
 	}
 
@@ -55,42 +49,6 @@ class WP_Weixin_Responder {
 		}
 	}
 
-	public function send_subscribe_message( $request_data ) {
-
-		if (
-			isset( $request_data['event'], $request_data['fromusername'] ) &&
-			'subscribe' === $request_data['event']
-		) {
-			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
-
-			if ( $user ) {
-				$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
-				$openid       = get_user_meta( $user->ID, 'wx_openid-' . $auth_blog_id, true );
-
-				$follower_info = $this->wechat->follower( $openid );
-				$error         = $this->wechat->getError();
-
-				if ( ! $follower_info || $error ) {
-					WP_Weixin::log( $error );
-
-					return;
-				}
-
-				$message = $this->get_follower_welcome_message( $follower_info, $user );
-
-				$this->wechat->response( 'news', $message );
-
-				$error = $this->wechat->getError();
-
-				if ( $error ) {
-					WP_Weixin::log( $error );
-				}
-
-				exit();
-			}
-		}
-	}
-
 	public function oa_unsubscribe_event( $request_data ) {
 
 		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'unsubscribe' === $request_data['event'] ) {
@@ -100,24 +58,49 @@ class WP_Weixin_Responder {
 				$sessions = WP_Session_Tokens::get_instance( $user->ID );
 
 				$sessions->destroy_all();
-				update_user_meta( $user->ID, 'wx_follower', array(
-					'follower'  => false,
-					'timestamp' => time(),
-				) );
+				update_user_meta(
+					$user->ID,
+					'wx_follower',
+					array(
+						'follower'  => false,
+						'timestamp' => time(),
+					)
+				);
 			}
 		}
 	}
 
 	public function oa_subscribe_event( $request_data ) {
 
-		if ( isset( $request_data['event'], $request_data['fromusername'] ) && 'subscribe' === $request_data['event'] ) {
-			$user = WP_Weixin::get_user_by_openid( $request_data['fromusername'] );
+		if (
+			isset( $request_data['event'], $request_data['fromusername'] ) &&
+			'subscribe' === $request_data['event']
+		) {
+			$openid        = $request_data['fromusername'];
+			$follower_info = $this->wechat->follower( $openid );
+			$error         = $this->wechat->getError();
+			$user          = WP_Weixin::get_user_by_openid( $openid );
 
-			if ( $user ) {
-				update_user_meta( $user->ID, 'wx_follower', array(
-					'follower'  => true,
-					'timestamp' => time() + 3600,
-				) );
+			if ( ! $error && ! $user && $follower_info ) {
+				$user = $this->register_user( $openid, $follower_info );
+
+				if ( $user ) {
+
+					if ( apply_filters( 'wp_weixin_follow_welcome', WP_Weixin_Settings::get_option( 'follow_welcome' ), $request_data ) ) {
+						$this->send_subscribe_message( $user );
+					}
+
+					update_user_meta(
+						$user->ID,
+						'wx_follower',
+						array(
+							'follower'  => true,
+							'timestamp' => time() + 3600,
+						)
+					);
+				}
+			} elseif ( $error ) {
+				WP_Weixin::log( $error );
 			}
 		}
 	}
@@ -166,17 +149,17 @@ class WP_Weixin_Responder {
 		exit();
 	}
 
-	protected function get_follower_welcome_message( $follower_info, $user ) {
-		global $sitepress;
+	protected function send_subscribe_message( $user ) {
+		$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
+		$openid       = get_user_meta( $user->ID, 'wx_openid-' . $auth_blog_id, true );
 
-		$language = isset( $follower_info['language'] ) ? $follower_info['language'] : false;
+		$follower_info = $this->wechat->follower( $openid );
+		$error         = $this->wechat->getError();
 
-		if ( $sitepress && $language ) {
-			$language = $sitepress->get_language_code_from_locale( $language );
+		if ( ! $follower_info || $error ) {
+			WP_Weixin::log( $error );
 
-			if ( $language ) {
-				$sitepress->switch_lang( $language );
-			}
+			return;
 		}
 
 		$name                = isset( $follower_info['nickname'] ) ? $follower_info['nickname'] : '';
@@ -212,7 +195,7 @@ class WP_Weixin_Responder {
 
 			if ( function_exists( 'wc_get_endpoint_url' ) ) {
 				$description .= __( ' Open now to access your personal account.', 'wp-weixin' );
-				$url          = home_url( wc_get_endpoint_url( 'my-account/' ) );
+				$url          = home_url( wc_get_endpoint_url( 'my-account' ) );
 			} else {
 				$description .= __( ' Open now to access our services.', 'wp-weixin' );
 			}
@@ -222,13 +205,65 @@ class WP_Weixin_Responder {
 		$description     = apply_filters( 'wp_weixin_follower_welcome_description', $description, $before_subscription );
 		$url             = apply_filters( 'wp_weixin_follower_welcome_url', $url, $before_subscription );
 		$default_pic_url = apply_filters( 'wp_weixin_follower_default_welcome_pic_url', $default_pic_url, $before_subscription );
-		$news            = array(
+		$message         = array(
 			'title'       => $title,
 			'description' => $description,
 			'picurl'      => $default_pic_url,
 			'url'         => $url,
 		);
 
-		return array( $news );
+		$this->wechat->response( 'news', array( $message ) );
+
+		$error = $this->wechat->getError();
+
+		if ( $error ) {
+			WP_Weixin::log( $error );
+		}
+	}
+
+	protected function register_user( $openid, $follower_info ) {
+		$user_info['openid']         = $openid;
+		$user_info['access_token']   = '';
+		$user_info['refresh_token']  = 0;
+		$user_info['refresh_expire'] = time() - 1000;
+		$openid_login_suffix         = ( is_multisite() ) ? strtolower( $user_info['openid'] ) : $user_info['openid'];
+		$parsed_url                  = wp_parse_url( home_url() );
+		$domain                      = ( isset( $parsed_url['host'] ) ) ? $parsed_url['host'] : 'example.com';
+		$email                       = $user_info['openid'] . '@' . $domain;
+
+		$user_data = array(
+			'user_login'   => 'wx-' . $openid_login_suffix,
+			'display_name' => $follower_info['nickname'],
+			'user_pass'    => wp_generate_password(),
+			'user_email'   => $email,
+			'nickname'     => $follower_info['nickname'],
+		);
+
+		$user_id = wp_insert_user( $user_data );
+
+		if ( is_wp_error( $user_id ) || ! $user_id ) {
+			$title    = '<h2>' . __( 'System error.', 'wp-weixin' ) . '</h2>';
+			$message  = '<p>' . __( 'Failed to create user, please refresh the page. ', 'wp-weixin' );
+			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
+
+			if ( is_wp_error( $user_id ) ) {
+				$message .= '<p> => ' . implode( '<br/> => ', esc_html( $user_id->get_error_messages() ) ) . '</p>';
+
+				WP_Weixin::log( $user_id->get_error_messages(), 'User creation failed' );
+			} else {
+				WP_Weixin::log( $user_data, 'User creation failed' );
+			}
+
+			wp_die( $title . $message ); // WPCS: XSS ok
+		}
+
+		$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
+
+		update_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, $user_info['openid'] );
+		update_user_meta( $user_id, 'wx_unionid', '' );
+		unset( $user_info['openid'] );
+		update_user_meta( $user_id, 'wp_weixin_rawdata', wp_json_encode( $user_info ) );
+
+		return get_user_by( 'ID', $user_id );
 	}
 }

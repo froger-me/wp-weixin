@@ -131,7 +131,7 @@ class WP_Weixin_Bind {
 	}
 
 	public function get_qr_src() {
-		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_UNSAFE_RAW );
 
 		if ( wp_verify_nonce( $nonce, 'wp_weixin_qr_code' ) ) {
 			$qr_id = bin2hex( openssl_random_pseudo_bytes( 10 ) );
@@ -162,7 +162,7 @@ class WP_Weixin_Bind {
 	}
 
 	public function heartbeat_pulse() {
-		$hash   = filter_input( INPUT_POST, 'hash', FILTER_SANITIZE_STRING );
+		$hash   = filter_input( INPUT_POST, 'hash', FILTER_UNSAFE_RAW );
 		$bundle = explode( '|', base64_decode( $hash ) ); // @codingStandardsIgnoreLine
 		$nonce  = array_pop( $bundle );
 		$qr_id  = array_pop( $bundle );
@@ -263,12 +263,12 @@ class WP_Weixin_Bind {
 	}
 
 	public function process_unbind( $ajax = true, $user_id = 0, $openid = '' ) {
-		$nonce   = ( $ajax ) ? filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ) : false;
+		$nonce   = ( $ajax ) ? filter_input( INPUT_POST, 'nonce', FILTER_UNSAFE_RAW ) : false;
 		$success = false;
 
 		if ( ! $ajax || wp_verify_nonce( $nonce, 'wp_weixin_unbind' ) ) {
-			$user_id = ( $ajax ) ? absint( filter_input( INPUT_POST, 'userid', FILTER_SANITIZE_STRING ) ) : $user_id;
-			$openid  = ( $ajax ) ? filter_input( INPUT_POST, 'openid', FILTER_SANITIZE_STRING ) : $openid;
+			$user_id = ( $ajax ) ? absint( filter_input( INPUT_POST, 'userid', FILTER_UNSAFE_RAW ) ) : $user_id;
+			$openid  = ( $ajax ) ? filter_input( INPUT_POST, 'openid', FILTER_UNSAFE_RAW ) : $openid;
 
 			wp_cache_delete( $user_id, 'user_meta' );
 

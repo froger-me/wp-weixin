@@ -86,6 +86,10 @@ class WP_Weixin_Metabox {
 		if ( isset( $_POST['wechat_link_description'] ) ) {
 			update_post_meta( $post_id, 'wechat_link_description', esc_attr( $_POST['wechat_link_description'] ) );
 		}
+
+		if ( isset( $_POST['wechat_link_thumb_url'] ) ) {
+			update_post_meta( $post_id, 'wechat_link_thumb_url', esc_attr( $_POST['wechat_link_thumb_url'] ) );
+		}
 	}
 
 	public function wechat_link_metabox( $post ) {
@@ -93,6 +97,7 @@ class WP_Weixin_Metabox {
 
 		$title       = self::get_meta( 'wechat_link_title' );
 		$description = self::get_meta( 'wechat_link_description' );
+		$thumb_url   = self::get_meta( 'wechat_link_thumb_url' );
 
 		require_once WP_WEIXIN_PLUGIN_PATH . 'inc/templates/admin/wechat-link-metabox.php';
 

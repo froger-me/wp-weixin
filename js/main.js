@@ -32,7 +32,7 @@ jQuery( function( $ ) {
 			} ).done( function( response ) {
 
 				if ( response.success ) {
-					window.location.reload( true ); 
+					window.location.reload( true );
 				} else {
 					 button.removeAttr( 'disabled' );
 				}
@@ -55,7 +55,7 @@ jQuery( function( $ ) {
 
 		if ( scanType ) {
 			get_qr_code( scanType );
-		
+
 			$( '.refresh' ).on( 'click', function( e ) {
 				e.preventDefault();
 				get_qr_code( scanType );
@@ -147,17 +147,17 @@ jQuery( function( $ ) {
 		window.wpWeixinShareTimelineSuccess = new CustomEvent( 'wpWeixinShareTimelineSuccess', {'detail' : data} );
 		window.dispatchEvent( window.wpWeixinShareTimelineSuccess );
 	};
-  
+
 	window.wpWeixinShareTimelineFailureTrigger = function( data ) {
 		window.wpWeixinShareTimelineFailure = new CustomEvent( 'wpWeixinShareTimelineFailure', {'detail' : data} );
 		window.dispatchEvent( window.wpWeixinShareTimelineFailure );
 	};
-  
+
 	window.wpWeixinShareAppMessageSuccessTrigger = function( data ) {
 		window.wpWeixinShareAppMessageSuccess = new CustomEvent( 'wpWeixinShareAppMessageSuccess', {'detail' : data} );
 		window.dispatchEvent( window.wpWeixinShareAppMessageSuccess );
 	};
-  
+
 	window.wpWeixinShareAppMessageFailureTrigger = function( data ) {
 		window.wpWeixinShareAppMessageFailure = new CustomEvent( 'wpWeixinShareAppMessageFailure', {'detail' : data} );
 		window.dispatchEvent( window.wpWeixinShareAppMessageFailure );
@@ -206,8 +206,8 @@ jQuery( function( $ ) {
 		nonceStr: WP_Weixin.weixin.nonceStr,
 		signature: WP_Weixin.weixin.signature,
 		jsApiList: [
-			'onMenuShareTimeline',
-			'onMenuShareAppMessage',
+			'updateTimelineShareData',
+			'updateAppMessageShareData',
 			'startRecord',
 			'stopRecord',
 			'onVoiceRecordEnd',
@@ -240,37 +240,43 @@ jQuery( function( $ ) {
 	} );
 
 	wx.ready( function() {
+		$(document.body).trigger('wp_weixin_ready');
 
 		$( '.wechat-close' ).on( 'click', function( e ) {
 			e.preventDefault();
 			wx.closeWindow();
 		} );
 
-		if ( WP_Weixin.share ) {
-			wx.onMenuShareTimeline( {
-				title: WP_Weixin.share.title,
-				link: WP_Weixin.share.link,
-				imgUrl: WP_Weixin.share.imgUrl,
-				success: function () {
-					window.wpWeixinShareTimelineSuccessTrigger( WP_Weixin.share );
-				},
-				cancel: function () {
-					window.wpWeixinShareTimelineFailureTrigger( WP_Weixin.share );
-				}
-			} );
+		$(document.body).on('wp_weixin_share_update', function() {
 
-			wx.onMenuShareAppMessage( {
-				title: WP_Weixin.share.title,
-				desc: WP_Weixin.share.desc,
-				link: WP_Weixin.share.link,
-				imgUrl: WP_Weixin.share.imgUrl,
-				success: function () {
-					window.wpWeixinShareAppMessageSuccessTrigger( WP_Weixin.share );
-				},
-				cancel: function () {
-					window.wpWeixinShareAppMessageFailureTrigger( WP_Weixin.share );
-				}
-			} );
-		}
+			if ( WP_Weixin.share ) {
+				wx.updateTimelineShareData( {
+					title: WP_Weixin.share.title,
+					link: WP_Weixin.share.link,
+					imgUrl: WP_Weixin.share.imgUrl,
+					success: function () {
+						window.wpWeixinShareTimelineSuccessTrigger( WP_Weixin.share );
+					},
+					cancel: function () {
+						window.wpWeixinShareTimelineFailureTrigger( WP_Weixin.share );
+					}
+				} );
+
+				wx.updateAppMessageShareData( {
+					title: WP_Weixin.share.title,
+					desc: WP_Weixin.share.desc,
+					link: WP_Weixin.share.link,
+					imgUrl: WP_Weixin.share.imgUrl,
+					success: function () {
+						window.wpWeixinShareAppMessageSuccessTrigger( WP_Weixin.share );
+					},
+					cancel: function () {
+						window.wpWeixinShareAppMessageFailureTrigger( WP_Weixin.share );
+					}
+				} );
+			}
+		});
+
+		$(document.body).trigger('wp_weixin_share_update');
 	} );
 } );

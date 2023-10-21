@@ -169,7 +169,7 @@ class Wechat_SDK {
 
 			$version_parts = explode('.', $version_browser);
 
-			if (count($version_parts) !== 3) {
+			if (count($version_parts) < 3) {
 				$this->setError('Invalid WeChat version format');
 
 				$is_wechat_mobile = false;
@@ -212,7 +212,7 @@ class Wechat_SDK {
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function checkBind() {
-		$echoStr = filter_input(INPUT_GET, 'echostr', FILTER_SANITIZE_STRING);
+		$echoStr = filter_input(INPUT_GET, 'echostr', FILTER_UNSAFE_RAW);
 
 		if ($echoStr) {
 
@@ -239,9 +239,9 @@ class Wechat_SDK {
 			return true;
 		}
 
-		$signature = filter_input(INPUT_GET, 'signature', FILTER_SANITIZE_STRING);
-		$timestamp = filter_input(INPUT_GET, 'timestamp', FILTER_SANITIZE_STRING);
-		$nonce     = filter_input(INPUT_GET, 'nonce', FILTER_SANITIZE_STRING);
+		$signature = filter_input(INPUT_GET, 'signature', FILTER_UNSAFE_RAW);
+		$timestamp = filter_input(INPUT_GET, 'timestamp', FILTER_UNSAFE_RAW);
+		$nonce     = filter_input(INPUT_GET, 'nonce', FILTER_UNSAFE_RAW);
 
 		if (empty($signature) || empty($timestamp) || empty($nonce)) {
 
@@ -766,6 +766,16 @@ class Wechat_SDK {
 				$data = $this->AESdecode($data['encrypt']);
 			}
 
+			if (!empty($data)) {
+
+				foreach ($data as $key => $value) {
+
+					if ($value instanceof SimpleXMLElement) {
+						$data[$key] = $this->json_encode($this->_extractXml($value), false);
+					}
+				}
+			}
+
 			return $this->data = $data;
 		} else {
 
@@ -812,7 +822,7 @@ class Wechat_SDK {
 
 		ob_start();
 
-		$serverProtocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING);
+		$serverProtocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_UNSAFE_RAW);
 
 		echo 'success';
 
@@ -1190,7 +1200,7 @@ class Wechat_SDK {
 	 * @return array|boolean
 	 */
 	public function getOauthAccessToken() {
-		$code = filter_input(INPUT_GET, 'code', FILTER_SANITIZE_STRING);
+		$code = filter_input(INPUT_GET, 'code', FILTER_UNSAFE_RAW);
 
 		if (!$code) {
 
@@ -1296,7 +1306,7 @@ class Wechat_SDK {
 		if (!isset($this->ticket)) {
 
 			if (!$this->qrcode($scene_id, $limit, $expire, $scene_str)) {
-			
+
 				return false;
 			}
 		}
@@ -1353,11 +1363,13 @@ class Wechat_SDK {
 
 	/**
 	 * JSON encode without escaping Chinese characters
-	 * @param  array $array Array to encode - default empty array
+	 * @param  array $array  Array to encode - default empty array
+	 * @param  bool  $pretty Whether to pretty print the JSON - default true
 	 * @return json
 	 */
-	public function json_encode($array = array()) {
-		$res = preg_replace_callback(
+	public function json_encode($array = array(), $pretty = true) {
+		$flag = ($pretty) ? JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE : JSON_UNESCAPED_UNICODE;
+		$res  = preg_replace_callback(
 			"#\\\u([0-9a-f]+)#i",
 			function($matches) {
 
@@ -1372,7 +1384,7 @@ class Wechat_SDK {
 					}
 				}
 			},
-			str_replace("\\/", "/", json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE))
+			str_replace("\\/", "/", json_encode($array, $flag))
 		);
 
 		return $res;
@@ -1490,16 +1502,16 @@ class Wechat_SDK {
 		}
 
 		$text = $text . $tmp;
-        
-        $ciphertext = openssl_encrypt(
-            $text,
-            'aes-256-cbc',
-            $key,
-            OPENSSL_RAW_DATA,
-            $iv
-        );
-        
-        return base64_encode($iv . $ciphertext);
+
+		$ciphertext = openssl_encrypt(
+			$text,
+			'aes-256-cbc',
+			$key,
+			OPENSSL_RAW_DATA,
+			$iv
+		);
+
+		return base64_encode($iv . $ciphertext);
 	}
 
 	/**
@@ -2401,7 +2413,7 @@ class Wechat_SDK {
 		$params['sign']         = self::_getOrderMd5($params);
 		$data                   = $this->_array2Xml($params);
 		$data                   = $this->http(self::REFUND_QUERY_URL, $data, 'POST');
-		
+
 		return self::parsePayRequest($data);
 	}
 
@@ -2418,10 +2430,10 @@ class Wechat_SDK {
 		$params['appid']     = $this->mch_appid;
 		$params['mch_id']    = $this->mch_id;
 		$params['nonce_str'] = self::getNonceStr();
-		$params['sign']      = self::_getOrderMd5($params);		
+		$params['sign']      = self::_getOrderMd5($params);
 		$data                = $this->_array2Xml($params);
 		$data                = $this->http(self::DOWNLOAD_BILL_URL, $data, 'POST');
-		
+
 		return self::parsePayRequest($data, false);
 	}
 
@@ -2441,11 +2453,11 @@ class Wechat_SDK {
 	 * Send shared red envelope
 	 * @param 	string 	$openid User OpenID
 	 * @param 	string 	$money 	Amount in RMB
-	 * @param 	integer $num 	Red envelop divisor - default 1
 	 * @param 	array 	$data 	Red envelope data
+	 * @param 	integer $num 	Red envelop divisor - default 1
 	 * @return 	boolean|array
 	 */
-	public function sendGroupRedPack($openid, $money, $num = 1, $data) {
+	public function sendGroupRedPack($openid, $money, $data, $num = 1) {
 		$params['mch_billno']   = self::createMchBillNo();
 		$params['send_name']    = $data['send_name'];
 		$params['re_openid']    = $openid;

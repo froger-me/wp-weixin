@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 }
 
-$active_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
+$active_tab = filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW );
 $active_tab = ( $active_tab ) ? $active_tab : 'settings';
 
 if ( ! current_user_can( 'manage_options' ) ) {
@@ -44,7 +44,7 @@ $base_qr_url = home_url( 'wp-weixin/get-qrcode/hash/' );
 				</form>
 			</div>
 		</div>
-		<?php do_action( 'wp_weixin_after_main_settings_inner' ); ?>
+			<?php do_action( 'wp_weixin_after_main_settings_inner' ); ?>
 		<?php endif; ?>
 	<?php endif; ?>	
 	<?php do_action( 'wp_weixin_after_main_settings' ); ?>

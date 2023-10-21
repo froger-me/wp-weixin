@@ -18,6 +18,10 @@ class WP_Weixin_Wechat {
 
 	public function __call( $method_name, $args ) {
 
+		if ( (bool) constant( 'WP_WEIXIN_API_DISABLED' ) ) {
+			return false;
+		}
+
 		if ( method_exists( $this->wechat, $method_name ) ) {
 			$result = call_user_func_array( array( $this->wechat, $method_name ), $args );
 			$error  = $this->wechat->getError();

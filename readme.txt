@@ -2,7 +2,7 @@
 Contributors: frogerme
 Tags: wechat, wechat share, 微信, 微信分享, 微信公众号
 Requires at least: 4.9.5
-Tested up to: 5.3.2
+Tested up to: 6.4
 Stable tag: trunk
 Requires PHP: 7.0
 License: GPLv3
@@ -36,7 +36,7 @@ This plugin adds the following major features to WordPress:
 * **Menu integration:** allows to set the Official Account menus in WordPress when the WeChat Responder is enabled.
 * **Welcome message:** sends a welcome message in WeChat when a user follows the Official Account ; allows to do so with WordPress when the WeChat Responder is enabled.
 * **Developers - WeChat Responder:** for developers to receive and respond to calls made by WeChat's API.
-* **Developers - WeChat JS_SDK:** the `wx` JavaScript global variable is pre-configured with a signed package to leverage the JavaScript SDK of WeChat in WordPress themes more easily. 
+* **Developers - WeChat JS_SDK:** the `wx` JavaScript global variable is pre-configured with a signed package to leverage the JavaScript SDK of WeChat in WordPress themes more easily.
 
 Compatible with [WooCommerce](https://wordpress.org/plugins/woocommerce/), [WooCommerce Multilingual](https://wordpress.org/plugins/woocommerce-multilingual/), [WPML](http://wpml.org/), [Ultimate Member](https://wordpress.org/plugins/ultimate-member/), [WordPress Multisite](https://codex.wordpress.org/Create_A_Network), and [many caching plugins](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-object-cache-considerations).
 
@@ -46,7 +46,7 @@ Compatible with [WooCommerce](https://wordpress.org/plugins/woocommerce/), [WooC
 * [WP Weixin Pay](https://wordpress.org/plugins/wp-weixin-pay): an extension to enable money transfers to an Official Account.
 * [WP Weixin Broadcast](https://wordpress.org/plugins/wp-weixin-broadcast/): broadcast WordPress posts to WeChat followers, directly from WordPress
 
-Developers are encouraged to build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available [functions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-functions), [actions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-actions) and [filters](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-filters), or directly [make use of the provided SDK](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-wechat-sdk).  
+Developers are encouraged to build plugins and themes integrated with WeChat with WP Weixin as a core, leveraging its publicly available [functions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-functions), [actions](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-actions) and [filters](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-filters), or directly [make use of the provided SDK](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-wechat-sdk).
 
 *If you wish to see your plugin added to this list, please [contact the author](https://froger.me/wp-content/uploads/2018/04/wechat-qr.png).*
 
@@ -54,19 +54,19 @@ Developers are encouraged to build plugins and themes integrated with WeChat wit
 
 WP Weixin supports multisite installs of WordPress, wether using domain/subdomains or subdirectories. It can even support multiple Official Accounts, provided the proper filters are implemented. For more information, see [a more extensive description of the multisite settings](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-multisite-settings), and the [Multisite section of the documentation](https://github.com/froger-me/wp-weixin/blob/master/README.md#user-content-multisite).
 
-Unlike some plugins (commercial, obfuscated, and with dubious security standards), WP Weixin does not and will not rely on a crossdomain script dumped at the root of WordPress, but prefers to leverage the standard WordPress functions, actions and filters. 
+Unlike some plugins (commercial, obfuscated, and with dubious security standards), WP Weixin does not and will not rely on a crossdomain script dumped at the root of WordPress, but prefers to leverage the standard WordPress functions, actions and filters.
 
 ### Troubleshoot, feature requests and 3rd party integration
 
-Unlike most WeChat integration plugins, WP Weixin and its companion plugins published by the same author are provided for free.  
+Unlike most WeChat integration plugins, WP Weixin and its companion plugins published by the same author are provided for free.
 
-WP Weixin is regularly updated, and bug reports are welcome, preferably on [Github](https://github.com/froger-me/wp-weixin/issues). Each bug report will be addressed in a timely manner, but issues reported on WordPress may take significantly longer to receive a response.  
+WP Weixin is regularly updated, and bug reports are welcome, preferably on [Github](https://github.com/froger-me/wp-weixin/issues). Each bug report will be addressed in a timely manner, but issues reported on WordPress may take significantly longer to receive a response.
 
-WP Weixin and all the companion plugins have been tested with the latest version of WordPress - in case of issue, please ensure you are able to reproduce it with a default installation of WordPress, Storefront theme if WooCommerce is active, and any of the aforementioned supported plugins if used before reporting a bug.  
+WP Weixin and all the companion plugins have been tested with the latest version of WordPress - in case of issue, please ensure you are able to reproduce it with a default installation of WordPress, Storefront theme if WooCommerce is active, and any of the aforementioned supported plugins if used before reporting a bug.
 
-Feature requests (such as "it would be nice to have XYZ") or 3rd party integration requests (such as "it is not working with XYZ plugin" or "it is not working with my theme") for WP Weixin and all its companion plugins will be considered only after receiving a red envelope (红包) of a minimum RMB 500 on WeChat (guarantee of best effort, no guarantee of result). 
+Feature requests (such as "it would be nice to have XYZ") or 3rd party integration requests (such as "it is not working with XYZ plugin" or "it is not working with my theme") for WP Weixin and all its companion plugins will be considered only after receiving a red envelope (红包) of a minimum RMB 500 on WeChat (guarantee of best effort, no guarantee of result).
 
-To add the author on WeChat, click [here](https://froger.me/wp-content/uploads/2018/04/wechat-qr.png), scan the WeChat QR code, and add "WP Weixin" as a comment in your contact request.  
+To add the author on WeChat, click [here](https://froger.me/wp-content/uploads/2018/04/wechat-qr.png), scan the WeChat QR code, and add "WP Weixin" as a comment in your contact request.
 
 == Upgrade Notice ==
 
@@ -85,9 +85,9 @@ This section describes how to install the plugin and get it working.
 3. Edit plugin settings
 
 == Screenshots ==
- 
+
 1. The main settings to integrate WordPress with WeChat.
-2. The WeChat Responder settings (for developers) and the proxy settings (beta).
+2. The WeChat Responder settings (for developers) and the proxy settings.
 3. Other settings.
 4. The screen shown in classic browser when "Force WeChat mobile" is checked in the main settings.
 5. The welcome message sent to a new subscriber when the WeChat Responder is active (customisable via filters).
@@ -104,6 +104,33 @@ This section describes how to install the plugin and get it working.
 16. The interface to setup the WeChat Official Account menu when the WeChat Responder is active.
 
 == Changelog ==
+
+= 1.3.15 =
+* Fix user avatar
+* WordPress tested up to: 6.4
+* Added `WP_WEIXIN_API_DISABLED` constant to prevent calling WeChat API when set to `true`
+* Minor cosmetic improvements - admin interface
+* Added `wp_weixin_is_follower` function
+* Check existence of several `$_SERVER` values before using them
+* Ultimate Member compatibility improvements
+* Optimise refresh user info
+* Fix: save alternate thumbnail URL for WeChat Share
+* Revamp responder: better event handling, pre-register user upon following the OA, optimization
+* Update codebase with `wp_doing_ajax` filter
+* Add `$class` parameter to `wp_weixin_get_auth_link`
+* Added `WP_WEIXIN_ALLOW_DESKTOP` constant to turn off WeChat desktop reztriction
+* Use `wx.updateTimelineShareData` and `wx.updateAppMessageShareData` instead of `updateTimelineShareData` and `updateAppMessageShareData`
+* Minor improvements, fixes, and compatibility updates
+
+= 1.3.14 =
+* Call `'wp_login'` action when automatically logging in with the WeChat browser
+
+= 1.3.13 =
+* Make sure not to show frontend error on default login page
+
+= 1.3.12 =
+* Support JS-SDK `jweixin-1.4.0.js`
+* WordPress tested up to: 5.4.1
 
 = 1.3.11 =
 * Update interface strings - payment callback labels
