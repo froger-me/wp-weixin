@@ -96,15 +96,12 @@ class Wechat_SDK {
 	const MASS_DELETE  = 'https://api.weixin.qq.com/cgi-bin/message/mass/delete';
 	const MASS_PREVIEW = 'https://api.weixin.qq.com/cgi-bin/message/mass/preview';
 	const MASS_GET     = 'https://api.weixin.qq.com/cgi-bin/message/mass/get';
-	/* Customer Service API */
-	const CS_SEND_MESSAGE = 'https://api.weixin.qq.com/cgi-bin/message/custom/send';
 
 	private $token;
 	private $appid;
 	private $secret;
 	private $access_token;
 	private $access_token_expire;
-	private $user_token;
 	private $debug = false;
 	private $data  = array();
 	private $send  = array();
@@ -117,8 +114,7 @@ class Wechat_SDK {
 	private $mch_appid;
 	private $mch_id;
 	private $payKey;
-	private $pemCert;
-	private $pemKey;
+	private $pem;
 	private $pemPath;
 	private $proxy;
 	private $proxyPort;
@@ -222,7 +218,7 @@ class Wechat_SDK {
 			} else {
 
 				exit('Access Denied!');
-			}	
+			}
 		}
 
 		return true;
@@ -244,7 +240,6 @@ class Wechat_SDK {
 		$nonce     = filter_input(INPUT_GET, 'nonce', FILTER_UNSAFE_RAW);
 
 		if (empty($signature) || empty($timestamp) || empty($nonce)) {
-
 			return false;
 		}
 
@@ -273,15 +268,12 @@ class Wechat_SDK {
 		$access_token = $this->access_token;
 
 		if (!empty($access_token) && !$force) {
-
 			return $this->access_token;
 		} else {
 
 			if ($this->requestAccessToken()) {
-
 				return $this->access_token;
 			} else {
-
 				return false;
 			}
 		}
@@ -302,7 +294,6 @@ class Wechat_SDK {
 	 * @author, chen shushu <cjango@163.com>
 	 */
 	public function getAccessTokenExpiry() {
-
 		return ($this->access_token_expire) ? $this->access_token_expire : false;
 	}
 
@@ -337,11 +328,9 @@ class Wechat_SDK {
 
 				return $this->access_token;
 			} else {
-
 				return false;
 			}
 		} else {
-
 			return false;
 		}
 	}
@@ -390,10 +379,8 @@ class Wechat_SDK {
 		$res     = $this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -436,13 +423,12 @@ class Wechat_SDK {
 	public function tags() {
 		$url     = self::TAG_GET_URL . '?access_token='.$this->getAccessToken();
 		$jsonStr = $this->http($url);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result['tags'];
 		} else {
-
 			return false;
 		}
 	}
@@ -468,13 +454,12 @@ class Wechat_SDK {
 		$params  = $this->json_encode($params);
 		$url     = self::TAG_CREATE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result['tag'];
 		} else {
-
 			return false;
 		}
 	}
@@ -497,18 +482,17 @@ class Wechat_SDK {
 			'tag' => array(
 				'id'   => $tag_id,
 				'name' => $name,
-			)
+			),
 		);
 		$params  = $this->json_encode($params);
 		$url     = self::TAG_UPDATE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -527,13 +511,12 @@ class Wechat_SDK {
 		$params  = $this->json_encode($params);
 		$url     = self::TAG_DELETE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -565,7 +548,8 @@ class Wechat_SDK {
 		}
 
 		$jsonStr = $this->http($url, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
 			$data = $this->result['data']['openid'];
@@ -576,7 +560,6 @@ class Wechat_SDK {
 
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -650,10 +633,8 @@ class Wechat_SDK {
 		$res     = $this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result['user_info_list'];
 		} else {
-
 			return false;
 		}
 	}
@@ -677,13 +658,12 @@ class Wechat_SDK {
 		$params  = $this->json_encode($params);
 		$url     = self::TAG_ID_USER_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result['tagid_list'];
 		} else {
-
 			return false;
 		}
 	}
@@ -712,10 +692,8 @@ class Wechat_SDK {
 		$res     = $this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -744,10 +722,8 @@ class Wechat_SDK {
 		$res     = $this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -778,7 +754,6 @@ class Wechat_SDK {
 
 			return $this->data = $data;
 		} else {
-
 			return false;
 		}
 	}
@@ -818,8 +793,6 @@ class Wechat_SDK {
 
 		$this->$type($content);
 
-		$response = 'success';
-
 		ob_start();
 
 		$serverProtocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_UNSAFE_RAW);
@@ -837,15 +810,14 @@ class Wechat_SDK {
 		flush();
 
 		$params  = $this->json_encode($this->data);
-		$url     = self::CS_SEND_MESSAGE . '?access_token=' . $this->getAccessToken();
+		$url     = self::CUSTOM_SEND_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -858,7 +830,9 @@ class Wechat_SDK {
 	 */
 	public function getSHA1($encrypt_msg, $nonce) {
 		$array = array($encrypt_msg, $this->token, time(), $nonce);
+
 		sort($array, SORT_STRING);
+
 		$str = implode($array);
 
 		return sha1($str);
@@ -915,7 +889,7 @@ class Wechat_SDK {
 			$articles[$key]['url']         = $value['url'];
 
 			if ($key >= 1) {
-				break; 
+				break;
 			} // Maximum 1 news
 		}
 
@@ -928,9 +902,7 @@ class Wechat_SDK {
 	 */
 	private function voice($voice) {
 		$content = array();
-
 		$content['media_id'] = $voice['media_id'];
-
 		$this->data['voice'] = $content;
 	}
 
@@ -955,9 +927,7 @@ class Wechat_SDK {
 	 */
 	private function mpnews($mpnews) {
 		$content = array();
-
 		$content['media_id'] = $mpnews['media_id'];
-
 		$this->data['mpnews'] = $content;
 	}
 
@@ -1046,13 +1016,12 @@ class Wechat_SDK {
 		$params = $this->json_encode($content);
 		$url    = self::TEMPLATE_SEND_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -1080,13 +1049,12 @@ class Wechat_SDK {
 		$params  = $this->json_encode($this->send);
 		$url     = self::CUSTOM_SEND_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -1139,11 +1107,11 @@ class Wechat_SDK {
 	 * @param string $content Music content
 	 */
 	private function sendmusic($music) {
-		list ( 
-			$music['title'], 
-			$music['description'], 
-			$music['musicurl'], 
-			$music['hqmusicurl'], 
+		list (
+			$music['title'],
+			$music['description'],
+			$music['musicurl'],
+			$music['hqmusicurl'],
 			$music['thumb_media_id']
 		) = $music;
 		$this->send['music'] = $music;
@@ -1179,7 +1147,6 @@ class Wechat_SDK {
 	 * @return 	string 	Authentication redirect URL
 	 */
 	public function getOAuthRedirect($callback, $state = '', $scope = 'snsapi_base') {
-
 		return self::OAUTH_AUTHORIZE_URL . '?appid=' . $this->appid . '&redirect_uri=' . rawurlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
 	}
 
@@ -1191,7 +1158,6 @@ class Wechat_SDK {
 	 * @return 	string 	QR Code authentication redirect URL
 	 */
 	public function getOAuthQR($callback, $state = '', $scope = 'snsapi_base') {
-
 		return self::QR_AUTHORIZATION_URL . '?appid='.$this->appid . '&redirect_uri=' . rawurlencode($callback) . '&response_type=code&scope=' . $scope . '&state=' . $state . '#wechat_redirect';
 	}
 
@@ -1203,7 +1169,6 @@ class Wechat_SDK {
 		$code = filter_input(INPUT_GET, 'code', FILTER_UNSAFE_RAW);
 
 		if (!$code) {
-
 			return false;
 		}
 
@@ -1214,13 +1179,12 @@ class Wechat_SDK {
 			'grant_type' => 'authorization_code',
 		);
 		$jsonStr = $this->http(self::OAUTH_USER_TOKEN_URL, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1237,13 +1201,12 @@ class Wechat_SDK {
 			'grant_type'    => 'refresh_token',
 		);
 		$jsonStr = $this->http(self::OAUTH_REFRESH_URL, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1261,13 +1224,12 @@ class Wechat_SDK {
 			'lang'         => 'zh_CN',
 		);
 		$jsonStr = $this->http(self::GET_USER_INFO_URL, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1282,13 +1244,12 @@ class Wechat_SDK {
 			'type'         => 'jsapi',
 		);
 		$jsonStr = $this->http(self::JSAPI_TICKET_URL, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result['ticket'];
 		} else {
-
 			return false;
 		}
 	}
@@ -1296,17 +1257,16 @@ class Wechat_SDK {
 	/**
 	 * Get parametric QR code image URL
 	 * @param  integer $scene_id 	Scene value - temporary code: 32 bits (integer); permanent code: no more than 1,000 - default null
-	 * @param  boolean $limit    	true for temporary QR code, false for permanent - default true
-	 * @param  integer $expire   	QR code validity time - up to 1,800 seconds - default 1,800
 	 * @param  string  $scene_str   Scene value - up to 64 characters - default empty string
+	 * @param  boolean $limit    	true for temporary QR code, false for permanent - default true
+	 * @param  integer $expire   	QR code validity time - up to 2592000 seconds - default 2592000
 	 * @return string|boolean
 	 */
-	public function getQRUrl($scene_id = null, $limit = true, $expire = 1800, $scene_str = '') {
+	public function getQRUrl($scene_id = null, $scene_str = '', $limit = true, $expire = 2592000 ) {
 
 		if (!isset($this->ticket)) {
 
-			if (!$this->qrcode($scene_id, $limit, $expire, $scene_str)) {
-
+			if (!$this->qrcode($scene_id, $scene_str, $limit, $expire)) {
 				return false;
 			}
 		}
@@ -1317,24 +1277,40 @@ class Wechat_SDK {
 	/**
 	 * Generate parametric QR code
 	 * @param  integer $scene_id 	Scene value - temporary code: 32 bits (integer); permanent code: no more than 1,000 - default null
-	 * @param  boolean $limit    	true for temporary QR code, false for permanent - default true
-	 * @param  integer $expire   	QR code validity time - up to 1,800 seconds - default 1,800
 	 * @param  string  $scene_str   Scene value - up to 64 characters - default empty string
+	 * @param  boolean $limit    	true for temporary QR code, false for permanent - default true
+	 * @param  integer $expire   	QR code validity time - up to 2,592,000 seconds - default 2592000
 	 * @return string|boolean
 	 */
-	private function qrcode($scene_id = null, $limit = true, $expire = 1800, $scene_str = '') {
+	private function qrcode($scene_id = null, $scene_str = '', $limit = true, $expire = 2592000) {
 
-		if (!$scene_id && (empty($scene_str) || strlen($scene_str) > 64)) {
-			$this->setError('Invalid scene_str');
-
-			return false;
-		} else if (!$scene_id || !is_numeric($scene_id) || $scene_id > 100000 || $scene_id < 1) {
-			$this->setError('Invalid scene_id');
+		if (!$scene_id && empty($scene_str)) {
+			$this->setError('Invalid scene_id and scene_str');
 
 			return false;
 		}
 
-		$params['action_name'] = $limit ? 'QR_SCENE' : 'QR_LIMIT_SCENE';
+		if ($scene_id) {
+
+			if (!is_numeric($scene_id) || $scene_id > 100000 || $scene_id < 1) {
+				$this->setError('Invalid scene_id');
+
+				return false;
+			}
+		}
+
+		if ($scene_str) {
+
+			if (strlen($scene_str) > 64) {
+				$this->setError('Invalid scene_str');
+
+				return false;
+			}
+		}
+
+		$action_name = $limit ? 'QR_' : 'QR_LIMIT_';
+		$action_name .= $scene_str ? 'STR_SCENE' : 'SCENE';
+		$params['action_name'] = $action_name;
 
 		if ($limit) {
 			$params['expire_seconds'] = $expire;
@@ -1350,13 +1326,12 @@ class Wechat_SDK {
 		$params  = $this->json_encode($params);
 		$url     = self::QRCODE_URL . '?access_token=' . $this->getAccessToken();
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->ticket = $this->result['ticket'];
 		} else {
-
 			return false;
 		}
 	}
@@ -1377,7 +1352,6 @@ class Wechat_SDK {
 					$current_encoding = mb_detect_encoding($match, 'auto');
 
 					if ($current_encoding !== 'UTF-8') {
-
 						return iconv($current_encoding, 'UTF-8', $match);
 					} else {
 						return $match;
@@ -1438,7 +1412,6 @@ class Wechat_SDK {
 		$key            = base64_decode($this->AESKey);
 		$ciphertext_dec = base64_decode($encrypted);
 		$iv             = substr($key, 0, 16);
-
 		$decrypted = openssl_decrypt(
 			$ciphertext_dec,
 			'aes-256-cbc',
@@ -1472,7 +1445,6 @@ class Wechat_SDK {
 
 			return false;
 		} else {
-
 			return $this->_extractXml($xml_content);
 		}
 	}
@@ -1502,7 +1474,6 @@ class Wechat_SDK {
 		}
 
 		$text = $text . $tmp;
-
 		$ciphertext = openssl_encrypt(
 			$text,
 			'aes-256-cbc',
@@ -1609,7 +1580,6 @@ class Wechat_SDK {
 
 			return false;
 		} else {
-
 			return $data;
 		}
 	}
@@ -1619,7 +1589,6 @@ class Wechat_SDK {
 	 * @return bool
 	 */
 	public function cert_files_exist() {
-
 		return file_exists( $this->pemPath . $this->pem . '_cert.pem' ) && file_exists( $this->pemPath . $this->pem . '_key.pem' );
 	}
 
@@ -1659,13 +1628,12 @@ class Wechat_SDK {
 		}
 
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1682,13 +1650,12 @@ class Wechat_SDK {
 			'media_id'     => $media_id,
 		);
 		$jsonStr = $this->http($url, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1703,13 +1670,12 @@ class Wechat_SDK {
 
 		$params  = $this->json_encode($articles);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1760,13 +1726,12 @@ class Wechat_SDK {
 		}
 
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1781,13 +1746,12 @@ class Wechat_SDK {
 
 		$params  = $this->json_encode($articles);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1804,13 +1768,12 @@ class Wechat_SDK {
 		);
 		$params  = $this->json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1827,13 +1790,12 @@ class Wechat_SDK {
 		);
 		$params  = $this->json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return true;
 		} else {
-
 			return false;
 		}
 	}
@@ -1847,13 +1809,12 @@ class Wechat_SDK {
 			'access_token' => $this->getAccessToken(),
 		);
 		$jsonStr = $this->http(self::MATERIAL_COUNT_URL, $params);
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1874,13 +1835,12 @@ class Wechat_SDK {
 		$url     = self::MATERIAL_LIST_URL . '?access_token=' . $this->getAccessToken();
 		$params  = $this->json_encode($params);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1920,16 +1880,14 @@ class Wechat_SDK {
 
 		$payload[$message_type] = $message;
 		$payload['msgtype']     = $message_type;
-
 		$params  = $this->json_encode($payload);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -1971,16 +1929,14 @@ class Wechat_SDK {
 
 		$payload[$message_type] = $message;
 		$payload['msgtype']     = $message_type;
-
 		$params  = $this->json_encode($payload);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -2035,13 +1991,12 @@ class Wechat_SDK {
 
 		$params  = $this->json_encode($payload);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -2068,13 +2023,12 @@ class Wechat_SDK {
 		);
 		$params  = $this->json_encode($payload);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -2092,13 +2046,12 @@ class Wechat_SDK {
 		);
 		$params  = $this->json_encode($payload);
 		$jsonStr = $this->http($url, $params, 'POST');
-		$res     = $this->parseJson($jsonStr);
+
+		$this->parseJson($jsonStr);
 
 		if (false === $this->getError()) {
-
 			return $this->result;
 		} else {
-
 			return false;
 		}
 	}
@@ -2149,7 +2102,6 @@ class Wechat_SDK {
 			if ($data['return_code'] === 'SUCCESS') {
 
 				if ($data['result_code'] === 'SUCCESS') {
-
 					return $data['code_url'];
 				} else {
 					$this->setError($data['err_code_des'], $data['err_code']);
@@ -2215,7 +2167,6 @@ class Wechat_SDK {
 			if ($data['return_code'] === 'SUCCESS') {
 
 				if ($data['result_code'] === 'SUCCESS') {
-
 					return $data['mweb_url'];
 				} else {
 					$this->setError($data['err_code_des'], $data['err_code']);
@@ -2281,7 +2232,6 @@ class Wechat_SDK {
 			if ($data['return_code'] === 'SUCCESS') {
 
 				if ($data['result_code'] === 'SUCCESS') {
-
 					return array(
 						'payment_params' => $this->createPayParams($data['prepay_id']),
 						'prepay_id'      => $data['prepay_id'],
@@ -2394,14 +2344,14 @@ class Wechat_SDK {
 		$params['refund_fee']    = (int)($refund_fee * 100);
 		$params['op_user_id']    = $this->mch_id;
 		$params['sign']          = self::_getOrderMd5($params);
-		$data                    = $this->_array2Xml($params);		
+		$data                    = $this->_array2Xml($params);
 		$data                    = $this->http(self::PAY_REFUND_ORDER_URL, $data, 'POST', true);
 
 		return self::parsePayRequest($data);
 	}
 
 	/**
-	 * Get Local order refund status from the WeChat payment interface 
+	 * Get Local order refund status from the WeChat payment interface
 	 * @param  string $orderId Local order ID
 	 * @return boolean|array
 	 */
@@ -2444,7 +2394,7 @@ class Wechat_SDK {
 	private function createMchBillNo() {
 		$micro = microtime(true) * 100;
 		$micro = ceil($micro);
-		$rand  = substr($micro, -8) . \Tools\String::randNumber(0,99);
+		$rand  = substr($micro, -8) . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
 
 		return $this->mch_id . date('Ymd') . $rand;
 	}
@@ -2546,7 +2496,6 @@ class Wechat_SDK {
 			if ($checkSign) {
 
 				if (!self::_checkSign($data)) {
-
 					return false;
 				}
 			}
@@ -2613,7 +2562,6 @@ class Wechat_SDK {
 
 			return false;
 		} else {
-
 			return true;
 		}
 	}
@@ -2652,10 +2600,8 @@ class Wechat_SDK {
 	public function getError() {
 
 		if ( empty($this->errorCode)) {
-
 			return false;
 		} elseif ('local' === $this->errorCode) {
-
 			return array('code' => null, 'message' => $this->error);
 		}
 

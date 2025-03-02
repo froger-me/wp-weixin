@@ -65,7 +65,7 @@ class WP_Weixin_Wechat_Singleton {
 		$message = __( 'WP Weixin is not ready. ', 'wp-weixin' );
 		$link    = '<a href="' . admin_url( '?page=wp-weixin' ) . '">' . __( 'Edit configuration', 'wp-weixin' ) . '</a>';
 
-		echo sprintf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . self::$error ); // WPCS: XSS ok
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . self::$error ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/*******************************************************************
@@ -109,7 +109,7 @@ class WP_Weixin_Wechat_Singleton {
 			'expiry' => $token_expiry,
 		);
 
-		if ( isset( $settings['wp_weixin_custom_token_persistence'] ) && $settings['custom_token_persistence'] ) {
+		if ( isset( $settings['wp_weixin_custom_token_persistence'] ) && $settings['wp_weixin_custom_token_persistence'] ) {
 
 			if ( ! has_action( 'wp_weixin_save_access_info' ) ) {
 
@@ -128,23 +128,22 @@ class WP_Weixin_Wechat_Singleton {
 	}
 
 	protected static function get_wechat_config( $access_token, $token_expiry ) {
-		$settings   = get_option( 'wp_weixin_settings' );
-		$appid      = isset( $settings['wp_weixin_appid'] ) && ! empty( 'wp_weixin_appid' ) ? $settings['wp_weixin_appid'] : null;
-		$secret     = isset( $settings['wp_weixin_secret'] ) && ! empty( 'wp_weixin_secret' ) ? $settings['wp_weixin_secret'] : null;
-		$force_auth = isset( $settings['wp_weixin_force_auth'] ) ? (bool) $settings['wp_weixin_force_auth'] : null;
-		$responder  = isset( $settings['wp_weixin_responder'] ) ? (bool) $settings['wp_weixin_responder'] : null;
-		$token      = isset( $settings['wp_weixin_token'] ) && ! empty( 'wp_weixin_token' ) ? $settings['wp_weixin_token'] : null;
-		$encode     = isset( $settings['wp_weixin_encode'] ) ? (bool) $settings['wp_weixin_encode'] : null;
-		$aeskey     = isset( $settings['wp_weixin_aeskey'] ) && ! empty( 'wp_weixin_aeskey' ) ? $settings['wp_weixin_aeskey'] : null;
-		$ecommerce  = isset( $settings['wp_weixin_ecommerce'] ) && ! empty( 'wp_weixin_ecommerce' ) ? $settings['wp_weixin_ecommerce'] : null;
-		$mch_appid  = isset( $settings['wp_weixin_mch_appid'] ) && ! empty( 'wp_weixin_mch_appid' ) ? $settings['wp_weixin_mch_appid'] : null;
-		$mch_id     = isset( $settings['wp_weixin_mch_id'] ) && ! empty( 'wp_weixin_mch_id' ) ? $settings['wp_weixin_mch_id'] : null;
-		$mch_key    = isset( $settings['wp_weixin_mch_key'] ) && ! empty( 'wp_weixin_mch_key' ) ? $settings['wp_weixin_mch_key'] : null;
-		$proxy      = isset( $settings['wp_weixin_proxy'] ) ? (bool) $settings['wp_weixin_proxy'] : null;
-		$host       = isset( $settings['wp_weixin_proxy_host'] ) && ! empty( 'wp_weixin_proxy_host' ) ? $settings['wp_weixin_proxy_host'] : null;
-		$port       = isset( $settings['wp_weixin_proxy_port'] ) && ! empty( 'wp_weixin_proxy_port' ) ? $settings['wp_weixin_proxy_port'] : null;
-		$pem        = isset( $settings['wp_weixin_pem'] ) && ! empty( 'wp_weixin_pem' ) ? $settings['wp_weixin_pem'] : 'apiclient';
-		$pem_path   = isset( $settings['wp_weixin_pem_path'] ) && ! empty( 'wp_weixin_pem_path' ) ? $settings['wp_weixin_pem_path'] : null;
+		$settings  = get_option( 'wp_weixin_settings' );
+		$appid     = isset( $settings['wp_weixin_appid'] ) && ! empty( 'wp_weixin_appid' ) ? $settings['wp_weixin_appid'] : null;
+		$secret    = isset( $settings['wp_weixin_secret'] ) && ! empty( 'wp_weixin_secret' ) ? $settings['wp_weixin_secret'] : null;
+		$responder = isset( $settings['wp_weixin_responder'] ) ? (bool) $settings['wp_weixin_responder'] : null;
+		$token     = isset( $settings['wp_weixin_token'] ) && ! empty( 'wp_weixin_token' ) ? $settings['wp_weixin_token'] : null;
+		$encode    = isset( $settings['wp_weixin_encode'] ) ? (bool) $settings['wp_weixin_encode'] : null;
+		$aeskey    = isset( $settings['wp_weixin_aeskey'] ) && ! empty( 'wp_weixin_aeskey' ) ? $settings['wp_weixin_aeskey'] : null;
+		$ecommerce = isset( $settings['wp_weixin_ecommerce'] ) && ! empty( 'wp_weixin_ecommerce' ) ? $settings['wp_weixin_ecommerce'] : null;
+		$mch_appid = isset( $settings['wp_weixin_mch_appid'] ) && ! empty( 'wp_weixin_mch_appid' ) ? $settings['wp_weixin_mch_appid'] : null;
+		$mch_id    = isset( $settings['wp_weixin_mch_id'] ) && ! empty( 'wp_weixin_mch_id' ) ? $settings['wp_weixin_mch_id'] : null;
+		$mch_key   = isset( $settings['wp_weixin_mch_key'] ) && ! empty( 'wp_weixin_mch_key' ) ? $settings['wp_weixin_mch_key'] : null;
+		$proxy     = isset( $settings['wp_weixin_proxy'] ) ? (bool) $settings['wp_weixin_proxy'] : null;
+		$host      = isset( $settings['wp_weixin_proxy_host'] ) && ! empty( 'wp_weixin_proxy_host' ) ? $settings['wp_weixin_proxy_host'] : null;
+		$port      = isset( $settings['wp_weixin_proxy_port'] ) && ! empty( 'wp_weixin_proxy_port' ) ? $settings['wp_weixin_proxy_port'] : null;
+		$pem       = isset( $settings['wp_weixin_pem'] ) && ! empty( 'wp_weixin_pem' ) ? $settings['wp_weixin_pem'] : 'apiclient';
+		$pem_path  = isset( $settings['wp_weixin_pem_path'] ) && ! empty( 'wp_weixin_pem_path' ) ? $settings['wp_weixin_pem_path'] : null;
 
 		if ( ! isset( $settings['wp_weixin_pem'] ) ) {
 			$settings['wp_weixin_pem'] = 'apiclient';
@@ -170,7 +169,6 @@ class WP_Weixin_Wechat_Singleton {
 					'token'     => $token,
 					'ecommerce' => $ecommerce,
 					'mch_id'    => $mch_id,
-					'ecommerce' => $ecommerce,
 					'mch_key'   => $mch_key,
 				);
 
@@ -179,7 +177,7 @@ class WP_Weixin_Wechat_Singleton {
 			}
 		}
 
-		$options = [
+		$options = array(
 			'token'               => $token,
 			'appid'               => $appid,
 			'secret'              => $secret,
@@ -195,7 +193,7 @@ class WP_Weixin_Wechat_Singleton {
 			'proxyPort'           => $port,
 			'pem'                 => $pem,
 			'pemPath'             => trailingslashit( $pem_path ),
-		];
+		);
 
 		return $options;
 	}
@@ -205,13 +203,13 @@ class WP_Weixin_Wechat_Singleton {
 		$message  = '<p>' . __( 'WP Weixin is not configured properly. ', 'wp-weixin' );
 		$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-		wp_die( $title . $message ); // WPCS: XSS ok
+		wp_die( $title . $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	protected static function set_error( $context, $error_vars = null ) {
 
 		if ( is_array( $error_vars ) && ! empty( $error_vars ) ) {
-			extract( $error_vars ); // @codingStandardsIgnoreLine
+			extract( $error_vars ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 		}
 
 		$error = '<ul>';
@@ -239,5 +237,4 @@ class WP_Weixin_Wechat_Singleton {
 
 		self::$error = $error;
 	}
-
 }

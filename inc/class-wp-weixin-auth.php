@@ -105,7 +105,7 @@ class WP_Weixin_Auth {
 
 			if ( 'wechat-auth-qr' === $action && ! WP_Weixin::is_wechat_mobile() ) {
 				$hash    = isset( $wp->query_vars['hash'] ) ? $wp->query_vars['hash'] : false;
-				$bundle  = explode( '|', base64_decode( $hash ) ); // @codingStandardsIgnoreLine
+				$bundle  = explode( '|', base64_decode( $hash ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 				$nonce   = array_pop( $bundle );
 				$qr_id   = array_pop( $bundle );
 				$blog_id = ( is_multisite() ) ? get_current_blog_id() : null;
@@ -196,7 +196,7 @@ class WP_Weixin_Auth {
 			$needs_auth = $needs_auth && strpos( $path, 'admin-ajax.php' ) === false;
 		}
 
-		$needs_auth = $needs_auth && ! current_user_can( 'administrator' );
+		$needs_auth = $needs_auth && ! current_user_can( 'manage_options' );
 
 		return $needs_auth;
 	}
@@ -210,24 +210,6 @@ class WP_Weixin_Auth {
 			add_filter( 'auth_cookie_expiration', array( $this, 'oauth_cookie' ), 1, 3 );
 		} elseif ( ! $is_wechat_mobile && $is_auth_needed ) {
 			add_action( 'template_redirect', array( $this, 'show_browser_qr' ), 0, 0 );
-		}
-
-		if ( is_plugin_active( 'open-social/open-social.php' ) ) {
-
-			if ( ! isset( $_GET['connect'] ) || 'wechat' === $_GET['connect'] ) { //@codingStandardsIgnoreLine
-
-				if ( isset( $_GET['connect'] ) ) { //@codingStandardsIgnoreLine
-					unset( $_GET['connect'] ); //@codingStandardsIgnoreLine
-				}
-
-				if ( isset( $_GET['code'] ) ) { //@codingStandardsIgnoreLine
-					unset( $_GET['code'] );
-				}
-
-				if ( isset( $_GET['state'] ) ) { //@codingStandardsIgnoreLine
-					unset( $_GET['state'] );
-				}
-			}
 		}
 	}
 
@@ -248,7 +230,7 @@ class WP_Weixin_Auth {
 					$message  = '<p>' . __( 'Invalid CSRF token. Please refresh the page. ', 'wp-weixin' );
 					$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-					wp_die( $title . $message ); // WPCS: XSS ok
+					wp_die( wp_kses_post( $title . $message ) );
 				}
 			} else {
 				$this->pre_oauth();
@@ -261,7 +243,7 @@ class WP_Weixin_Auth {
 		}
 	}
 
-	public function oauth_cookie( $length, $user_id, $remember ) {
+	public function oauth_cookie( $length, $user_id, $remember ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		if ( $this->expire_length ) {
 			$length = time() + (int) $this->expire_length;
@@ -302,7 +284,7 @@ class WP_Weixin_Auth {
 				$qr_url = apply_filters( 'wp_weixin_subscribe_qr_url', get_transient( 'wp_weixin_subscribe_qr_url' ) );
 
 				if ( ! $qr_url ) {
-					$qr_url = $this->wechat->getQRUrl( 1, false, 0, 'wp_wexin_subscribe' );
+					$qr_url = $this->wechat->getQRUrl( 1, 'wp_wexin_subscribe', false );
 
 					set_transient( 'wp_weixin_subscribe_qr_url', $qr_url, 3600 );
 				}
@@ -363,7 +345,7 @@ class WP_Weixin_Auth {
 
 		$blog_id     = ( is_multisite() ) ? get_current_blog_id() : null;
 		$current_url = get_home_url( $blog_id, $wp->request );
-		$hash        = base64_encode( $current_url . '|' . wp_create_nonce( 'wp_weixin_qr_code' ) ); // @codingStandardsIgnoreLine
+		$hash        = WP_Weixin_Settings::encode_url( $current_url . '|' . wp_create_nonce( 'wp_weixin_qr_code' ) );
 		$page_qr_src = get_home_url( $blog_id, 'wp-weixin/get-qrcode/hash/' . $hash );
 
 		return $page_qr_src;
@@ -412,14 +394,13 @@ class WP_Weixin_Auth {
 		return $access;
 	}
 
-	public function auth_link( $output = true, $class = '', $target = '' ) {
+	public function auth_link( $output = true, $_class = '', $target = '' ) {
 
 		if ( get_current_user_id() ) {
-
 			return;
 		}
 
-		$class = ( 'login_footer' === current_filter() ) ? 'wp-wx-login-form' : $class;
+		$class = ( 'login_footer' === current_filter() ) ? 'wp-wx-login-form' : $_class;
 
 		set_query_var( 'class', $class );
 		set_query_var( 'target', $target );
@@ -430,7 +411,7 @@ class WP_Weixin_Auth {
 		$html = ob_get_clean();
 
 		if ( $output ) {
-			echo $html; // WPCS: XSS ok
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return ( $output ) ? $html : false;
@@ -438,7 +419,7 @@ class WP_Weixin_Auth {
 
 	public function heartbeat_pulse() {
 		$hash   = filter_input( INPUT_POST, 'hash', FILTER_UNSAFE_RAW );
-		$bundle = explode( '|', base64_decode( $hash ) ); // @codingStandardsIgnoreLine
+		$bundle = explode( '|', base64_decode( $hash ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		$nonce  = array_pop( $bundle );
 		$qr_id  = array_pop( $bundle );
 
@@ -471,7 +452,7 @@ class WP_Weixin_Auth {
 
 		if ( wp_verify_nonce( $nonce, 'wp_weixin_qr_code' ) ) {
 			$qr_id = bin2hex( openssl_random_pseudo_bytes( 10 ) );
-			$hash  = base64_encode( $qr_id . '|' . wp_create_nonce( 'wp_weixin_qr_code' ) ); // @codingStandardsIgnoreLine
+			$hash  = base64_encode( $qr_id . '|' . wp_create_nonce( 'wp_weixin_qr_code' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 
 			set_transient(
 				'wp_weixin_qr_' . $qr_id,
@@ -532,7 +513,7 @@ class WP_Weixin_Auth {
 		return $template;
 	}
 
-	public function add_login_scripts( $hook ) {
+	public function add_login_scripts( $hook ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 		$css_ext = ( $debug ) ? '.css' : '.min.css';
 		$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'css/admin/login' . $css_ext );
@@ -560,7 +541,7 @@ class WP_Weixin_Auth {
 
 		$html = ob_get_clean();
 
-		echo $html; // WPCS: XSS ok
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/*******************************************************************
@@ -610,7 +591,7 @@ class WP_Weixin_Auth {
 
 			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-			wp_die( $title . $message ); // WPCS: XSS ok
+			wp_die( wp_kses_post( $title . $message ) );
 		}
 
 		$access_token        = $oauth_access_token_info['access_token'];
@@ -759,7 +740,7 @@ class WP_Weixin_Auth {
 
 			$message .= __( 'If the problem persists, please contact an administrator.', 'wp-weixin' ) . '</p>';
 
-			wp_die( $title . $message ); // WPCS: XSS ok
+			wp_die( wp_kses_post( $title . $message ) );
 		}
 
 		$user_info['access_token']   = $access_token;
@@ -790,7 +771,7 @@ class WP_Weixin_Auth {
 				WP_Weixin::log( $user_data, 'User creation failed' );
 			}
 
-			wp_die( $title . $message ); // WPCS: XSS ok
+			wp_die( wp_kses_post( $title . $message ) );
 		}
 
 		$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
@@ -884,7 +865,7 @@ class WP_Weixin_Auth {
 		}
 
 		if ( false !== $image ) {
-			$src = 'data:image/jpg;base64,' . base64_encode( $image ); // @codingStandardsIgnoreLine
+			$src = 'data:image/jpg;base64,' . base64_encode( $image ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		}
 
 		$this->qr_subscribe_src = $src;
@@ -1009,7 +990,7 @@ class WP_Weixin_Auth {
 		// Match Dingbats
 		$regex_dingbats = '/[\x{2700}-\x{27BF}]/u';
 		$clean_text     = preg_replace( $regex_dingbats, '', $clean_text );
+
 		return $clean_text;
 	}
-
 }

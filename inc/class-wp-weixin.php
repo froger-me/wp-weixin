@@ -144,7 +144,7 @@ class WP_Weixin {
 						$message  = '<p>' . __( 'Please update WeChat to a more recent version ', 'wp-weixin' );
 						$message .= __( '(minimum compatible version: 6.5.8)', 'wp-weixin' );
 
-						wp_die( $title . $message ); // WPCS: XSS ok
+						wp_die( $title . $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					} else {
 						$is_wechat_mobile = true;
 					}
@@ -262,7 +262,7 @@ class WP_Weixin {
 		$wp_styles->queue = self::$styles;
 	}
 
-	public static function locate_template( $template_name, $load = false, $require_once = true, $plugin_name = '' ) {
+	public static function locate_template( $template_name, $load = false, $required_once = true, $plugin_name = '' ) {
 
 		if ( ! empty( $plugin_name ) ) {
 			$plugin_name = trailingslashit( $plugin_name );
@@ -280,7 +280,7 @@ class WP_Weixin {
 		$template    = locate_template(
 			apply_filters( 'wp_weixin_locate_template_paths', $paths, $plugin_name ),
 			$load,
-			$require_once
+			$required_once
 		);
 
 		if ( empty( $template ) ) {
@@ -296,7 +296,7 @@ class WP_Weixin {
 		);
 
 		if ( $load && '' !== $template ) {
-			load_template( $template, $require_once );
+			load_template( $template, $required_once );
 		}
 
 		return $template;
@@ -434,7 +434,7 @@ class WP_Weixin {
 					$description = WP_Weixin_Metabox::get_meta( 'wechat_link_description', $queried_object );
 
 					if ( ! trim( $description ) ) {
-						$description = strip_tags( $queried_object->post_excerpt );
+						$description = wp_strip_all_tags( $queried_object->post_excerpt );
 					}
 
 					$img_url = WP_Weixin_Metabox::get_meta( 'wechat_link_thumb_url', $queried_object );
@@ -456,7 +456,7 @@ class WP_Weixin {
 					$params['share'] = apply_filters( 'wp_weixin_wechat_share_params', $params['share'], null );
 				}
 
-				wp_enqueue_script( 'wechat-api-script', '//res.wx.qq.com/open/js/jweixin-1.6.0.js', false, false );
+				wp_enqueue_script( 'wechat-api-script', '//res.wx.qq.com/open/js/jweixin-1.6.0.js', false, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter
 				wp_enqueue_script(
 					'wp-weixin-main-script',
 					WP_WEIXIN_PLUGIN_URL . 'js/main' . $js_ext,
@@ -469,7 +469,7 @@ class WP_Weixin {
 		}
 	}
 
-	public function add_admin_scripts( $hook ) {
+	public function add_admin_scripts( $hook ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$debug   = apply_filters( 'wp_weixin_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 		$css_ext = ( $debug ) ? '.css' : '.min.css';
 		$version = filemtime( WP_WEIXIN_PLUGIN_PATH . 'css/admin/main' . $css_ext );
@@ -510,7 +510,7 @@ class WP_Weixin {
 		return $doing_ajax;
 	}
 
-	public function avatar( $avatar, $id_or_email, $size, $default, $alt ) {
+	public function avatar( $avatar, $id_or_email, $size, $_default, $alt ) {
 		$user = false;
 
 		if ( is_numeric( $id_or_email ) ) {
@@ -547,7 +547,7 @@ class WP_Weixin {
 		return $avatar;
 	}
 
-	public function avatar_description( $description, $profileuser ) {
+	public function avatar_description( $description, $profileuser ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$description = __( 'Latest known WeChat profile photo.', 'wp-weixin' );
 
 		return $description;
@@ -572,14 +572,14 @@ class WP_Weixin {
 
 			require_once WP_WEIXIN_PLUGIN_PATH . 'inc/templates/admin/wechat-public-info.php';
 
-			echo ob_get_clean(); // WPCS: XSS ok
+			echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			do_action( 'wp_weixin_after_user_profile_wechat_info', $data, $user );
 		} else {
 			ob_start();
 			set_query_var( 'wechat_info', $data );
 			self::locate_template( 'wp-weixin-public-info.php', true );
-			echo ob_get_clean(); // WPCS: XSS ok
+			echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
@@ -594,38 +594,36 @@ class WP_Weixin {
 			$data = json_decode( get_user_meta( $user_id, 'wp_weixin_rawdata', true ), true );
 
 			if ( ! empty( $data ) ) {
+				$data['headimgurl'] = isset( $data['headimgurl'] ) ? $data['headimgurl'] : '';
 				$data['headimgurl'] = ( is_ssl() ) ? str_replace( 'http://', 'https://', $data['headimgurl'] ) : $data['headimgurl'];
-				$sex                = absint( $data['sex'] );
+				$sex                = isset( $data['sex'] ) ? absint( $data['sex'] ) : false;
 				$auth_blog_id       = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 
 				if ( is_admin() ) {
 
-					if ( 0 === $sex ) {
+					if ( ! $sex ) {
 						$sex = __( '0 (N/A)', 'wp-weixin' );
 					} elseif ( 1 === $sex ) {
 						$sex = __( '1 (M)', 'wp-weixin' );
 					} elseif ( 2 === $sex ) {
 						$sex = __( '2 (F)', 'wp-weixin' );
 					}
-				} else {
-
-					if ( 0 === $sex ) {
-						$sex = __( 'N/A', 'wp-weixin' );
-					} elseif ( 1 === $sex ) {
-						$sex = __( 'Male', 'wp-weixin' );
-					} elseif ( 2 === $sex ) {
-						$sex = __( 'Female', 'wp-weixin' );
-					}
+				} elseif ( ! $sex ) {
+					$sex = __( 'N/A', 'wp-weixin' );
+				} elseif ( 1 === $sex ) {
+					$sex = __( 'Male', 'wp-weixin' );
+				} elseif ( 2 === $sex ) {
+					$sex = __( 'Female', 'wp-weixin' );
 				}
 
 				$data = array(
-					'nickname'   => $this->cleanup_wechat_info( $data['nickname'] ),
-					'headimgurl' => $data['headimgurl'],
+					'nickname'   => isset( $data['nickname'] ) ? $this->cleanup_wechat_info( $data['nickname'] ) : '',
+					'headimgurl' => isset( $data['headimgurl'] ) ? $data['headimgurl'] : '',
 					'sex'        => $sex,
-					'language'   => $data['language'],
-					'city'       => $this->cleanup_wechat_info( $data['city'] ),
-					'province'   => $this->cleanup_wechat_info( $data['province'] ),
-					'country'    => $this->cleanup_wechat_info( $data['country'] ),
+					'language'   => isset( $data['language'] ) ? $data['language'] : '',
+					'city'       => isset( $data['city'] ) ? $this->cleanup_wechat_info( $data['city'] ) : '',
+					'province'   => isset( $data['province'] ) ? $this->cleanup_wechat_info( $data['province'] ) : '',
+					'country'    => isset( $data['country'] ) ? $this->cleanup_wechat_info( $data['country'] ) : '',
 					'unionid'    => get_user_meta( $user_id, 'wx_unionid', true ),
 				);
 
@@ -691,7 +689,7 @@ class WP_Weixin {
 		return $check;
 	}
 
-	public function filter_wechat_update_user_meta( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
+	public function filter_wechat_update_user_meta( $check, $object_id, $meta_key, $meta_value, $prev_value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		if ( 'wp_weixin_openid' === $meta_key ) {
 			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
@@ -854,12 +852,10 @@ class WP_Weixin {
 		return $cell;
 	}
 
-	protected function cleanup_wechat_info( $string ) {
-		$regex  = '/u[[:xdigit:]]{4}/';
-		$string = preg_replace( '/(u[[:xdigit:]]{4})/', '\\\$1', $string );
-		$string = json_decode( sprintf( '"%s"', $string ) );
+	protected function cleanup_wechat_info( $_string ) {
+		$string = preg_replace( '/(u[[:xdigit:]]{4})/', '\\\$1', $_string );
+		$string = json_decode( sprintf( '"%s"', $_string ) );
 
-		return $string;
+		return $_string;
 	}
-
 }

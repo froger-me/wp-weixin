@@ -2,8 +2,8 @@
 Contributors: frogerme
 Tags: wechat, wechat share, 微信, 微信分享, 微信公众号
 Requires at least: 4.9.5
-Tested up to: 6.4
-Stable tag: 1.3.16
+Tested up to: 6.7
+Stable tag: 1.3.17
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -104,6 +104,12 @@ This section describes how to install the plugin and get it working.
 16. The interface to setup the WeChat Official Account menu when the WeChat Responder is active.
 
 == Changelog ==
+
+= 1.3.17 =
+* Sanitization of admin settings
+* SDK refactor
+* Cleanup and formatting
+* WordPress tested up to: 6.7
 
 = 1.3.16 =
 * Remove WooCommerce compatbility tag (reason: irrelevant)

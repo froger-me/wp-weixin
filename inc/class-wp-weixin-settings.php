@@ -76,7 +76,7 @@ class WP_Weixin_Settings {
 		} elseif ( $is_section_callback ) {
 			call_user_func_array( array( $this, 'section_render' ), array( $section_key ) );
 		} else {
-			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . esc_html( $method_name ) . '()', E_USER_ERROR ); // @codingStandardsIgnoreLine
+			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . esc_html( $method_name ) . '()', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 		}
 	}
 
@@ -133,7 +133,7 @@ class WP_Weixin_Settings {
 	}
 
 	public static function encode_url( $url ) {
-		$encoded = base64_encode( $url ); // @codingStandardsIgnoreLine
+		$encoded = base64_encode( $url ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$encoded = str_replace( '=', '-', $encoded );
 		$encoded = str_replace( '/', '~', $encoded );
 		$encoded = str_replace( '+', '*', $encoded );
@@ -145,7 +145,7 @@ class WP_Weixin_Settings {
 		$encoded = str_replace( '-', '=', $encoded );
 		$encoded = str_replace( '~', '/', $encoded );
 		$encoded = str_replace( '*', '+', $encoded );
-		$url     = base64_decode( $encoded ); // @codingStandardsIgnoreLine
+		$url     = base64_decode( $encoded ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 
 		return esc_url_raw( $url );
 	}
@@ -154,7 +154,7 @@ class WP_Weixin_Settings {
 		wp_cache_add_non_persistent_groups( 'wp_weixin' );
 	}
 
-	public function set_wp_weixin_flush( $old_value, $value, $option ) {
+	public function set_wp_weixin_flush( $old_value, $value, $option ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		set_transient( 'wp_weixin_flush', 1, 60 );
 	}
 
@@ -202,8 +202,24 @@ class WP_Weixin_Settings {
 		);
 	}
 
+	public function sanitize_settings( $value ) {
+		$filtered = array();
+
+		foreach ( $value as $key => $val ) {
+			$filtered[ $key ] = sanitize_text_field( $val );
+		}
+
+		return $filtered;
+	}
+
 	public function build_settings_page() {
-		register_setting( 'wpWeixinSettings', 'wp_weixin_settings' );
+		register_setting(
+			'wpWeixinSettings',
+			'wp_weixin_settings',
+			array(
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
+			)
+		);
 
 		foreach ( $this->settings_fields as $section_name => $section ) {
 
@@ -222,17 +238,17 @@ class WP_Weixin_Settings {
 					$callback    = array( $this, 'wp_weixin_' . $field['id'] . '_render' );
 					$page        = 'wpWeixinSettings';
 					$section_key = 'wp_weixin_' . $section_name . '_section';
-					$class       = 'wp_weixin-' . $section_name . '-section wp_weixin-' . $field['id'] . '-field';
+					$_class      = 'wp_weixin-' . $section_name . '-section wp_weixin-' . $field['id'] . '-field';
 
 					if (
 						false !== strpos( $section['class'], 'hidden' ) ||
 						false !== strpos( $field['class'], 'hidden' )
 					) {
-						$class .= ' hidden';
+						$_class .= ' hidden';
 					}
 
 					$args = array(
-						'class' => $class,
+						'class' => $_class,
 					);
 
 					add_settings_field( $id, $title, $callback, $page, $section_key, $args );
@@ -261,7 +277,7 @@ class WP_Weixin_Settings {
 					restore_current_blog();
 				}
 
-				$wpdb->query( $wpdb->prepare( $sql, 'wx_openid-' . $value['wp_weixin_auth_blog_id'] ) ); // @codingStandardsIgnoreLine
+				$wpdb->query( $wpdb->prepare( $sql, 'wx_openid-' . $value['wp_weixin_auth_blog_id'] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				update_site_option( 'wp_weixin_auth_blog_id', $value['wp_weixin_auth_blog_id'] );
 				switch_to_blog( absint( $value['wp_weixin_auth_blog_id'] ) );
 				set_transient( 'wp_weixin_flush', 1, 60 );
@@ -365,7 +381,7 @@ class WP_Weixin_Settings {
 			}
 
 			$nonce = wp_create_nonce( 'wp_weixin_qr_code' );
-			$hash  = self::encode_url( $base_payment_url . '|' . $nonce ); // @codingStandardsIgnoreLine
+			$hash  = self::encode_url( $base_payment_url . '|' . $nonce );
 		} elseif ( $url ) {
 
 			if ( $product_name ) {
@@ -407,6 +423,11 @@ class WP_Weixin_Settings {
 
 	protected function build_settings_fields() {
 		global $sitepress;
+
+		if ( ! isset( $sitepress ) ) {
+			define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN', null );
+			define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DIRECTORY', null );
+		}
 
 		$jsapi_urls       = array();
 		$notify           = apply_filters( 'wp_weixin_pay_callback_endpoint', '' );
@@ -713,7 +734,7 @@ class WP_Weixin_Settings {
 					'label' => __( 'Use custom persistence for access_token', 'wp-weixin' ),
 					'type'  => 'checkbox',
 					'class' => '',
-					'help'  => __( 'Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br>Warning - requires the implementation of:<br>- <code>add_filter(\'wp_weixin_get_access_info\', $access_info, 10, 0);</code><br>- <code>add_action(\'wp_weixin_save_access_info\', $access_info, 10, 1);</code><br/>The parameter <code>$access_info</code> is an array with the keys <code>token</code> and <code>expiry</code>.<br/>Add the hooks above in a <code>plugins_loaded</code> action with a priority of <code>4</code> or less.<br/>Useful to avoid a race condition if the access_token information need to be shared between multiple platforms.<br>When unchecked, access_token &amp; expiry timestamp are stored in the Wordpress options table in the database.', 'wp-weixin' ),
+					'help'  => __( 'Use a custom persistence method for the Official Account access_token and its expiry timestamp.<br>Warning - requires the implementation of:<br>- <code>add_filter(\'wp_weixin_get_access_info\', $access_info, 10, 1);</code><br>- <code>add_action(\'wp_weixin_save_access_info\', $access_info, 10, 1);</code><br/>The parameter <code>$access_info</code> is an array with the keys <code>token</code> and <code>expiry</code>.<br/>Add the hooks above in a <code>plugins_loaded</code> action with a priority of <code>4</code> or less.<br/>Useful to avoid a race condition if the access_token information need to be shared between multiple platforms.<br>When unchecked, access_token &amp; expiry timestamp are stored in the Wordpress options table in the database.', 'wp-weixin' ),
 				),
 				'title'       => __( 'Miscellaneous Settings', 'wp-weixin' ),
 				'class'       => 'dashicons-before dashicons-admin-generic',
@@ -848,33 +869,41 @@ class WP_Weixin_Settings {
 		}
 	}
 
-	protected function get_input_text_option( $key, $class ) {
-		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
-		$input  = '<input type="text" name="wp_weixin_settings[wp_weixin_' . $key . ']" value="';
-		$input .= isset( self::$settings[ $key ] ) ? self::$settings[ $key ] : '';
-		$input .= '"' . $class . '>';
+	protected function get_input_text_option( $key, $_class ) {
+		$_class = empty( $_class ) ? ' ' : ' class="' . esc_attr( $_class ) . '" ';
+		$input  = '<input type="text" name="wp_weixin_settings[wp_weixin_' . esc_attr( $key ) . ']" value="';
+		$input .= esc_html( isset( self::$settings[ $key ] ) ? self::$settings[ $key ] : '' );
+		$input .= '"' . esc_attr( $_class ) . '>';
 
 		return $input;
 	}
 
-	protected function get_input_checkbox_option( $key, $class ) {
-		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
-		$input  = '<input type="checkbox" name="wp_weixin_settings[wp_weixin_' . $key . ']" value="1" ';
+	protected function get_input_checkbox_option( $key, $_class ) {
+		$_class = empty( $_class ) ? ' ' : ' class="' . esc_attr( $_class ) . '" ';
+		$input  = '<input type="checkbox" name="wp_weixin_settings[wp_weixin_' . esc_attr( $key ) . ']" value="1" ';
 		$input .= ( isset( self::$settings[ $key ] ) && self::$settings[ $key ] ) ? 'checked' : '';
-		$input .= $class . '>';
+		$input .= esc_attr( $_class ) . '>';
 
 		return $input;
 	}
 
-	protected function get_input_select_option( $key, $class ) {
-		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
+	protected function get_input_select_option( $key, $_class ) {
+		$_class = empty( $_class ) ? ' ' : ' class="' . esc_attr( $_class ) . '" ';
 		$values = $this->get_field_attr( $key, 'value' );
-		$input  = '<select name="wp_weixin_settings[wp_weixin_' . $key . ']"' . $class . '>';
+		$input  = '<select name="wp_weixin_settings[wp_weixin_'
+			. esc_attr( $key ) . ']"' . esc_attr( $_class ) . '>';
+
+		if ( ! is_array( $values ) ) {
+			return false;
+		}
 
 		foreach ( $values as $option_value => $option ) {
 			$condition = isset( self::$settings[ $key ] ) && self::$settings[ $key ] === (string) $option_value;
 			$selected  = ( $condition ) ? ' selected' : '';
-			$input    .= '<option value="' . $option_value . '"' . $selected . '>' . $option . '</option>';
+			$input    .= '<option value="'
+				. esc_attr( $option_value ) . '"'
+				. esc_attr( $selected ) . '>'
+				. esc_attr( $option ) . '</option>';
 		}
 
 		$input .= '</select>';
@@ -882,19 +911,21 @@ class WP_Weixin_Settings {
 		return $input;
 	}
 
-	protected function get_input_password_option( $key, $class ) {
-		$class  = empty( $class ) ? ' ' : ' class="' . $class . '" ';
-		$input  = '<input type="password" id="wp_weixin_' . $key . '"';
-		$input .= ' name="wp_weixin_settings[wp_weixin_' . $key . ']" value="';
-		$input .= isset( self::$settings[ $key ] ) ? self::$settings[ $key ] : '';
-		$input .= '"' . $class . '>';
+	protected function get_input_password_option( $key, $_class ) {
+		$_class = empty( $_class ) ? ' ' : ' class="' . $_class . '" ';
+		$input  = '<input type="password" id="wp_weixin_' . esc_attr( $key ) . '"';
+		$input .= ' name="wp_weixin_settings[wp_weixin_' . esc_attr( $key ) . ']" value="';
+		$input .= esc_html( isset( self::$settings[ $key ] ) ? self::$settings[ $key ] : '' );
+		$input .= '"' . esc_attr( $_class ) . '>';
 
 		return $input;
 	}
 
-	protected function get_raw_text_option( $key, $class ) {
-		$class     = empty( $class ) ? ' ' : ' class="' . $class . '" ';
-		$paragraph = '<p' . $class . '>' . $this->get_field_attr( $key, 'value' ) . '</p>';
+	protected function get_raw_text_option( $key, $_class ) {
+		$_class    = empty( $_class ) ? ' ' : ' class="' . esc_attr( $_class ) . '" ';
+		$paragraph = '<p' . esc_attr( $_class ) . '>'
+			. wp_kses_post( $this->get_field_attr( $key, 'value' ) )
+			. '</p>';
 
 		return $paragraph;
 	}
@@ -902,43 +933,43 @@ class WP_Weixin_Settings {
 	protected function field_render( $key ) {
 
 		if ( $this->get_field_attr( $key, 'type' ) === 'text' ) {
-			echo $this->get_input_text_option( $key, $this->get_field_attr( $key, 'class' ) ); // WPCS: XSS ok
+			echo $this->get_input_text_option( $key, $this->get_field_attr( $key, 'class' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( $this->get_field_attr( $key, 'type' ) === 'password' ) {
-			echo $this->get_input_password_option( $key, $this->get_field_attr( $key, 'class' ) ); // WPCS: XSS ok
+			echo $this->get_input_password_option( $key, $this->get_field_attr( $key, 'class' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( $this->get_field_attr( $key, 'type' ) === 'select' ) {
-			echo $this->get_input_select_option( $key, $this->get_field_attr( $key, 'class' ) ); // WPCS: XSS ok
+			echo $this->get_input_select_option( $key, $this->get_field_attr( $key, 'class' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( $this->get_field_attr( $key, 'type' ) === 'checkbox' ) {
-			echo $this->get_input_checkbox_option( $key, $this->get_field_attr( $key, 'class' ) ); // WPCS: XSS ok
+			echo $this->get_input_checkbox_option( $key, $this->get_field_attr( $key, 'class' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( $this->get_field_attr( $key, 'type' ) === 'raw_text' ) {
-			echo $this->get_raw_text_option( $key, $this->get_field_attr( $key, 'class' ) ); // WPCS: XSS ok
+			echo $this->get_raw_text_option( $key, $this->get_field_attr( $key, 'class' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( $this->get_field_attr( $key, 'help' ) ) {
-			echo '<p class="description">' . $this->get_field_attr( $key, 'help' ) . '</p>'; // WPCS: XSS ok
+			echo '<p class="description">' . $this->get_field_attr( $key, 'help' ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
 	protected function section_render( $key ) {
-		$hide   = isset( $this->settings_fields[ $key ]['class'] );
-		$hide   = $hide && false !== strpos( $this->settings_fields[ $key ]['class'], 'hidden' );
-		$class  = 'wp_weixin-' . $key . '-description';
-		$class .= ( $hide ) ? ' hidden' : '';
+		$hide    = isset( $this->settings_fields[ $key ]['class'] );
+		$hide    = $hide && false !== strpos( $this->settings_fields[ $key ]['class'], 'hidden' );
+		$_class  = 'wp_weixin-' . $key . '-description';
+		$_class .= ( $hide ) ? ' hidden' : '';
 
 		if ( isset( $this->settings_fields[ $key ]['class'] ) ) {
 			echo '<span class="section-class-holder hidden" data-section_class="';
-			echo $this->settings_fields[ $key ]['class'];  // WPCS: XSS ok
+			echo $this->settings_fields[ $key ]['class']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '"></span>';
 		}
 
-		echo '<div class="' . $class . '">' . $this->settings_fields[ $key ]['description'] . '</div>'; // WPCS: XSS ok
+		echo '<div class="' . $_class . '">' . $this->settings_fields[ $key ]['description'] . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	protected function get_field_attr( $key, $attr ) {
@@ -957,10 +988,10 @@ class WP_Weixin_Settings {
 		return false;
 	}
 
-	protected function get_network_sites_select_values( $default = false ) {
+	protected function get_network_sites_select_values( $_default = false ) {
 		$blogs = get_sites();
 
-		if ( 1 === $default ) {
+		if ( 1 === $_default ) {
 			$values = array();
 		} else {
 			$values = array(
@@ -978,7 +1009,7 @@ class WP_Weixin_Settings {
 			if ( $active ) {
 				$value = $blog->blogname . ' (' . $blog->siteurl . ' - ID ' . $blog->blog_id . ')';
 
-				if ( 1 === $default && 1 === absint( $blog->blog_id ) ) {
+				if ( 1 === $_default && 1 === absint( $blog->blog_id ) ) {
 					$prefix                   = __( 'Default - ', 'wp-weixin' );
 					$values[ $blog->blog_id ] = $prefix . $value;
 				} else {

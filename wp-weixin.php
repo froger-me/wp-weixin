@@ -3,7 +3,7 @@
 Plugin Name: WP Weixin
 Plugin URI: https://github.com/froger-me/wp-weixin
 Description: WordPress WeChat integration
-Version: 1.3.16
+Version: 1.3.17
 Author: Alexandre Froger
 Author URI: https://froger.me
 Text Domain: wp-weixin
