@@ -37,10 +37,14 @@ class WP_Weixin_Metabox {
 		$metaboxes = array(
 			'wechat_link' => array(
 				'title'      => __( 'Wechat Links', 'wp-weixin' ),
-				'post_types' => array(
-					'product',
-					'page',
-					'post',
+				'post_types' => apply_filters(
+					'wp_weixin_metabox_post_types',
+					array(
+						'product',
+						'page',
+						'post',
+					),
+					'wechat_link'
 				),
 				'context'    => 'side',
 				'callback'   => array( $this, 'wechat_link_metabox' ),
@@ -49,7 +53,8 @@ class WP_Weixin_Metabox {
 		);
 
 		foreach ( $metaboxes as $id => $metabox ) {
-			add_meta_box( $id,
+			add_meta_box(
+				$id,
 				$metabox['title'],
 				$metabox['callback'],
 				$metabox['post_types'],
@@ -92,7 +97,7 @@ class WP_Weixin_Metabox {
 		}
 	}
 
-	public function wechat_link_metabox( $post ) {
+	public function wechat_link_metabox( $post ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		ob_start();
 
 		$title       = self::get_meta( 'wechat_link_title' );
@@ -103,7 +108,6 @@ class WP_Weixin_Metabox {
 
 		$html = ob_get_clean();
 
-		echo $html; // WPCS: XSS ok
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
-
 }

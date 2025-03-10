@@ -3,7 +3,7 @@ Contributors: frogerme
 Tags: wechat, wechat share, 微信, 微信分享, 微信公众号
 Requires at least: 4.9.5
 Tested up to: 6.7
-Stable tag: 1.3.17
+Stable tag: 1.3.18
 Requires PHP: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -104,6 +104,11 @@ This section describes how to install the plugin and get it working.
 16. The interface to setup the WeChat Official Account menu when the WeChat Responder is active.
 
 == Changelog ==
+
+= 1.3.18 =
+* Fullfill "If disabled, users will simply be identified with a cookie using their WeChat public information during their session, but not authenticated in Wordpress." when "Enable WeChat authentication" is left unckecked
+* Fix: `wp_weixin_get_bind_link` and `wp_weixin_unbind`
+* Added `wp_weixin_metabox_post_types` filter to allow other post types to use the metabox
 
 = 1.3.17 =
 * Sanitization of admin settings

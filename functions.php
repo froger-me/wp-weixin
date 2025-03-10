@@ -108,12 +108,19 @@ if ( ! function_exists( 'wp_weixin_get_user_wechat_info' ) ) {
 if ( ! function_exists( 'wp_weixin_get_user_wechat_openid' ) ) {
 
 	function wp_weixin_get_user_wechat_openid( $user_id = false ) {
-		$user_id      = ( $user_id ) ? absint( $user_id ) : get_current_user_id();
-		$auth_blog_id = ( $user_id ) ? apply_filters( 'wp_weixin_ms_auth_blog_id', 1 ) : 1;
+		$openid = false;
 
-		wp_cache_delete( $user_id, 'user_meta' );
+		if ( ! wp_weixin_get_option( 'enable_auth' ) && wp_weixin_is_wechat() ) {
+			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
+			$openid       = isset( $_COOKIE[ 'wx_openId-' . $auth_blog_id ] ) ? $_COOKIE[ 'wx_openId-' . $auth_blog_id ] : false;
+		} else {
+			$user_id      = ( $user_id ) ? absint( $user_id ) : get_current_user_id();
+			$auth_blog_id = ( $user_id ) ? apply_filters( 'wp_weixin_ms_auth_blog_id', 1 ) : 1;
 
-		$openid = ( $user_id ) ? get_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, true ) : false;
+			wp_cache_delete( $user_id, 'user_meta' );
+
+			$openid = ( $user_id ) ? get_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, true ) : false;
+		}
 
 		return $openid;
 	}
@@ -121,7 +128,7 @@ if ( ! function_exists( 'wp_weixin_get_user_wechat_openid' ) ) {
 
 if ( ! function_exists( 'wp_weixin_get_auth_link' ) ) {
 
-	function wp_weixin_get_auth_link( $output = false, $target = '', $class = '' ) {
+	function wp_weixin_get_auth_link( $output = false, $target = '', $_class = '' ) {
 		$link = '';
 
 		if (
@@ -130,7 +137,7 @@ if ( ! function_exists( 'wp_weixin_get_auth_link' ) ) {
 			! wp_weixin_is_wechat()
 		) {
 			$wp_weixin_auth = new WP_Weixin_Auth( wp_weixin_get_wechat() );
-			$link           = $wp_weixin_auth->auth_link( $output, $class, $target );
+			$link           = $wp_weixin_auth->auth_link( $output, $_class, $target );
 		}
 
 		return $link;
@@ -139,7 +146,7 @@ if ( ! function_exists( 'wp_weixin_get_auth_link' ) ) {
 
 if ( ! function_exists( 'wp_weixin_get_bind_link' ) ) {
 
-	function wp_weixin_get_bind_link( $output = false, $target = '_blank' ) {
+	function wp_weixin_get_bind_link( $output = false, $target = '_blank' ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$link = '';
 
 		if (
@@ -156,7 +163,7 @@ if ( ! function_exists( 'wp_weixin_get_bind_link' ) ) {
 
 			$auth_blog_id  = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 			$wechat_openid = get_user_meta( $user->ID, 'wx_openid-' . $auth_blog_id, true );
-			$link          = $wp_weixin_bind->bind_link( $user, $wechat_openid, '', $output );
+			$link          = $wp_weixin_bind->bind_link( $user, $wechat_openid, '', $target, $output );
 		}
 
 		return $link;
@@ -173,15 +180,15 @@ if ( ! function_exists( 'wp_weixin_unbind' ) ) {
 			$wp_weixin_auth = new WP_Weixin_Auth( $wechat );
 			$wp_weixin_bind = new WP_Weixin_Bind( $wechat, $wp_weixin_auth );
 
-			if ( empty( $openid ) ) {
+			if ( empty( $open_id ) ) {
 				wp_cache_delete( $user_id, 'user_meta' );
 
 				$auth_blog_id  = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
 				$wechat_openid = get_user_meta( $user_id, 'wx_openid-' . $auth_blog_id, true );
-				$openid        = $wechat_openid;
+				$open_id       = $wechat_openid;
 			}
 
-			$unbound = $wp_weixin_bind->process_unbind( false, $user_id, $openid );
+			$unbound = $wp_weixin_bind->process_unbind( false, $user_id, $open_id );
 		}
 
 		return $unbound;

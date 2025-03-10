@@ -23,22 +23,23 @@ class WP_Weixin_Auth {
 
 		if ( $init_hooks ) {
 
+			// Manage WeChat authentication
+			add_action( 'init', array( $this, 'manage_auth' ), PHP_INT_MIN + 10, 0 );
+			// Parse the endpoint request
+			add_action( 'parse_request', array( $this, 'parse_request' ), PHP_INT_MIN + 10, 0 );
+			// Clear cookie on logout
+			add_action( 'wp_logout', array( $this, 'logout' ), PHP_INT_MIN + 10, 0 );
+
+			// Determine where WeChat authentication is needed
+			add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), PHP_INT_MIN + 10, 1 );
+
 			if ( WP_Weixin_Settings::get_option( 'enable_auth' ) ) {
-				// Manage WeChat authentication
-				add_action( 'init', array( $this, 'manage_auth' ), PHP_INT_MIN + 10, 0 );
-				// Parse the endpoint request
-				add_action( 'parse_request', array( $this, 'parse_request' ), PHP_INT_MIN + 10, 0 );
 				// Add admin scripts
 				add_action( 'login_enqueue_scripts', array( $this, 'add_login_scripts' ), 99, 1 );
 				// Add QR code generation ajax callback
 				add_action( 'wp_ajax_nopriv_wp_weixin_get_auth_qr', array( $this, 'get_qr_src' ), 10, 0 );
 				// Add QR code heartbeat ajax callback
 				add_action( 'wp_ajax_nopriv_wp_weixin_auth_heartbeat_pulse', array( $this, 'heartbeat_pulse' ), 10, 0 );
-				// Clear cookie on logout
-				add_action( 'wp_logout', array( $this, 'logout' ), PHP_INT_MIN + 10, 0 );
-
-				// Determine where WeChat authentication is needed
-				add_filter( 'wp_weixin_auth_needed', array( $this, 'page_needs_wechat_auth' ), PHP_INT_MIN + 10, 1 );
 
 				if ( WP_Weixin_Settings::get_option( 'show_auth_link' ) && ! WP_Weixin::is_wechat_mobile() ) {
 					// Add link to WeChat qr authentication page
@@ -64,8 +65,26 @@ class WP_Weixin_Auth {
 	 *******************************************************************/
 
 	public static function is_auth_needed() {
-		$needs_auth = WP_Weixin_Settings::get_option( 'force_wechat' );
-		$needs_auth = $needs_auth || WP_Weixin::is_wechat_mobile();
+		$open_id    = filter_input(
+			INPUT_COOKIE,
+			'wx_openId-' . apply_filters( 'wp_weixin_ms_auth_blog_id', 1 ),
+			FILTER_SANITIZE_FULL_SPECIAL_CHARS
+		);
+		$needs_auth = (
+			// in any case, if authentication is enabled and forced
+			(
+				WP_Weixin_Settings::get_option( 'enable_auth' ) &&
+				WP_Weixin_Settings::get_option( 'force_wechat' )
+			) ||
+			// otherwise, when in the wechat app, if authentication is enabled or no open id is set
+			(
+				WP_Weixin::is_wechat_mobile() &&
+				(
+					WP_Weixin_Settings::get_option( 'enable_auth' ) ||
+					empty( $open_id )
+				)
+			)
+		);
 
 		self::$needs_auth = apply_filters( 'wp_weixin_auth_needed', $needs_auth );
 
@@ -99,11 +118,19 @@ class WP_Weixin_Auth {
 		if ( isset( $wp->query_vars['__wp_weixin_api'] ) ) {
 			$action = $wp->query_vars['action'];
 
-			if ( 'wechat-auth' === $action && ! WP_Weixin::is_wechat_mobile() ) {
+			if (
+				'wechat-auth' === $action &&
+				! WP_Weixin::is_wechat_mobile() &&
+				WP_Weixin_Settings::get_option( 'enable_auth' )
+			) {
 				add_action( 'template_redirect', array( $this, 'wechat_auth_page' ), 0, 0 );
 			}
 
-			if ( 'wechat-auth-qr' === $action && ! WP_Weixin::is_wechat_mobile() ) {
+			if (
+				'wechat-auth-qr' === $action &&
+				! WP_Weixin::is_wechat_mobile() &&
+				WP_Weixin_Settings::get_option( 'enable_auth' )
+			) {
 				$hash    = isset( $wp->query_vars['hash'] ) ? $wp->query_vars['hash'] : false;
 				$bundle  = explode( '|', base64_decode( $hash ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 				$nonce   = array_pop( $bundle );
@@ -123,7 +150,11 @@ class WP_Weixin_Auth {
 				);
 			}
 
-			if ( 'wechat-auth-validate' === $action && WP_Weixin::is_wechat_mobile() ) {
+			if (
+				'wechat-auth-validate' === $action &&
+				WP_Weixin::is_wechat_mobile() &&
+				WP_Weixin_Settings::get_option( 'enable_auth' )
+			) {
 				$this->prevent_force_follow = true;
 
 				$this->oauth();
@@ -650,6 +681,16 @@ class WP_Weixin_Auth {
 			if ( $this->target_blog_id ) {
 				restore_current_blog();
 			}
+		} else {
+			$auth_blog_id = apply_filters( 'wp_weixin_ms_auth_blog_id', 1 );
+
+			setcookie(
+				'wx_openId-' . $auth_blog_id,
+				$openid,
+				time() + (int) $this->expire_length,
+				'/',
+				COOKIE_DOMAIN
+			);
 		}
 
 		if ( $redirect ) {
