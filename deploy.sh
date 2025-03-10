@@ -124,7 +124,7 @@ execute_or_echo() {
                 if $VERBOSE; then
                     echo "$command ${args[*]}"
                 fi
-                "$command" "${args[@]}"
+                "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
             fi
             ;;
         svn)
@@ -135,7 +135,7 @@ execute_or_echo() {
                 if $VERBOSE; then
                     echo "$command ${args[*]}"
                 fi
-                "$command" "${args[@]}"
+                "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
             fi
             ;;
         gh)
@@ -146,7 +146,7 @@ execute_or_echo() {
                 if $VERBOSE; then
                     echo "gh ${args[*]}"
                 fi
-                "$command" "${args[@]}"
+                "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
             fi
             ;;
         *)
@@ -154,7 +154,7 @@ execute_or_echo() {
             if $VERBOSE; then
                 echo "$command ${args[*]}"
             fi
-            "$command" "${args[@]}"
+            "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
         ;;
     esac
 }
@@ -305,7 +305,7 @@ fi
 # Export HEAD of branch from git to SVN trunk
 execute_or_echo git checkout-index -a -f --prefix="$SVNPATH"/trunk/
 
-# Ignore GitHub-specific files
+# Ignore files
 execute_or_echo svn propset svn:ignore "deploy.sh
 .DS_Store
 .vscode
@@ -318,7 +318,23 @@ execute_or_echo svn add readme.txt
 
 # Create new SVN tag
 execute_or_echo cd "$SVNPATH"
-execute_or_echo svn copy trunk/ tags/"$NEWVERSION1"/
+
+# Check if the tag already exists
+if svn list "$SVNURL"/tags/ | grep -q "$NEWVERSION1"; then
+
+    # Switch back to the original branch
+    execute_or_echo cd "$GITPATH"
+    execute_or_echo git checkout "$CURRENTBRANCH"
+
+    echo "Tag $NEWVERSION1 already exists. Exiting."
+
+    # Clean up temporary directory
+    execute_or_echo rm -fr "${SVNPATH:?}/"
+
+    exit 1
+fi
+
+execute_or_echo svn copy trunk tags/"$NEWVERSION1"
 
 # Add all new files in the tag folder
 execute_or_echo cd "$SVNPATH"/tags/"$NEWVERSION1"
