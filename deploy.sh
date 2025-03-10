@@ -5,7 +5,7 @@ DIR=$(pwd)
 PLUGINSLUG=$(basename "$DIR")
 MAINFILE="$PLUGINSLUG.php"
 # SVN user
-SVNUSER=$1
+SVNUSER=""
 # Verbose mode
 VERBOSE=false
 # Deploy mode
@@ -18,32 +18,51 @@ SCRIPT_NAME=$(basename "$0")
 GITBRANCH="main"
 
 # Parse arguments
-for arg in "$@"; do
-    case "$arg" in
+while [[ $# -gt 0 ]]; do
+    case "$1" in
         -d|--deploy)
             DEPLOY=true
+            shift
             ;;
         -v|--verbose)
             VERBOSE=true
+            shift
             ;;
         -sa|--skip-assets)
             SKIP_ASSETS=true
+            shift
             ;;
         -b|--branch)
+            if [[ -z "$2" || "$2" == -* ]]; then
+                echo "Error: Missing value for --branch option."
+                exit 1
+            fi
             GITBRANCH="$2"
-            shift
+            shift 2
             ;;
         -mf|--mainfile)
+            if [[ -z "$2" || "$2" == -* ]]; then
+                echo "Error: Missing value for --mainfile option."
+                exit 1
+            fi
             MAINFILE="$2"
-            shift
+            shift 2
             ;;
         -p|--path)
+            if [[ -z "$2" || "$2" == -* ]]; then
+                echo "Error: Missing value for --path option."
+                exit 1
+            fi
             DIR="$2"
-            shift
+            shift 2
             ;;
         -s|--slug)
+            if [[ -z "$2" || "$2" == -* ]]; then
+                echo "Error: Missing value for --slug option."
+                exit 1
+            fi
             PLUGINSLUG="$2"
-            shift
+            shift 2
             ;;
         -h|--help)
             echo "Deploy WordPress plugin to the official repository."
@@ -52,9 +71,13 @@ for arg in "$@"; do
             exit 0
             ;;
         *)
-            # Assume the first non-flag argument is PARAM1
+            # Assume the first non-flag argument is SVNUSER
             if [[ -z "$SVNUSER" ]]; then
-                SVNUSER="$arg"
+                SVNUSER="$1"
+                shift
+            else
+                echo "Error: Unexpected argument '$1'."
+                exit 1
             fi
             ;;
     esac
@@ -65,6 +88,18 @@ if [[ -z "$SVNUSER" ]]; then
     echo "Error: Missing required parameter <svn-user>."
     echo "Usage: ./$SCRIPT_NAME <svn-user> [-d|--deploy] [-v|--verbose] [-sa|--skip-assets] [-b|--branch <branch>] [-mf|--mainfile <mainfile.php>] [-p|--path <plugin-path>] [-s|--slug <plugin-slug>]"
     exit 1
+fi
+
+# Debug output (optional, for testing purposes)
+if [[ "$VERBOSE" == true ]]; then
+    echo "SVNUSER: $SVNUSER"
+    echo "DEPLOY: $DEPLOY"
+    echo "VERBOSE: $VERBOSE"
+    echo "SKIP_ASSETS: $SKIP_ASSETS"
+    echo "GITBRANCH: $GITBRANCH"
+    echo "MAINFILE: $MAINFILE"
+    echo "DIR: $DIR"
+    echo "PLUGINSLUG: $PLUGINSLUG"
 fi
 
 # Git config
