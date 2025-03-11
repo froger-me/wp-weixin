@@ -108,6 +108,19 @@ GITPATH="$DIR/"
 SVNPATH="/tmp/$PLUGINSLUG" # path to a temp SVN repo. No trailing slash required and don't add trunk.
 SVNURL="http://plugins.svn.wordpress.org/$PLUGINSLUG/" # Remote SVN repo on wordpress.org, with no trailing slash
 
+# Function to handle command errors
+handle_error() {
+    local cmd="$1"
+    local exit_code="$2"
+    echo "Error: $cmd command failed with exit code $exit_code"
+    cd "$GITPATH" || {
+        echo "Error: Unable to change directory to $GITPATH"
+        exit 1
+    }
+    git checkout "$CURRENTBRANCH"
+    exit 1
+}
+
 # Function to execute or echo commands based on deploy mode
 execute_or_echo() {
     local command="$1"
@@ -124,7 +137,19 @@ execute_or_echo() {
                 if $VERBOSE; then
                     echo "$command ${args[*]}"
                 fi
-                "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
+                "$command" "${args[@]}"
+                local exit_code=$?
+                if [[ $exit_code -ne 0 ]]; then
+                    # Make exception for git commit when there's nothing to commit
+                    if [[ "$command" == "git" && "${args[0]}" == "commit" && $exit_code -eq 1 ]]; then
+                        # Check if the error is about "nothing to commit"
+                        if git status | grep -q "nothing to commit"; then
+                            echo "Notice: Nothing to commit, continuing with deployment"
+                            return 0
+                        fi
+                    fi
+                    handle_error "$command ${args[*]}" "$exit_code"
+                fi
             fi
             ;;
         svn)
@@ -135,7 +160,11 @@ execute_or_echo() {
                 if $VERBOSE; then
                     echo "$command ${args[*]}"
                 fi
-                "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
+                "$command" "${args[@]}"
+                local exit_code=$?
+                if [[ $exit_code -ne 0 ]]; then
+                    handle_error "$command ${args[*]}"
+                fi
             fi
             ;;
         gh)
@@ -146,7 +175,11 @@ execute_or_echo() {
                 if $VERBOSE; then
                     echo "gh ${args[*]}"
                 fi
-                "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
+                "$command" "${args[@]}"
+                local exit_code=$?
+                if [[ $exit_code -ne 0 ]]; then
+                    handle_error "$command ${args[*]}"
+                fi
             fi
             ;;
         *)
@@ -154,7 +187,11 @@ execute_or_echo() {
             if $VERBOSE; then
                 echo "$command ${args[*]}"
             fi
-            "$command" "${args[@]}" || { echo "Error: $command command failed"; exit 1; }
+            "$command" "${args[@]}"
+            local exit_code=$?
+            if [[ $exit_code -ne 0 ]]; then
+                handle_error "$command ${args[*]}"
+            fi
         ;;
     esac
 }
