@@ -343,7 +343,7 @@ fi
 execute_or_echo git checkout-index -a -f --prefix="$SVNPATH"/trunk/
 
 # Ignore files
-execute_or_echo svn propset svn:ignore "deploy.sh
+execute_or_echo svn propset svn:ignore "*.sh
 .DS_Store
 .vscode
 .git
